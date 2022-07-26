@@ -9,7 +9,6 @@ class JSONBuilder {
       JSONBuilder::JSONBuilder(void) {
        json = "{ ";
        jsonParamCount = 0;
-       Print("Init first" + jsonParamCount);
       };
       
       JSONBuilder::JSONBuilder(string premade, int previousJsonParamCount) {
@@ -19,7 +18,6 @@ class JSONBuilder {
       
       JSONBuilder* addInput(string name, string value) {
          json = json + addComa() + name + ": \"" + value + "\"";
-         Print(jsonParamCount + " HAHGAHAHA " + jsonParamCount++);
          JSONBuilder* pJson = new JSONBuilder(json, ++jsonParamCount);
          return pJson;
       };
