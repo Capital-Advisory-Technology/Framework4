@@ -1,8 +1,4 @@
 
-#property copyright "Copyright 2022, MetaQuotes Software Corp."
-#property link      "https://www.mql5.com"
-#property strict
-
 class JSONBuilder {
 
    private:
@@ -40,15 +36,13 @@ class JSONBuilder {
          return pJson;
       };
       
-      
       string addComa() {
-         
          if(jsonParamCount > 1) {
             return ", ";
          } else { 
             return "";
          }
-      }
+      };
       
       string build() {
            return json + " }";
