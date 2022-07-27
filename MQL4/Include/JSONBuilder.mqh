@@ -34,8 +34,14 @@ class JSONBuilder {
          return pJson;
       };
       
+       JSONBuilder* addInput(string name, double value) {
+         json = json + addComa() + name + ": " + (string)value;
+         JSONBuilder* pJson = new JSONBuilder(json, ++jsonParamCount);
+         return pJson;
+      };
+      
       string addComa() {
-         if(jsonParamCount > 1) {
+         if(jsonParamCount > 0) {
             return ", ";
          } else { 
             return "";
