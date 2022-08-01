@@ -13,6 +13,7 @@
 //+------------------------------------------------------------------+
 double CalculateLotSize(double balance, double risk, int stopLoss)
   {
+   Print("Balance: " + balance + " Risk: " + risk + " SL: " + stopLoss);
    double lotStep = MarketInfo(Symbol(),MODE_LOTSTEP);
    double minLot = MarketInfo(Symbol(),MODE_MINLOT);
    double maxLot = MarketInfo(Symbol(),MODE_MAXLOT);

@@ -4,22 +4,22 @@
 class Position {
 
    private:
-   long openTime;
-   long closeTime;
-   int positionType;
-   double lotSize;
-   double openPrice;
-   double closePrice;
-   double slPrice;
-   double tpPrice;
-   double profit;
-   double SMA200;
-   double EMA200;
-   double SMA65;
-   double EMA65;
-   double RSI14;
-   double ATR14;
-   int breakEvenFlag;
+      long openTime;
+      long closeTime;
+      double profit;
+      int positionType;
+      double lotSize;
+      double openPrice;
+      double closePrice;
+      double slPrice;
+      double tpPrice;
+      double SMA200;
+      double EMA200;
+      double SMA65;
+      double EMA65;
+      double RSI14;
+      double ATR14;
+      int breakEvenFlag;
       
    public: 
       Position::Position(
@@ -50,11 +50,13 @@ class Position {
          this.breakEvenFlag = 0;
       };
       
+      ~Position() { } 
       
-      void setPositionClosed(datetime endTime, double closePrice){
-         closeTime = endTime;
-         closePrice = closePrice;
-         
+      
+      void setPositionClosed(datetime endTime, double closePrice, double profit){
+         this.closeTime = endTime;
+         this.closePrice = closePrice;
+         this.profit = profit;
       };
       
       void setBreakEvenFlag(bool positive) {
@@ -63,5 +65,69 @@ class Position {
          } else {
             breakEvenFlag = 0;
          }; 
+      };
+      
+      long getOpenTime() {
+         return openTime;
+      };
+        
+      long getCloseTime() {
+         return closeTime;
+      };
+      
+      int getPositionType() {
+         return positionType;
+      };
+      
+      double getLotSize() {
+         return lotSize;
+      };
+      
+      double getOpenPrice() {
+         return openPrice;
+      };
+      
+      double getClosePrice() {
+         return closePrice;
+      };
+      
+      double getSlPrice() {
+         return slPrice;
+      };
+      
+      double getTpPrice() {
+         return tpPrice;
+      };
+      
+      double getProfit() {
+         return profit;
+      };
+      
+      double getSMA200() {
+         return SMA200;
+      };
+      
+      double getEMA200() {
+         return EMA200;
+      };
+      
+      double getSMA65() {
+         return SMA65;
+      };
+      
+      double getEMA65() {
+         return EMA65;
+      };
+      
+      double getRSI14() {
+         return RSI14;
+      };
+      
+      double getATR14() {
+         return ATR14;
+      };
+      
+      int getBreakEvenFlag() {
+         return breakEvenFlag;
       };
 };
