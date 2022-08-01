@@ -6,12 +6,11 @@ const string DATE_FORMAT = "";
 class BacktestInfo {
 
    private:
-      string name; // done
       string modelName; // done
       string modelParamsJson; // done
-      double profit; 
-      double profit_factor;
-      double drawdown;
+      double profit; // done
+      double profit_factor; 
+      double drawdown; // maks papisiens
       double longsWon; // done
       double shortsWon; // done
       int dateFrom; // done
@@ -35,7 +34,7 @@ class BacktestInfo {
           
           for (int i = 0; i < positionAmount; i++) {
             Position* pos = positions[i];
-            
+            profit += pos.getProfit();
             
             // Consecutive params
             if (pos.getProfit() > 0) {
@@ -51,11 +50,13 @@ class BacktestInfo {
              
             int tempLongsWon = 0;
             int tempShortsWon = 0;
+            
+            long positionProfit = pos.getProfit();
             if (pos.getPositionType() == 0) {
-                if (pos.getProfit() > 0) tempLongsWon++;
+               if (positionProfit > 0) tempLongsWon++;
                longTrades++;
             } else {
-               if (pos.getProfit() > 0) tempShortsWon++;
+               if (positionProfit > 0) tempShortsWon++;
                shortTrades++;
             }
             
@@ -66,8 +67,7 @@ class BacktestInfo {
       
       
    public: 
-      BacktestInfo::BacktestInfo(string backtestName, string newModelName, string modelParams) {
-         this.name = backtestName;
+      BacktestInfo::BacktestInfo(string newModelName, string modelParams) {
          this.modelName = newModelName;
          this.modelParamsJson = modelParams;
       };

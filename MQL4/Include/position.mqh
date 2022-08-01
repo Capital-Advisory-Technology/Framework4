@@ -8,6 +8,7 @@ class Position {
       long closeTime;
       double profit;
       int positionType;
+      double balance;
       double lotSize;
       double openPrice;
       double closePrice;
@@ -54,6 +55,7 @@ class Position {
       
       
       void setPositionClosed(datetime endTime, double closePrice, double profit){
+         this.balance = AccountBalance();
          this.closeTime = endTime;
          this.closePrice = closePrice;
          this.profit = profit;

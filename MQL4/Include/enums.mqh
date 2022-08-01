@@ -19,5 +19,6 @@ enum ExternalNames
 {
    RISK_PER_TRADE,
    SL_RATIO,
-   TP_RATIO, 
+   TP_RATIO,
+   SLIPPAGE
 };
