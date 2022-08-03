@@ -24,41 +24,41 @@ class Position {
       
    public: 
       Position::Position(
-      long openTime,
-      int positiontype,
-      double lotSize, 
-      double openPrice, 
-      double slPrice, 
-      double tpPrice,
-      double SMA200,
-      double EMA200,
-      double SMA65,
-      double EMA65,
-      double RSI14,
-      double ATR14
+         long cOpenTime,
+         int cPositiontype,
+         double cLotSize, 
+         double cOpenPrice, 
+         double cSlPrice, 
+         double cTpPrice,
+         double cSMA200,
+         double cEMA200,
+         double cSMA65,
+         double cEMA65,
+         double cRSI14,
+         double cATR14
       ) {
-         this.positionType = positionType;
-         this.lotSize = lotSize; 
-         this.openPrice =  openPrice;
-         this.slPrice = slPrice;
-         this.tpPrice = tpPrice;
-         this.SMA200 = SMA200;
-         this.EMA200 = EMA200;
-         this.SMA65 = SMA65;
-         this.EMA65 = EMA65;
-         this.RSI14 = RSI14;
-         this.ATR14 = ATR14;
+         this.openTime = cOpenTime;
+         this.positionType = cPositiontype;
+         this.lotSize = cLotSize; 
+         this.openPrice =  cOpenPrice;
+         this.slPrice = cSlPrice;
+         this.tpPrice = cTpPrice;
+         this.SMA200 = cSMA200;
+         this.EMA200 = cEMA200;
+         this.SMA65 = cSMA65;
+         this.EMA65 = cEMA65;
+         this.RSI14 = cRSI14;
+         this.ATR14 = cATR14;
          this.breakEvenFlag = 0;
       };
       
-      ~Position() { } 
+      ~Position() {} 
       
-      
-      void setPositionClosed(datetime endTime, double closePrice, double profit){
+      void setPositionClosed(datetime endTime, double cClosePrice, double cProfit){
          this.balance = AccountBalance();
          this.closeTime = endTime;
-         this.closePrice = closePrice;
-         this.profit = profit;
+         this.closePrice = cClosePrice;
+         this.profit = cProfit;
       };
       
       void setBreakEvenFlag(bool positive) {
@@ -79,6 +79,10 @@ class Position {
       
       int getPositionType() {
          return positionType;
+      };
+      
+      double getBalance() {
+         return balance;
       };
       
       double getLotSize() {
