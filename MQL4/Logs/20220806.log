@@ -1,0 +1,92 @@
+0	00:42:06.134	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	00:42:07.770	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=0; 
+0	00:42:07.782	EA_TEMPLATE USDCHF,H1: initialized
+0	00:43:34.827	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	00:43:34.849	Expert EA_TEMPLATE USDCHF,H1: removed
+0	00:43:40.499	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	00:43:42.170	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=1; 
+0	00:43:42.184	EA_TEMPLATE USDCHF,H1: initialized
+0	00:45:26.707	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	00:45:26.730	Expert EA_TEMPLATE USDCHF,H1: removed
+0	00:45:50.355	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	00:45:52.639	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=1; 
+0	00:45:52.653	EA_TEMPLATE USDCHF,H1: initialized
+0	00:49:24.329	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	00:49:24.349	Expert EA_TEMPLATE USDCHF,H1: removed
+0	00:49:26.244	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	00:49:27.408	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=1; 
+0	00:49:27.422	EA_TEMPLATE USDCHF,H1: initialized
+0	01:07:20.016	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	01:07:20.036	Expert EA_TEMPLATE USDCHF,H1: removed
+0	01:07:41.716	VP-v6 XAGUSD,H1: uninit reason 9
+0	01:07:41.717	Macro_TE GBPJPY,Monthly: uninit reason 9
+0	01:07:41.856	Custom indicator VP-v6 XAGUSD,H1: removed
+0	01:07:41.860	Custom indicator Macro_TE GBPJPY,Monthly: removed
+0	11:08:31.464	Custom indicator VP-v6 XAGUSD,H1: loaded successfully
+0	11:08:31.496	VP-v6 XAGUSD,H1: initialized
+0	11:08:31.527	Custom indicator Macro_TE GBPJPY,Monthly: loaded successfully
+0	11:08:31.558	Macro_TE GBPJPY,Monthly: initialized
+0	11:08:31.866	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	11:08:36.539	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=4; 
+0	11:08:36.555	EA_TEMPLATE USDCHF,H1: initialized
+0	12:21:19.089	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	12:21:19.108	Expert EA_TEMPLATE USDCHF,H1: removed
+0	12:22:53.272	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	12:22:54.353	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=4; 
+0	12:22:54.359	EA_TEMPLATE USDCHF,H1: initialized
+0	12:23:41.439	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	12:23:41.455	Expert EA_TEMPLATE USDCHF,H1: removed
+0	12:23:44.747	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	12:23:45.781	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=4; 
+0	12:23:45.796	EA_TEMPLATE USDCHF,H1: initialized
+0	12:29:49.457	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	12:29:49.478	Expert EA_TEMPLATE USDCHF,H1: removed
+0	12:35:16.639	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	12:35:17.951	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=4; 
+0	12:35:17.964	EA_TEMPLATE USDCHF,H1: initialized
+0	12:36:36.409	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	12:36:36.428	Expert EA_TEMPLATE USDCHF,H1: removed
+0	12:37:21.708	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	12:37:22.938	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=4; 
+0	12:37:22.952	EA_TEMPLATE USDCHF,H1: initialized
+0	12:45:12.998	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	12:45:13.018	Expert EA_TEMPLATE USDCHF,H1: removed
+0	12:45:15.201	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	12:45:17.039	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=4; 
+0	12:45:17.054	EA_TEMPLATE USDCHF,H1: initialized
+0	12:54:56.672	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	12:54:56.690	Expert EA_TEMPLATE USDCHF,H1: removed
+0	12:55:02.909	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	12:55:04.641	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=4; 
+0	12:55:04.654	EA_TEMPLATE USDCHF,H1: initialized
+0	12:57:35.037	VP-v6 XAGUSD,H1: uninit reason 9
+0	12:57:35.038	Macro_TE GBPJPY,Monthly: uninit reason 9
+0	12:57:35.046	EA_TEMPLATE USDCHF,H1: uninit reason 9
+0	12:57:35.151	Custom indicator VP-v6 XAGUSD,H1: removed
+0	12:57:35.153	Custom indicator Macro_TE GBPJPY,Monthly: removed
+0	12:57:35.187	Expert EA_TEMPLATE USDCHF,H1: removed
+0	12:57:52.079	Custom indicator VP-v6 XAGUSD,H1: loaded successfully
+0	12:57:52.101	VP-v6 XAGUSD,H1: initialized
+0	12:57:52.130	Custom indicator Macro_TE GBPJPY,Monthly: loaded successfully
+0	12:57:52.148	Macro_TE GBPJPY,Monthly: initialized
+0	12:57:52.498	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	12:58:11.309	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=4; 
+0	12:58:11.323	EA_TEMPLATE USDCHF,H1: initialized
+0	13:01:27.617	EA_TEMPLATE USDCHF,H1: uninit reason 4
+0	13:01:27.637	Expert EA_TEMPLATE USDCHF,H1: removed
+0	13:01:30.593	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	13:01:31.791	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=4; 
+0	13:01:31.803	EA_TEMPLATE USDCHF,H1: initialized
+0	13:27:23.889	VP-v6 XAGUSD,H1: uninit reason 9
+0	13:27:23.889	Macro_TE GBPJPY,Monthly: uninit reason 9
+0	13:27:23.889	EA_TEMPLATE USDCHF,H1: uninit reason 9
+0	13:27:23.949	Custom indicator VP-v6 XAGUSD,H1: removed
+0	13:27:23.952	Custom indicator Macro_TE GBPJPY,Monthly: removed
+0	13:27:23.987	Expert EA_TEMPLATE USDCHF,H1: removed
+0	23:44:10.658	Custom indicator VP-v6 XAGUSD,H1: loaded successfully
+0	23:44:10.674	VP-v6 XAGUSD,H1: initialized
+0	23:44:10.731	Custom indicator Macro_TE GBPJPY,Monthly: loaded successfully
+0	23:44:10.747	Macro_TE GBPJPY,Monthly: initialized
+0	23:44:11.148	Expert Templates\EA_TEMPLATE USDCHF,H1: loaded successfully
+0	23:44:12.209	EA_TEMPLATE USDCHF,H1 inputs: riskPerTrade=1.0; SLRatio=1.0; TPRatio=10.0; useExit=false; breakEven=4; 
+0	23:44:12.211	EA_TEMPLATE USDCHF,H1: initialized

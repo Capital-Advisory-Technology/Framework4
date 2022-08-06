@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                 calculations.mqh |
-//|                                                             IKAR |
+//|                                                             Tykee |
 //|                                                                  |
 //+------------------------------------------------------------------+
-#property copyright "IKAR"
+#property copyright "Tykee"
 #property link      ""
 #property strict
 

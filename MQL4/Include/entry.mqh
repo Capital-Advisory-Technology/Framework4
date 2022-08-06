@@ -13,7 +13,6 @@
 //+------------------------------------------------------------------+
 OrderAction TrendEnvelopeEntrySingle()
   {
-
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
@@ -33,6 +32,42 @@ OrderAction TrendEnvelopeEntrySingle()
         }
 
    return signal;
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+OrderAction TrendEnvelopeEntryMacroMicro()
+  {
+   RefreshRates();
+   OrderAction signal = OA_IGNORE;
+
+   double TEBuy = iCustom(NULL,0,"TrendEnvelope",0,1);
+   double TESell = iCustom(NULL,0,"TrendEnvelope",1,1);
+   double TEBuyPrev = iCustom(NULL,0,"TrendEnvelope",0,2);
+   double TESellPrev = iCustom(NULL,0,"TrendEnvelope",1,2);
+
+   double TEMacroBuy = iCustom(NULL,0,"TrendEnvelopeMacro",0,1);
+   double TEMacroSell = iCustom(NULL,0,"TrendEnvelopeMacro",1,1);
+
+   if(CheckForLong(TEMacroBuy, TEMacroSell) == true)
+     {
+      if(LongCrossOver(TEBuy, TESell, TEBuyPrev, TESellPrev) == true)
+        {
+         signal = OA_OPEN_LONG;
+        }
+     }
+   else
+      if(CheckForShort(TEMacroBuy, TEMacroSell) == true)
+        {
+         if(ShortCrossOver(TEBuy, TESell, TEBuyPrev, TESellPrev) == true)
+        {
+         signal = OA_OPEN_SHORT;
+        }
+
+     }
+
+return signal;
 
   }
 //+------------------------------------------------------------------+
