@@ -5,7 +5,6 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2022, IKAR"
 #property link      ""
-#property strict
 
 enum OrderAction 
 {
@@ -22,3 +21,10 @@ enum ExternalNames
    TP_RATIO,
    SLIPPAGE
 };
+
+enum PositionStatus 
+{
+   AVAILABLE_TO_OPEN,
+   IS_OPENED
+};
+

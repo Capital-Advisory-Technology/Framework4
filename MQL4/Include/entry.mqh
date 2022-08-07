@@ -2,9 +2,6 @@
 //|                                                        entry.mqh |
 //|                                                             IKAR |
 //+------------------------------------------------------------------+
-#property copyright "IKAR"
-#property link      ""
-#property strict
 
 #include <enums.mqh>
 #include <utils.mqh>
@@ -35,4 +32,4 @@ OrderAction TrendEnvelopeEntrySingle()
    return signal;
 
   }
-//+------------------------------------------------------------------+
+//+-----;-------------------------------------------------------------+

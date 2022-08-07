@@ -4,6 +4,7 @@
 class Position {
 
    private:
+      int number;
       long openTime;
       long closeTime;
       double profit;
@@ -24,6 +25,7 @@ class Position {
       
    public: 
       Position::Position(
+         int cNumber,
          long cOpenTime,
          int cPositiontype,
          double cLotSize, 
@@ -37,6 +39,7 @@ class Position {
          double cRSI14,
          double cATR14
       ) {
+         this.number = cNumber;
          this.openTime = cOpenTime;
          this.positionType = cPositiontype;
          this.lotSize = cLotSize; 
@@ -59,6 +62,27 @@ class Position {
          this.closeTime = endTime;
          this.closePrice = cClosePrice;
          this.profit = cProfit;
+         
+         Print("----------------------------------------");
+         Print("number: " + string(number));
+         Print("openTime: " + string(openTime));
+         Print("closeTime: " + string(closeTime));
+         Print("Profit: " + string(profit));
+         Print("positionType: " + string(positionType));
+         Print("balance: " + string(balance));
+         Print("lotSize: " + string(lotSize));
+         Print("openPrice: " + string(openPrice));
+         Print("closePrice: " + string(closePrice));
+         Print("slPrice: " + string(slPrice));
+         Print("tpPrice: " + string(tpPrice));
+         Print("SMA200: " + string(SMA200));
+         Print("EMA200: " + string(EMA200));
+         Print("SMA65: " + string(SMA65));
+         Print("EMA65: " + string(EMA65));
+         Print("RSI14: " + string(RSI14));
+         Print("ATR14: " + string(ATR14));
+         Print("breakEvenFlag: " + string(breakEvenFlag));
+         Print("----------------------------------------");
       };
       
       void setBreakEvenFlag(bool positive) {
