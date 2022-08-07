@@ -36,7 +36,6 @@ class PositionManager {
          delete openPosition;
       }
     
-
    void openOrder(int positionType) {
       int stopLoss = CalculateSLTP(SLRatio, TPRatio, 0);
       int takeProfit = CalculateSLTP(SLRatio, TPRatio, 1);
@@ -44,12 +43,12 @@ class PositionManager {
       double slPrice = GetSLprice(stopLoss, positionType);
       double tpPrice = GetTPprice(takeProfit, positionType);
       
-      double SMA200 = iMA(Symbol(),Period(), 200, 0, MODE_SMA, PRICE_CLOSE, 0);
-      double EMA200 = iMA(Symbol(), Period(), 200, 0, MODE_EMA, PRICE_CLOSE, 0);
-      double SMA65 = iMA(Symbol(), Period(), 65, 0, MODE_SMA, PRICE_CLOSE, 0);
-      double EMA65 = iMA(Symbol(), Period(), 65, 0, MODE_EMA, PRICE_CLOSE, 0);
-      double RSI14 = iRSI(Symbol(), Period(), 14, PRICE_CLOSE, 0);
-      double ATR14 = iATR(Symbol(), Period(), 14, 0);
+      double SMA200 = iMA(Symbol(),Period(), 200, 0, MODE_SMA, PRICE_CLOSE, 1);
+      double EMA200 = iMA(Symbol(), Period(), 200, 0, MODE_EMA, PRICE_CLOSE, 1);
+      double SMA65 = iMA(Symbol(), Period(), 65, 0, MODE_SMA, PRICE_CLOSE, 1);
+      double EMA65 = iMA(Symbol(), Period(), 65, 0, MODE_EMA, PRICE_CLOSE, 1);
+      double RSI14 = iRSI(Symbol(), Period(), 14, PRICE_CLOSE, 1);
+      double ATR14 = iATR(Symbol(), Period(), 14, 1);
       
       double openPrice;
       if (positionType == OP_BUY) openPrice = Ask; else openPrice = Bid;
@@ -83,6 +82,7 @@ class PositionManager {
    };
    
    void closePosition() {
+      if (openPosition == NULL) return;
       double price;
       if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
        
@@ -110,6 +110,16 @@ class PositionManager {
    
    bool isPositionOpen() {
       return openPosition != NULL;
+   }
+   
+   // When backtest stop, we have to save open position. We cannot execute "closePosition".
+   void onDeInit() {
+      double price;
+      if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
+      if (openPosition != NULL) {
+       openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit());
+       backtestInfo.savePosition(openPosition);
+      }
    }
    
    PositionStatus getStatus() {
