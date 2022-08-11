@@ -11,7 +11,7 @@
 //|   TODO:    Add comparison with High/Low to reduce slippage       |
 //+------------------------------------------------------------------+
 
-void CheckForBreakEven(int breakeven) {
+void CheckForBreakEven(double breakeven) {
    
    OrderSelect(0, SELECT_BY_POS);
    double high = iHigh(OrderSymbol(),PERIOD_CURRENT,1);   
@@ -20,16 +20,14 @@ void CheckForBreakEven(int breakeven) {
    if (OrderOpenPrice() == OrderStopLoss()) return;
    
    double BreakEvenPrice;
-   
-    
     
    if (OrderType() == OP_BUY) { 
-      BreakEvenPrice = NormalizeDouble(((OrderTakeProfit() - OrderOpenPrice()) / breakeven + OrderOpenPrice()),Digits);         
+      BreakEvenPrice = NormalizeDouble(((OrderTakeProfit() - OrderOpenPrice()) * breakeven + OrderOpenPrice()),Digits);         
          if (Bid >= BreakEvenPrice || high >= BreakEvenPrice) {
             OrderModify(OrderTicket(),OrderOpenPrice(),OrderOpenPrice(),OrderTakeProfit(),0,clrOrange);      
          }
    } else {
-      BreakEvenPrice = NormalizeDouble((OrderOpenPrice() - (OrderOpenPrice() - OrderTakeProfit()) / breakeven),Digits);
+      BreakEvenPrice = NormalizeDouble((OrderOpenPrice() - (OrderOpenPrice() - OrderTakeProfit()) * breakeven),Digits);
          if (Ask <= BreakEvenPrice || low <= BreakEvenPrice) {
             OrderModify(OrderTicket(),OrderOpenPrice(),OrderOpenPrice(),OrderTakeProfit(),0,clrOrange);
          }
