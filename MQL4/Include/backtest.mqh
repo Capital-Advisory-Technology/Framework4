@@ -1,5 +1,8 @@
 
 #include <position.mqh>
+#include <SQLite3/Statement.mqh>
+#include <DB.mqh>
+#include <queries.mqh>
 
 class BacktestInfo {
 
@@ -29,7 +32,7 @@ class BacktestInfo {
          Print("Params: " + modelParamsJson);
          Print("Profit: " + string(profit));
          Print("Profit factor: " + string(profitFactor));
-         Print("Drawdown: " + string(drawdown));
+         Print("Consecutive Drawdown: " + string(consecutiveDrawdown));
          Print("Long wons: " + string(longsWon));
          Print("Short won: " + string(shortsWon));
          Print("Initial balance: " + string(initialBalance));
@@ -39,7 +42,16 @@ class BacktestInfo {
          Print("Long trades: " + string(longTrades));
          Print("Short trades: " + string(shortTrades));
          Print("Consecutive wins: " + string(consecutiveWins));
-         Print("Consecutive loses: " + string(consecutiveLoses));
+         Print("Consecutive losses: " + string(consecutiveLosses));
+         
+         Database* db = new Database();
+         
+         int modelId = db.getModelId(modelName, modelParamsJson);
+         
+         string backtestSql = setBacktestDataQuery(0, modelId, profit, profitFactor, consecutiveDrawdown, longsWon, shortsWon, dateFrom, dateTo,totalTrades, longTrades, shortTrades, consecutiveWins, consecutiveLosses);
+         Print(backtestSql);
+         db.insertData(backtestSql);
+         Print("MODEL ID " + modelId);
       }
       
       void savePosition(Position* position) {
@@ -52,7 +64,7 @@ class BacktestInfo {
       string modelParamsJson; 
       double profit; 
       double profitFactor; 
-      double drawdown;
+      double consecutiveDrawdown;
       double longsWon;
       double shortsWon; 
       double initialBalance;
@@ -62,38 +74,51 @@ class BacktestInfo {
       int longTrades; 
       int shortTrades; 
       int consecutiveWins; 
-      int consecutiveLoses; 
+      int consecutiveLosses; 
       Position* positions[];
       
       void doCalculations() {
           int positionAmount = ArraySize(positions);
           totalTrades = positionAmount;
-          
           profit = (AccountBalance() - initialBalance) / initialBalance;
-          
           setConsecutiveStats(positionAmount);
           setTradeOveralls(positionAmount);
-          setMaxDrawDown(positionAmount);
       }
       
       void setConsecutiveStats(int positionAmount) {
          int tempConsecutiveLoses = 0;
          int tempConsecutiveWins = 0;
+         double tempConsecutiveDrawdown = 0;
          double grossProfit = 0;
          double grossLoss = 0;
          
          for (int i = 0; i < positionAmount; i++) {
             Position* position = positions[i];
+            
             if (position.getProfit() > 0) {
-               grossProfit += position.getProfit();
                tempConsecutiveWins++;
-               if (tempConsecutiveWins > consecutiveWins) consecutiveWins = tempConsecutiveWins;
+               
+               if (tempConsecutiveWins > consecutiveWins){
+                consecutiveWins = tempConsecutiveWins;
+               }
+               
+               grossProfit += position.getProfit();
                tempConsecutiveLoses = 0;
+               tempConsecutiveDrawdown = 0;
             } else {
                tempConsecutiveLoses++;
-               if (tempConsecutiveLoses > consecutiveLoses) consecutiveLoses = tempConsecutiveLoses;
+               tempConsecutiveDrawdown += position.getProfit();
+               
+               if (tempConsecutiveDrawdown < consecutiveDrawdown){
+                consecutiveDrawdown = tempConsecutiveDrawdown;
+               }
+               
+               if (tempConsecutiveLoses > consecutiveLosses) {
+                consecutiveLosses = tempConsecutiveLoses;
+               } 
+               
+               grossLoss += position.getProfit();     
                tempConsecutiveWins = 0;
-               grossLoss += position.getProfit();
             }
          }
          
@@ -107,7 +132,8 @@ class BacktestInfo {
          for (int i = 0; i < positionAmount; i++) {
             Position* position = positions[i];
             double positionProfit = position.getProfit();
-            if (position.getPositionType() == 0) {
+           
+            if (position.getPositionType() == OP_BUY) {
                if (positionProfit > 0) tempLongsWon++;
                longTrades++;
             } else {
@@ -117,25 +143,5 @@ class BacktestInfo {
          }
          longsWon = double(tempLongsWon) / longTrades;
          shortsWon = double(tempShortsWon) / shortTrades;
-      }
-      
-      void setMaxDrawDown(int positionAmount) {
-         int peakValueIndex = 0;
-         for (int i = 0; i < positionAmount; i++) {
-            if (positions[i].getBalance() > positions[peakValueIndex].getBalance()) {
-               peakValueIndex = i;
-            }
-         }
-         
-         int lowestValueAfterPeakIndex = peakValueIndex + 1;
-         for (int j = peakValueIndex + 1; j < positionAmount; j++) {
-            if (positions[j].getBalance() < positions[lowestValueAfterPeakIndex].getBalance()) {
-               lowestValueAfterPeakIndex = j;
-            }
-         }
-         
-         double lowestValue = positions[lowestValueAfterPeakIndex].getBalance();
-         double highestValue = positions[peakValueIndex].getBalance();
-         drawdown = double((lowestValue - highestValue) / highestValue * 100);
       }
 };

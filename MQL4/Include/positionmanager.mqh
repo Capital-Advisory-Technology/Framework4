@@ -85,8 +85,8 @@ class PositionManager {
       if (openPosition == NULL) return;
       double price;
       if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
-       
       if (OrderClose(OrderTicket(), OrderLots(), price, 30, White)) {
+          OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY);
           Print("Position closed");
           openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit());
           backtestInfo.savePosition(openPosition);
@@ -118,6 +118,7 @@ class PositionManager {
       if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
       if (openPosition != NULL) {
        openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit());
+       Print("Profit: " + openPosition.getProfit() + "  Open Price " + openPosition.getOpenPrice() + " Close price " + openPosition.getClosePrice());
        backtestInfo.savePosition(openPosition);
       }
    }
