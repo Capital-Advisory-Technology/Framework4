@@ -2,17 +2,14 @@
 //|                                                        entry.mqh |
 //|                                                             IKAR |
 //+------------------------------------------------------------------+
-#property copyright "IKAR"
-#property link      ""
-#property strict
 
 #include <enums.mqh>
 #include <utils.mqh>
 //+------------------------------------------------------------------+
 //| Trend Envelope (TE) Crossover Entry                              |
 //+------------------------------------------------------------------+
-OrderAction TrendEnvelopeEntrySingle()
-  {
+OrderAction TrendEnvelopeEntrySingle() {
+
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
@@ -21,24 +18,18 @@ OrderAction TrendEnvelopeEntrySingle()
    double TEBuyPrev = iCustom(NULL,0,"TrendEnvelope",0,2);
    double TESellPrev = iCustom(NULL,0,"TrendEnvelope",1,2);
 
-   if(LongCrossOver(TEBuy, TESell, TEBuyPrev, TESellPrev))
-     {
+   if(LongCrossOver(TEBuy, TESell, TEBuyPrev, TESellPrev)) {
       signal = OA_OPEN_LONG;
-     }
-   else
-      if(ShortCrossOver(TEBuy, TESell, TEBuyPrev, TESellPrev))
-        {
-         signal = OA_OPEN_SHORT;
-        }
-
+   }
+   else if(ShortCrossOver(TEBuy, TESell, TEBuyPrev, TESellPrev)) {
+      signal = OA_OPEN_SHORT;
+   }
    return signal;
+   
   }
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-OrderAction TrendEnvelopeEntryMacroMicro()
-  {
+  
+//+-----;-------------------------------------------------------------+
+OrderAction TrendEnvelopeEntryMacroMicro() {
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
@@ -50,24 +41,15 @@ OrderAction TrendEnvelopeEntryMacroMicro()
    double TEMacroBuy = iCustom(NULL,0,"TrendEnvelopeMacro",0,1);
    double TEMacroSell = iCustom(NULL,0,"TrendEnvelopeMacro",1,1);
 
-   if(CheckForLong(TEMacroBuy, TEMacroSell) == true)
-     {
-      if(LongCrossOver(TEBuy, TESell, TEBuyPrev, TESellPrev) == true)
-        {
+   if(CheckForLong(TEMacroBuy, TEMacroSell) == true) {
+      if(LongCrossOver(TEBuy, TESell, TEBuyPrev, TESellPrev) == true) {
          signal = OA_OPEN_LONG;
-        }
-     }
-   else
-      if(CheckForShort(TEMacroBuy, TEMacroSell) == true)
-        {
-         if(ShortCrossOver(TEBuy, TESell, TEBuyPrev, TESellPrev) == true)
-        {
+      }   
+   }
+   else if(CheckForShort(TEMacroBuy, TEMacroSell) == true) {
+      if(ShortCrossOver(TEBuy, TESell, TEBuyPrev, TESellPrev) == true) {
          signal = OA_OPEN_SHORT;
-        }
-
-     }
-
-return signal;
-
+      }
+   }
+   return signal;
   }
-//+------------------------------------------------------------------+
