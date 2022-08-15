@@ -4,6 +4,7 @@
 #include <position.mqh>
 #include <backtest.mqh>
 #include <enums.mqh>
+#include <risk.mqh>
 
 /** MOST IMPORTANT NOTE
 * DO NOT SPAM "OrderSelect" across separate files. As we have MAX
@@ -19,17 +20,19 @@ class PositionManager {
       double SLRatio;
       double TPRatio;
       int slippage;
+      double breakEven;
       Position* openPosition;
       BacktestInfo* backtestInfo;
      
    public:
-      PositionManager::PositionManager(BacktestInfo* cBacktestInfo, double cSLRatio, double cTPRatio, double cRiskPerTrade, int cSlippage) {
+      PositionManager::PositionManager(BacktestInfo* cBacktestInfo, double cSLRatio, double cTPRatio, double cRiskPerTrade, int cSlippage, double cBreakEven) {
         this.backtestInfo = cBacktestInfo;
         this.riskPerTrade = cRiskPerTrade;
         this.SLRatio = cSLRatio;
         this.TPRatio = cTPRatio;
         this.slippage = cSlippage;
         this.openPosition = NULL;
+        this.breakEven = cBreakEven;
       }
       
       ~ PositionManager() {
@@ -112,14 +115,14 @@ class PositionManager {
       return openPosition != NULL;
    }
    
-   // When backtest stop, we have to save open position. We cannot execute "closePosition".
    void onDeInit() {
-      double price;
-      if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
-      if (openPosition != NULL) {
-       openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit());
-       Print("Profit: " + openPosition.getProfit() + "  Open Price " + openPosition.getOpenPrice() + " Close price " + openPosition.getClosePrice());
-       backtestInfo.savePosition(openPosition);
+      if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
+         double price;
+         if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
+         if (openPosition != NULL) {
+             openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit());
+             backtestInfo.savePosition(openPosition);
+         }
       }
    }
    
@@ -130,6 +133,10 @@ class PositionManager {
       } else if (!isPositionOpen() && OrdersTotal() == 0){
          return AVAILABLE_TO_OPEN;
       } else if(isPositionOpen()) {
+         if (CheckForBreakEven(breakEven) && !openPosition.getBreakEvenFlag()) {
+            openPosition.updateStopLoss();
+            openPosition.setBreakEvenFlag(true);
+         }
          return IS_OPENED;
       } else {
          return IS_OPENED;

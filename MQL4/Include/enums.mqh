@@ -19,7 +19,8 @@ enum ExternalNames
    RISK_PER_TRADE,
    SL_RATIO,
    TP_RATIO,
-   SLIPPAGE
+   SLIPPAGE,
+   BREAK_EVEN
 };
 
 enum PositionStatus 

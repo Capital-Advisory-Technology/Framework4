@@ -11,11 +11,15 @@ class BacktestInfo {
          this.initialBalance = AccountBalance();
          this.modelName = cModelName;
          this.modelParamsJson = cModelParams;
+         this.backtestLaunchTime = TimeLocal();
+         this.db = new Database();
+         this.symbolId = db.getSymbolId(Symbol());
       };
       
       ~BacktestInfo() {
          for (int i = 0; i < ArraySize(positions); i++) {
             delete positions[i];
+            delete db;
          }
       }
       
@@ -44,14 +48,46 @@ class BacktestInfo {
          Print("Consecutive wins: " + string(consecutiveWins));
          Print("Consecutive losses: " + string(consecutiveLosses));
          
-         Database* db = new Database();
-         
          int modelId = db.getModelId(modelName, modelParamsJson);
+         string backtestSql = setBacktestDataQuery(
+          symbolId, modelId,
+          profit, profitFactor,
+          consecutiveDrawdown,longsWon, 
+          shortsWon,dateFrom,
+          dateTo,totalTrades,
+          longTrades, shortTrades,
+          consecutiveWins, consecutiveLosses,
+          backtestLaunchTime
+         );
          
-         string backtestSql = setBacktestDataQuery(0, modelId, profit, profitFactor, consecutiveDrawdown, longsWon, shortsWon, dateFrom, dateTo,totalTrades, longTrades, shortTrades, consecutiveWins, consecutiveLosses);
-         Print(backtestSql);
          db.insertData(backtestSql);
-         Print("MODEL ID " + modelId);
+         int backtestId = db.findBacktestId(backtestLaunchTime);
+         
+         for (int i = 0; i < ArraySize(positions); i++) {
+             Position* pos = positions[i];
+             string positionSql = setPositionQuery(
+                 backtestId,
+                 pos.getNumber(),
+                 pos.getOpenTime(),
+                 pos.getCloseTime(),
+                 pos.getProfit(), 
+                 pos.getPositionType(), 
+                 pos.getBalance(),
+                 pos.getLotSize(), 
+                 pos.getOpenPrice(), 
+                 pos.getClosePrice(), 
+                 pos.getSlPrice(), 
+                 pos.getTpPrice(), 
+                 pos.getSMA200(),
+                 pos.getEMA200(),
+                 pos.getSMA65(),
+                 pos.getEMA65(),
+                 pos.getRSI14(),
+                 pos.getATR14(),
+                 pos.getBreakEvenFlag()
+              );
+             db.insertData(positionSql);
+         }
       }
       
       void savePosition(Position* position) {
@@ -69,13 +105,16 @@ class BacktestInfo {
       double shortsWon; 
       double initialBalance;
       int dateFrom; 
-      int dateTo; 
+      int dateTo;
+      int backtestLaunchTime;
       int totalTrades; 
       int longTrades; 
       int shortTrades; 
       int consecutiveWins; 
-      int consecutiveLosses; 
+      int consecutiveLosses;
+      int symbolId;
       Position* positions[];
+      Database* db;
       
       void doCalculations() {
           int positionAmount = ArraySize(positions);
@@ -117,6 +156,7 @@ class BacktestInfo {
                 consecutiveLosses = tempConsecutiveLoses;
                } 
                
+               consecutiveDrawdown = consecutiveDrawdown / initialBalance;
                grossLoss += position.getProfit();     
                tempConsecutiveWins = 0;
             }

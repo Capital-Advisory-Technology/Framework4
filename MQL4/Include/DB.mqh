@@ -11,8 +11,6 @@
 #include <queries.mqh>
 #include <backtest.mqh>
 
-
-
 class Database
   {
    
@@ -22,25 +20,25 @@ class Database
       string dbPath;
       SQLite3* db;
       
-   int findModelId(string modelName, string modelInputs) {
-      int modelId = -1;
-      string query = findModelQuery(modelName, modelInputs);
-      Statement s(db, query);
+      int findModelId(string modelName, string modelInputs) {
+         int modelId = -1;
+         string query = findModelQuery(modelName, modelInputs);
+         Statement s(db, query);
+         if(!s.isValid())Print(">> SQLite: Faild to execute getSymbolIdQuery....", db.getErrorMsg());
+         
+         int r = s.step();
+         do {
+            if(r == SQLITE_ROW) {
+               s.getColumn(0, modelId);
+            } else {
+               break;
+            }
       
-      
-      int r = s.step();
-      do {
-         if(r == SQLITE_ROW) {
-            s.getColumn(0, modelId);
-         }
-         else break;
-   
-         r=s.step();
-      } while(r != SQLITE_DONE);
-      return modelId;
-   }
-      
-      
+            r=s.step();
+         } while(r != SQLITE_DONE);
+         return modelId;
+      }
+
    public:
       Database::Database(void) {
          dbName = "TykeeDB.db";
@@ -54,25 +52,34 @@ class Database
          dbName = name;
          filesPath = TerminalInfoString(TERMINAL_DATA_PATH)+"\\MQL4\\Files";
          dbPath = filesPath + "\\" + dbName;
+         SQLite3::initialize();
+         db = new SQLite3(dbPath, SQLITE_OPEN_READWRITE);
       };
+      
+      ~Database() {
+       SQLite3::shutdown();
+      } 
      
      int getSymbolId(string symbol) {
-         int symbolId;
+         int symbolId = -1;
          string query = getSymbolIdQuery(symbol);
+         Statement s(db, query);
+         if(!s.isValid())Print(">> SQLite: Faild to execute getSymbolIdQuery....", db.getErrorMsg());
          
-         Statement statement(db, query);
-         if(!statement.isValid())Print(">> SQLite: Faild to execute getSymbolIdQuery....", db.getErrorMsg());
-         
-         int row = statement.step();
+         int r = s.step();
          do {
-           if(row==SQLITE_ROW) statement.getColumn(0,symbolId);
-         }
-         while(row!=SQLITE_DONE);
-         SQLite3::shutdown();
-         return symbolId;
+            if(r == SQLITE_ROW) {
+               s.getColumn(0, symbolId);
+            } else {
+               break;
+            }
+      
+            r=s.step();
+          } while(r != SQLITE_DONE);
+          return symbolId;
      }
      
-      int getModelId(string modelName, string modelInputs) {
+     int getModelId(string modelName, string modelInputs) {
            int modelId = findModelId(modelName, modelInputs);
            if (modelId != -1) {
                return modelId;
@@ -81,12 +88,9 @@ class Database
                return findModelId(modelName, modelInputs);
            }
       }
-        
+           
       void insertData(string sql) {
-         if(!db.isValid()) Print(">> SQLite: Failed to connect...  ", db.getErrorMsg());
-         
          Statement s(db,sql);
-   
          if(!s.isValid()) {
             Print(db.getErrorMsg());
             return;
@@ -95,9 +99,26 @@ class Database
          int r = s.step();
          if(r == SQLITE_OK) {
            Print(">>> Step finished.");
-         } else if(r==SQLITE_DONE)
-           Print(">>> Successfully created table.");
-          else
+         } else if(r==SQLITE_DONE) {
+           // Ignore
+         } else
            Print(">>> Error executing statement: ",db.getErrorMsg());
          }
-  };
+            
+      int findBacktestId(int backtestLaunchTime) {
+         int backtestId = -1;
+         string query = findBacktestQuery(backtestLaunchTime);
+         Statement s(db, query);
+         
+         int r = s.step();
+         do {
+            if(r == SQLITE_ROW) {
+               s.getColumn(0, backtestId);
+            }
+            else break;
+      
+            r=s.step();
+         } while(r != SQLITE_DONE);
+         return backtestId;
+      }
+};

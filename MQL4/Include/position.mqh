@@ -46,12 +46,12 @@ class Position {
          this.openPrice =  cOpenPrice;
          this.slPrice = cSlPrice;
          this.tpPrice = cTpPrice;
-         this.SMA200 = cSMA200;
-         this.EMA200 = cEMA200;
-         this.SMA65 = cSMA65;
-         this.EMA65 = cEMA65;
-         this.RSI14 = cRSI14;
-         this.ATR14 = cATR14;
+         this.SMA200 = NormalizeDouble(cSMA200, 2);
+         this.EMA200 = NormalizeDouble(cEMA200, 2);
+         this.SMA65 = NormalizeDouble(cSMA65, 2);
+         this.EMA65 = NormalizeDouble(cEMA65, 2);
+         this.RSI14 = NormalizeDouble(cRSI14, 2);
+         this.ATR14 = NormalizeDouble(cATR14, 2);
          this.breakEvenFlag = 0;
       };
       
@@ -93,8 +93,16 @@ class Position {
          }; 
       };
       
+      void updateStopLoss() {
+         slPrice = getOpenPrice();
+      };
+      
       long getOpenTime() {
          return openTime;
+      };
+      
+      int getNumber() {
+         return number;
       };
         
       long getCloseTime() {
