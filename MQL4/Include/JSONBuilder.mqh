@@ -16,26 +16,26 @@ class JSONBuilder {
        jsonParamCount = previousJsonParamCount;
       };
       
-      JSONBuilder* addInput(string name, string value) {
-         json = json + addComa() + name + ": \"" + value + "\"";
+      JSONBuilder* addInput(string key, string value) {
+         json = json + addComa() + key + ": \"" + value + "\"";
          JSONBuilder* pJson = new JSONBuilder(json, ++jsonParamCount);
          return pJson;
       };
       
-      JSONBuilder* addInput(string name, int value) {
-         json = json + addComa()+  name + ": " + (string)value ;
+      JSONBuilder* addInput(string key, int value) {
+         json = json + addComa()+  key + ": " + (string)value ;
          JSONBuilder* pJson = new JSONBuilder(json, ++jsonParamCount);
          return pJson;
       };
       
-      JSONBuilder* addInput(string name, float value) {
-         json = json + addComa() + name + ": " + (string)value;
+      JSONBuilder* addInput(string key, float value) {
+         json = json + addComa() + key + ": " + (string)value;
          JSONBuilder* pJson = new JSONBuilder(json, ++jsonParamCount);
          return pJson;
       };
       
-       JSONBuilder* addInput(string name, double value) {
-         json = json + addComa() + name + ": " + (string)value;
+       JSONBuilder* addInput(string key, double value) {
+         json = json + addComa() + key + ": " + (string)value;
          JSONBuilder* pJson = new JSONBuilder(json, ++jsonParamCount);
          return pJson;
       };

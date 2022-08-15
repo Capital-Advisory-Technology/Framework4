@@ -5,7 +5,6 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2022, IKAR"
 #property link      ""
-#property strict
 
 enum OrderAction 
 {
@@ -14,3 +13,19 @@ enum OrderAction
    OA_CLOSE,
    OA_IGNORE   
 };
+
+enum ExternalNames 
+{
+   RISK_PER_TRADE,
+   SL_RATIO,
+   TP_RATIO,
+   SLIPPAGE,
+   BREAK_EVEN
+};
+
+enum PositionStatus 
+{
+   AVAILABLE_TO_OPEN,
+   IS_OPENED
+};
+

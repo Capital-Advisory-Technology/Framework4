@@ -13,18 +13,13 @@
 //+------------------------------------------------------------------+
 double CalculateLotSize(double balance, double risk, int stopLoss)
   {
+   Print("Balance: " + string(balance) + " Risk: " + string(risk) + " SL: " + string(stopLoss));
    double lotStep = MarketInfo(Symbol(),MODE_LOTSTEP);
    double minLot = MarketInfo(Symbol(),MODE_MINLOT);
    double maxLot = MarketInfo(Symbol(),MODE_MAXLOT);
    double tickVal = MarketInfo(Symbol(),MODE_TICKVALUE);
-
    double lotSize = balance * risk / 100 / (stopLoss * tickVal);
-
-   return MathMin(
-             maxLot,
-             MathMax(minLot,
-                     NormalizeDouble(lotSize / lotStep,0) * lotStep)
-          );
+   return MathMin(maxLot, MathMax(minLot,NormalizeDouble(lotSize / lotStep,0) * lotStep));
   }
 
 //+------------------------------------------------------------------+
