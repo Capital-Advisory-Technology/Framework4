@@ -29,3 +29,10 @@ enum PositionStatus
    IS_OPENED
 };
 
+enum CloseType 
+{
+   MANUAL_CLOSE = 0,
+   AUTOMATIC_CLOSE = 1
+};
+
+

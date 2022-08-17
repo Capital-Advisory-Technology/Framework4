@@ -1,8 +1,8 @@
 
-#include <position.mqh>
+#include <common/position.mqh>
 #include <SQLite3/Statement.mqh>
-#include <DB.mqh>
-#include <queries.mqh>
+#include <database/DB.mqh>
+#include <database/queries.mqh>
 
 class BacktestInfo {
 
@@ -11,9 +11,9 @@ class BacktestInfo {
          this.initialBalance = AccountBalance();
          this.modelName = cModelName;
          this.modelParamsJson = cModelParams;
-         this.backtestLaunchTime = TimeLocal();
          this.db = new Database();
          this.symbolId = db.getSymbolId(Symbol());
+         this.backtestLaunchTime = db.getDateTime();
       };
       
       ~BacktestInfo() {
@@ -84,7 +84,8 @@ class BacktestInfo {
                  pos.getEMA65(),
                  pos.getRSI14(),
                  pos.getATR14(),
-                 pos.getBreakEvenFlag()
+                 pos.getBreakEvenFlag(),
+                 pos.getCloseType()
               );
              db.insertData(positionSql);
          }
@@ -119,7 +120,7 @@ class BacktestInfo {
       void doCalculations() {
           int positionAmount = ArraySize(positions);
           totalTrades = positionAmount;
-          profit = (AccountBalance() - initialBalance) / initialBalance;
+          profit = NormalizeDouble(((AccountBalance() - initialBalance) / initialBalance) * 100, 2);
           setConsecutiveStats(positionAmount);
           setTradeOveralls(positionAmount);
       }
@@ -156,13 +157,13 @@ class BacktestInfo {
                 consecutiveLosses = tempConsecutiveLoses;
                } 
                
-               consecutiveDrawdown = consecutiveDrawdown / initialBalance;
+               consecutiveDrawdown = NormalizeDouble((consecutiveDrawdown / initialBalance) * 100, 2);
                grossLoss += position.getProfit();     
                tempConsecutiveWins = 0;
             }
          }
          
-         profitFactor = MathAbs(grossProfit / grossLoss);
+         profitFactor = NormalizeDouble(MathAbs(grossProfit / grossLoss), 2);
       }
       
       void setTradeOveralls(int positionAmount) {
@@ -181,7 +182,7 @@ class BacktestInfo {
                shortTrades++;
             }
          }
-         longsWon = double(tempLongsWon) / longTrades;
-         shortsWon = double(tempShortsWon) / shortTrades;
+         longsWon = NormalizeDouble(double(tempLongsWon) / longTrades, 2);
+         shortsWon = NormalizeDouble(double(tempShortsWon) / shortTrades, 2);
       }
 };

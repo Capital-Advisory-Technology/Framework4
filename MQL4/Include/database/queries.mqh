@@ -17,7 +17,7 @@ string insertModelQuery(string name, string inputs) {
 }
 
 string findModelQuery(string name, string inputs) {
-   return StringFormat("SELECT id FROM models where name = '%s' AND inputs = '%s'", name, inputs);
+   return StringFormat("SELECT id FROM models WHERE name = '%s' AND inputs = '%s'", name, inputs);
 }
 
 string findBacktestQuery(int backtestLaunchTime) {
@@ -27,6 +27,10 @@ string findBacktestQuery(int backtestLaunchTime) {
 
 string insertPositionQuery(string name, string inputs) {
    return StringFormat("SELECT id FROM models where name = '%s' AND inputs = '%s'", name, inputs);
+}
+
+string getCurrentTimeQuery() {
+   return "SELECT CAST(strftime('%s', 'now') as INT)";
 }
 
 string setBacktestDataQuery(
@@ -73,16 +77,17 @@ string setBacktestDataQuery(
       double EMA65,
       double RSI14,
       double ATR14,
-      int breakEvenFlag
+      int breakEvenFlag,
+      int closeType
 ){    
       string base = "";
       StringAdd(base,"INSERT INTO positions ");
-      StringAdd(base,"(backtest_id, order_number, open_time, close_time, profit, order_type, lot_size, open_price, close_price, sl_price, tp_price, SMA_200, EMA_200, SMA_65, EMA_65, RSI_14, ATR_14, breakeven_flag) ");
+      StringAdd(base,"(backtest_id, order_number, open_time, close_time, profit, order_type, lot_size, open_price, close_price, sl_price, tp_price, SMA_200, EMA_200, SMA_65, EMA_65, RSI_14, ATR_14, breakeven_flag, close_type) ");
       StringAdd(
          base,
          StringFormat(
-            "VALUES (%d, %d, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f ,%f, %f, %f, %f, %d)",
-            backtestId, number, openTime, closeTime, profit, positionType, lotSize, openPrice, closePrice, slPrice, tpPrice, SMA200, EMA200, SMA65, EMA65, RSI14, ATR14, breakEvenFlag
+            "VALUES (%d, %d, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f ,%f, %f, %f, %f, %d, %d)",
+            backtestId, number, openTime, closeTime, profit, positionType, lotSize, openPrice, closePrice, slPrice, tpPrice, SMA200, EMA200, SMA65, EMA65, RSI14, ATR14, breakEvenFlag, closeType
          )
       );
       return base; 
