@@ -22,17 +22,4 @@ bool ShortCrossOver(double buy, double sell, double buyPrev, double sellPrev)
   {
    return sell > buy && buyPrev > sellPrev;
   }
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+  
-bool CheckForLong(double buy, double sell) 
-{
-   return buy > sell;   
-}
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-bool CheckForShort(double buy, double sell) 
-{
-   return sell > buy;   
-}
+
