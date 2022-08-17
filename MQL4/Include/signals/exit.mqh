@@ -6,8 +6,8 @@
 #property link      ""
 #property strict
 
-#include <enums.mqh>
-#include <utils.mqh>
+#include <common/enums.mqh>
+#include <common/utils.mqh>
 //+------------------------------------------------------------------+
 //| Relative Vigor Index (RVI) Crossover Exit                        |
 //+------------------------------------------------------------------+

@@ -1,10 +1,10 @@
 
 
-#include <calculations.mqh>
-#include <position.mqh>
-#include <backtest.mqh>
-#include <enums.mqh>
-#include <risk.mqh>
+#include <common/calculations.mqh>
+#include <common/position.mqh>
+#include <main/backtest.mqh>
+#include <common/enums.mqh>
+#include <main/risk.mqh>
 
 /** MOST IMPORTANT NOTE
 * DO NOT SPAM "OrderSelect" across separate files. As we have MAX
@@ -91,7 +91,7 @@ class PositionManager {
       if (OrderClose(OrderTicket(), OrderLots(), price, 30, White)) {
           OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY);
           Print("Position closed");
-          openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit());
+          openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit(), MANUAL_CLOSE);
           backtestInfo.savePosition(openPosition);
           openPosition = NULL;
       } else {
@@ -103,7 +103,7 @@ class PositionManager {
       Print("Stop loss/Take profit executed");
       if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
          Print("Position closed");
-         openPosition.setPositionClosed(OrderCloseTime(), OrderClosePrice(), OrderProfit());
+         openPosition.setPositionClosed(OrderCloseTime(), OrderClosePrice(), OrderProfit(), AUTOMATIC_CLOSE);
          backtestInfo.savePosition(openPosition);
          openPosition = NULL;
       } else {
@@ -116,12 +116,12 @@ class PositionManager {
    }
    
    void onDeInit() {
-      if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
-         double price;
-         if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
-         if (openPosition != NULL) {
-             openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit());
-             backtestInfo.savePosition(openPosition);
+      if (isPositionOpen()) {
+         if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
+            double price;
+            if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
+               openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit(), AUTOMATIC_CLOSE);
+               backtestInfo.savePosition(openPosition);
          }
       }
    }

@@ -1,5 +1,5 @@
 
-#include <enums.mqh>
+#include <common/enums.mqh>
 
 class Position {
 
@@ -22,6 +22,7 @@ class Position {
       double RSI14;
       double ATR14;
       int breakEvenFlag;
+      int closeType;
       
    public: 
       Position::Position(
@@ -46,22 +47,23 @@ class Position {
          this.openPrice =  cOpenPrice;
          this.slPrice = cSlPrice;
          this.tpPrice = cTpPrice;
-         this.SMA200 = NormalizeDouble(cSMA200, 2);
-         this.EMA200 = NormalizeDouble(cEMA200, 2);
-         this.SMA65 = NormalizeDouble(cSMA65, 2);
-         this.EMA65 = NormalizeDouble(cEMA65, 2);
-         this.RSI14 = NormalizeDouble(cRSI14, 2);
-         this.ATR14 = NormalizeDouble(cATR14, 2);
+         this.SMA200 = NormalizeDouble(cSMA200, Digits);
+         this.EMA200 = NormalizeDouble(cEMA200, Digits);
+         this.SMA65 = NormalizeDouble(cSMA65, Digits);
+         this.EMA65 = NormalizeDouble(cEMA65, Digits);
+         this.RSI14 = NormalizeDouble(cRSI14, Digits);
+         this.ATR14 = NormalizeDouble(cATR14, Digits);
          this.breakEvenFlag = 0;
       };
       
       ~Position() {} 
       
-      void setPositionClosed(datetime endTime, double cClosePrice, double cProfit){
+      void setPositionClosed(datetime endTime, double cClosePrice, double cProfit, int closeType){
          this.balance = AccountBalance();
          this.closeTime = endTime;
          this.closePrice = cClosePrice;
          this.profit = cProfit;
+         this.closeType = closeType;
          
          Print("----------------------------------------");
          Print("number: " + string(number));
@@ -167,5 +169,9 @@ class Position {
       
       int getBreakEvenFlag() {
          return breakEvenFlag;
+      };
+      
+       int getCloseType() {
+         return closeType;
       };
 };

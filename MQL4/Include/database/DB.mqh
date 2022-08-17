@@ -8,8 +8,8 @@
 #property strict
 
 #include <SQLite3/Statement.mqh>
-#include <queries.mqh>
-#include <backtest.mqh>
+#include <database/queries.mqh>
+#include <main/backtest.mqh>
 
 class Database
   {
@@ -77,6 +77,26 @@ class Database
             r=s.step();
           } while(r != SQLITE_DONE);
           return symbolId;
+     }
+     
+     
+     int getDateTime() {
+         int datetimeInt = 0;
+         Statement s(db, getCurrentTimeQuery());
+         if(!s.isValid() )Print(">> SQLite: Faild to execute", db.getErrorMsg());
+         
+         int r = s.step();
+         do {
+            if(r == SQLITE_ROW) {
+               s.getColumn(0, datetimeInt);
+               Print("date time int" + datetimeInt);
+            } else {
+               break;
+            }
+      
+            r=s.step();
+          } while(r != SQLITE_DONE);
+          return datetimeInt;
      }
      
      int getModelId(string modelName, string modelInputs) {
