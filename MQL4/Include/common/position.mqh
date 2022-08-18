@@ -1,5 +1,6 @@
 
 #include <common/enums.mqh>
+#include <database/DB.mqh>
 
 class Position {
 
@@ -65,27 +66,44 @@ class Position {
          this.profit = cProfit;
          this.closeType = closeType;
          
-         Print("----------------------------------------");
-         Print("number: " + string(number));
-         Print("openTime: " + string(openTime));
-         Print("closeTime: " + string(closeTime));
-         Print("Profit: " + string(profit));
-         Print("positionType: " + string(positionType));
-         Print("balance: " + string(balance));
-         Print("lotSize: " + string(lotSize));
-         Print("openPrice: " + string(openPrice));
-         Print("closePrice: " + string(closePrice));
-         Print("slPrice: " + string(slPrice));
-         Print("tpPrice: " + string(tpPrice));
-         Print("SMA200: " + string(SMA200));
-         Print("EMA200: " + string(EMA200));
-         Print("SMA65: " + string(SMA65));
-         Print("EMA65: " + string(EMA65));
-         Print("RSI14: " + string(RSI14));
-         Print("ATR14: " + string(ATR14));
-         Print("breakEvenFlag: " + string(breakEvenFlag));
-         Print("----------------------------------------");
+         Logger::log("----------------------------------------");
+         Logger::log("number: " + string(number));
+         Logger::log("openTime: " + string(openTime));
+         Logger::log("closeTime: " + string(closeTime));
+         Logger::log("Profit: " + string(profit));
+         Logger::log("positionType: " + string(positionType));
+         Logger::log("balance: " + string(balance));
+         Logger::log("lotSize: " + string(lotSize));
+         Logger::log("openPrice: " + string(openPrice));
+         Logger::log("closePrice: " + string(closePrice));
+         Logger::log("slPrice: " + string(slPrice));
+         Logger::log("tpPrice: " + string(tpPrice));
+         Logger::log("SMA200: " + string(SMA200));
+         Logger::log("EMA200: " + string(EMA200));
+         Logger::log("SMA65: " + string(SMA65));
+         Logger::log("EMA65: " + string(EMA65));
+         Logger::log("RSI14: " + string(RSI14));
+         Logger::log("ATR14: " + string(ATR14));
+         Logger::log("breakEvenFlag: " + string(breakEvenFlag));
+         Logger::log("----------------------------------------");
       };
+      
+      
+      void exportToDatabase(Database* db, int backtestId) {
+         string positionSql = setPositionQuery(
+                 backtestId, number,
+                 openTime, closeTime,
+                 profit, positionType,
+                 balance,lotSize,
+                 openPrice,closePrice,
+                 slPrice,tpPrice,
+                 SMA200,EMA200,
+                 SMA65,EMA65,
+                 RSI14, ATR14,
+                 breakEvenFlag,closeType
+              );
+          db.insertData(positionSql);   
+      }
       
       void setBreakEvenFlag(bool positive) {
          if (positive) {
@@ -95,83 +113,20 @@ class Position {
          }; 
       };
       
-      void updateStopLoss() {
-         slPrice = getOpenPrice();
-      };
-      
-      long getOpenTime() {
-         return openTime;
-      };
-      
-      int getNumber() {
-         return number;
-      };
-        
-      long getCloseTime() {
-         return closeTime;
-      };
-      
-      int getPositionType() {
-         return positionType;
-      };
-      
-      double getBalance() {
-         return balance;
-      };
-      
-      double getLotSize() {
-         return lotSize;
-      };
-      
-      double getOpenPrice() {
-         return openPrice;
-      };
-      
-      double getClosePrice() {
-         return closePrice;
-      };
-      
-      double getSlPrice() {
-         return slPrice;
-      };
-      
-      double getTpPrice() {
-         return tpPrice;
-      };
-      
       double getProfit() {
          return profit;
-      };
+      }
       
-      double getSMA200() {
-         return SMA200;
-      };
+      int getPositionType() {
+         return positionType;    
+      }
       
-      double getEMA200() {
-         return EMA200;
-      };
+       int getBreakEvenFlag() {
+         return breakEvenFlag;    
+      }
       
-      double getSMA65() {
-         return SMA65;
+      void updateStopLoss() {
+         slPrice = openPrice;
       };
-      
-      double getEMA65() {
-         return EMA65;
-      };
-      
-      double getRSI14() {
-         return RSI14;
-      };
-      
-      double getATR14() {
-         return ATR14;
-      };
-      
-      int getBreakEvenFlag() {
-         return breakEvenFlag;
-      };
-      
-       int getCloseType() {
-         return closeType;
-      };
+
 };

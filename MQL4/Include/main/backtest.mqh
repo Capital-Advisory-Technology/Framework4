@@ -50,44 +50,21 @@ class BacktestInfo {
          
          int modelId = db.getModelId(modelName, modelParamsJson);
          string backtestSql = setBacktestDataQuery(
-          symbolId, modelId,
-          profit, profitFactor,
-          consecutiveDrawdown,longsWon, 
-          shortsWon,dateFrom,
-          dateTo,totalTrades,
-          longTrades, shortTrades,
-          consecutiveWins, consecutiveLosses,
-          backtestLaunchTime
+             symbolId, modelId,
+             profit, profitFactor,
+             consecutiveDrawdown,longsWon, 
+             shortsWon,dateFrom,
+             dateTo,totalTrades,
+             longTrades, shortTrades,
+             consecutiveWins, consecutiveLosses,
+             backtestLaunchTime
          );
          
          db.insertData(backtestSql);
          int backtestId = db.findBacktestId(backtestLaunchTime);
          
          for (int i = 0; i < ArraySize(positions); i++) {
-             Position* pos = positions[i];
-             string positionSql = setPositionQuery(
-                 backtestId,
-                 pos.getNumber(),
-                 pos.getOpenTime(),
-                 pos.getCloseTime(),
-                 pos.getProfit(), 
-                 pos.getPositionType(), 
-                 pos.getBalance(),
-                 pos.getLotSize(), 
-                 pos.getOpenPrice(), 
-                 pos.getClosePrice(), 
-                 pos.getSlPrice(), 
-                 pos.getTpPrice(), 
-                 pos.getSMA200(),
-                 pos.getEMA200(),
-                 pos.getSMA65(),
-                 pos.getEMA65(),
-                 pos.getRSI14(),
-                 pos.getATR14(),
-                 pos.getBreakEvenFlag(),
-                 pos.getCloseType()
-              );
-             db.insertData(positionSql);
+            positions[i].exportToDatabase(db, backtestId);
          }
       }
       

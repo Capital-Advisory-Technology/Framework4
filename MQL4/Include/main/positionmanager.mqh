@@ -5,6 +5,7 @@
 #include <main/backtest.mqh>
 #include <common/enums.mqh>
 #include <main/risk.mqh>
+#include <common/logger.mqh>
 
 /** MOST IMPORTANT NOTE
 * DO NOT SPAM "OrderSelect" across separate files. As we have MAX
@@ -57,9 +58,9 @@ class PositionManager {
       if (positionType == OP_BUY) openPrice = Ask; else openPrice = Bid;
       
       int number = OrderSend(Symbol(), positionType, lotSize, openPrice, slippage, slPrice, tpPrice, "Comment", 0, 0, Red);
-      Print("Opened order number: " + string(number));
+      Logger::log("Opened order number: " + string(number));
       if  (number != -1) {
-         Print("Order send success");
+         Logger::log("Order send success");
          if (OrderSelect(0, SELECT_BY_POS)) {
             openPosition = new Position(
                number,
@@ -77,10 +78,10 @@ class PositionManager {
                ATR14
            );
          } else {
-            Print("Select position error: ", string(GetLastError()));
+           Logger::log("Select position error: " + string(GetLastError()));
          }
       } else {
-         Print("Open position error: ", string(GetLastError()));
+         Logger::log("Open position error: " + string(GetLastError()));
       }  
    };
    
@@ -90,24 +91,24 @@ class PositionManager {
       if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
       if (OrderClose(OrderTicket(), OrderLots(), price, 30, White)) {
           OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY);
-          Print("Position closed");
+          Logger::log("Position closed");
           openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit(), MANUAL_CLOSE);
           backtestInfo.savePosition(openPosition);
           openPosition = NULL;
       } else {
-         Print("Close position error: ", string(GetLastError()));
+         Logger::log("Close position error: " + string(GetLastError()));
       }
    }
    
    void onAutomaticPositionClose() {
-      Print("Stop loss/Take profit executed");
+      Logger::log("Stop loss/Take profit executed");
       if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
-         Print("Position closed");
+         Logger::log("Position closed");
          openPosition.setPositionClosed(OrderCloseTime(), OrderClosePrice(), OrderProfit(), AUTOMATIC_CLOSE);
          backtestInfo.savePosition(openPosition);
          openPosition = NULL;
       } else {
-        Print("Automatic close position error: ", string(GetLastError()));
+        Logger::log("Automatic close position error: " + string(GetLastError()));
       }
    }
    
