@@ -1,5 +1,3 @@
-
-
 #include <common/calculations.mqh>
 #include <common/position.mqh>
 #include <main/backtest.mqh>

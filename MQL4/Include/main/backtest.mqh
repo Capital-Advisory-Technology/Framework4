@@ -1,4 +1,3 @@
-
 #include <common/position.mqh>
 #include <SQLite3/Statement.mqh>
 #include <database/DB.mqh>
