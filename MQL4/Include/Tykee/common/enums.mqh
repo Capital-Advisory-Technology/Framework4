@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                        enums.mqh |
-//|                                             Copyright 2022, IKAR |
+//|                                            Copyright 2022, Tykee |
 //|                                                                  |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2022, IKAR"
+#property copyright "Copyright 2022, Tykee"
 #property link      ""
 
 enum OrderAction 
@@ -20,7 +20,8 @@ enum ExternalNames
    SL_RATIO,
    TP_RATIO,
    SLIPPAGE,
-   BREAK_EVEN
+   BREAK_EVEN,
+   USE_EXIT
 };
 
 enum PositionStatus 
