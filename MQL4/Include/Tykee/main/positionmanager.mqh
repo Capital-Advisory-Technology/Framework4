@@ -1,11 +1,10 @@
+#include <Tykee/main/risk.mqh>
+#include <Tykee/main/backtest.mqh>
 
-
-#include <common/calculations.mqh>
-#include <common/position.mqh>
-#include <main/backtest.mqh>
-#include <common/enums.mqh>
-#include <main/risk.mqh>
-#include <common/logger.mqh>
+#include <Tykee/common/calculations.mqh>
+#include <Tykee/common/position.mqh>
+#include <Tykee/common/enums.mqh>
+#include <Tykee/common/logger.mqh>
 
 /** MOST IMPORTANT NOTE
 * DO NOT SPAM "OrderSelect" across separate files. As we have MAX
@@ -90,11 +89,19 @@ class PositionManager {
       double price;
       if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
       if (OrderClose(OrderTicket(), OrderLots(), price, 30, White)) {
-          OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY);
-          Logger::log("Position closed");
-          openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit(), MANUAL_CLOSE);
-          backtestInfo.savePosition(openPosition);
-          openPosition = NULL;
+          if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY) == true) {
+             Logger::log("Position closed");
+             double oGrossProfit = NormalizeDouble(OrderProfit(), 2);
+             double oCommission = NormalizeDouble(OrderCommission(), 2);
+             double oSwap = NormalizeDouble(OrderSwap(), 2);
+             double oNetProfit = NormalizeDouble(oGrossProfit - oCommission + oSwap, 2);
+             
+             openPosition.setPositionClosed(OrderCloseTime(), price, oGrossProfit, oNetProfit, oCommission, oSwap, MANUAL_CLOSE);
+             backtestInfo.savePosition(openPosition);
+             openPosition = NULL;
+          } else {
+               Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
+          }
       } else {
          Logger::log("Close position error: " + string(GetLastError()));
       }
@@ -104,7 +111,12 @@ class PositionManager {
       Logger::log("Stop loss/Take profit executed");
       if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
          Logger::log("Position closed");
-         openPosition.setPositionClosed(OrderCloseTime(), OrderClosePrice(), OrderProfit(), AUTOMATIC_CLOSE);
+         double oGrossProfit = NormalizeDouble(OrderProfit(), 2);
+         double oCommission = NormalizeDouble(OrderCommission(), 2);
+         double oSwap = NormalizeDouble(OrderSwap(), 2);
+         double oNetProfit = NormalizeDouble(oGrossProfit - oCommission + oSwap, 2);
+         
+         openPosition.setPositionClosed(OrderCloseTime(), OrderClosePrice(), oGrossProfit, oNetProfit, oCommission, oSwap, AUTOMATIC_CLOSE);
          backtestInfo.savePosition(openPosition);
          openPosition = NULL;
       } else {
@@ -121,7 +133,11 @@ class PositionManager {
          if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
             double price;
             if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
-               openPosition.setPositionClosed(OrderCloseTime(), price, OrderProfit(), AUTOMATIC_CLOSE);
+               double oGrossProfit = NormalizeDouble(OrderProfit(), 2);
+               double oCommission = NormalizeDouble(OrderCommission(), 2);
+               double oSwap = NormalizeDouble(OrderSwap(), 2);
+               double oNetProfit = NormalizeDouble(oGrossProfit - oCommission + oSwap, 2);
+               openPosition.setPositionClosed(OrderCloseTime(), OrderClosePrice(), oGrossProfit, oNetProfit, oCommission, oSwap, AUTOMATIC_CLOSE);
                backtestInfo.savePosition(openPosition);
          }
       }

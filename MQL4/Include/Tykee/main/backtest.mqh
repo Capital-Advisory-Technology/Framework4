@@ -1,8 +1,8 @@
-
-#include <common/position.mqh>
 #include <SQLite3/Statement.mqh>
-#include <database/DB.mqh>
-#include <database/queries.mqh>
+
+#include <Tykee/common/position.mqh>
+#include <Tykee/database/DB.mqh>
+#include <Tykee/database/queries.mqh>
 
 class BacktestInfo {
 
@@ -51,6 +51,7 @@ class BacktestInfo {
          int modelId = db.getModelId(modelName, modelParamsJson);
          string backtestSql = setBacktestDataQuery(
              symbolId, modelId,
+             initialBalance,
              profit, profitFactor,
              consecutiveDrawdown,longsWon, 
              shortsWon,dateFrom,
@@ -112,19 +113,19 @@ class BacktestInfo {
          for (int i = 0; i < positionAmount; i++) {
             Position* position = positions[i];
             
-            if (position.getProfit() > 0) {
+            if (position.getNetProfit() > 0) {
                tempConsecutiveWins++;
                
                if (tempConsecutiveWins > consecutiveWins){
                 consecutiveWins = tempConsecutiveWins;
                }
                
-               grossProfit += position.getProfit();
+               grossProfit += position.getNetProfit();
                tempConsecutiveLoses = 0;
                tempConsecutiveDrawdown = 0;
             } else {
                tempConsecutiveLoses++;
-               tempConsecutiveDrawdown += position.getProfit();
+               tempConsecutiveDrawdown += position.getNetProfit();
                
                if (tempConsecutiveDrawdown < consecutiveDrawdown){
                 consecutiveDrawdown = tempConsecutiveDrawdown;
@@ -135,7 +136,7 @@ class BacktestInfo {
                } 
                
                consecutiveDrawdown = NormalizeDouble((consecutiveDrawdown / initialBalance) * 100, 2);
-               grossLoss += position.getProfit();     
+               grossLoss += position.getNetProfit();     
                tempConsecutiveWins = 0;
             }
          }
@@ -149,7 +150,7 @@ class BacktestInfo {
          
          for (int i = 0; i < positionAmount; i++) {
             Position* position = positions[i];
-            double positionProfit = position.getProfit();
+            double positionProfit = position.getNetProfit();
            
             if (position.getPositionType() == OP_BUY) {
                if (positionProfit > 0) tempLongsWon++;

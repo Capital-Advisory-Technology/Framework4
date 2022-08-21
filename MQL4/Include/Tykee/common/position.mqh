@@ -1,6 +1,7 @@
+#include <Tykee/common/enums.mqh>
+#include <Tykee/common/logger.mqh>
+#include <Tykee/database/DB.mqh>
 
-#include <common/enums.mqh>
-#include <database/DB.mqh>
 
 class Position {
 
@@ -8,7 +9,8 @@ class Position {
       int number;
       long openTime;
       long closeTime;
-      double profit;
+      double grossProfit;
+      double netProfit;
       int positionType;
       double balance;
       double lotSize;
@@ -16,6 +18,8 @@ class Position {
       double closePrice;
       double slPrice;
       double tpPrice;
+      double commission;
+      double swap;
       double SMA200;
       double EMA200;
       double SMA65;
@@ -59,18 +63,22 @@ class Position {
       
       ~Position() {} 
       
-      void setPositionClosed(datetime endTime, double cClosePrice, double cProfit, int closeType){
+      void setPositionClosed(datetime endTime, double cClosePrice, double cGrossProfit, double cNetProfit, double cCommission, double cSwap, int ccloseType){
          this.balance = AccountBalance();
          this.closeTime = endTime;
          this.closePrice = cClosePrice;
-         this.profit = cProfit;
-         this.closeType = closeType;
+         this.grossProfit = cGrossProfit;
+         this.netProfit = cNetProfit;
+         this.commission = cCommission;
+         this.swap = cSwap;
+         this.closeType = ccloseType;
          
          Logger::log("----------------------------------------");
          Logger::log("number: " + string(number));
          Logger::log("openTime: " + string(openTime));
          Logger::log("closeTime: " + string(closeTime));
-         Logger::log("Profit: " + string(profit));
+         Logger::log("grossProfit: " + string(grossProfit));
+         Logger::log("netProfit: " + string(netProfit));
          Logger::log("positionType: " + string(positionType));
          Logger::log("balance: " + string(balance));
          Logger::log("lotSize: " + string(lotSize));
@@ -78,6 +86,8 @@ class Position {
          Logger::log("closePrice: " + string(closePrice));
          Logger::log("slPrice: " + string(slPrice));
          Logger::log("tpPrice: " + string(tpPrice));
+         Logger::log("Commission: " + string(commission));
+         Logger::log("Swap: " + string(swap));
          Logger::log("SMA200: " + string(SMA200));
          Logger::log("EMA200: " + string(EMA200));
          Logger::log("SMA65: " + string(SMA65));
@@ -85,6 +95,7 @@ class Position {
          Logger::log("RSI14: " + string(RSI14));
          Logger::log("ATR14: " + string(ATR14));
          Logger::log("breakEvenFlag: " + string(breakEvenFlag));
+         Logger::log("closeType: " + string(closeType));
          Logger::log("----------------------------------------");
       };
       
@@ -93,10 +104,12 @@ class Position {
          string positionSql = setPositionQuery(
                  backtestId, number,
                  openTime, closeTime,
-                 profit, positionType,
+                 grossProfit, netProfit,
+                 positionType,
                  balance,lotSize,
                  openPrice,closePrice,
                  slPrice,tpPrice,
+                 commission, swap,
                  SMA200,EMA200,
                  SMA65,EMA65,
                  RSI14, ATR14,
@@ -113,8 +126,8 @@ class Position {
          }; 
       };
       
-      double getProfit() {
-         return profit;
+      double getNetProfit() {
+         return netProfit;
       }
       
       int getPositionType() {

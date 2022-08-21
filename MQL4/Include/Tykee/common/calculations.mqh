@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                 calculations.mqh |
-//|                                                             IKAR |
+//|                                                            Tykee |
 //|                                                                  |
 //+------------------------------------------------------------------+
-#property copyright "IKAR"
+#property copyright "Tykee"
 #property link      ""
 #property strict
 
@@ -13,7 +13,6 @@
 //+------------------------------------------------------------------+
 double CalculateLotSize(double balance, double risk, int stopLoss)
   {
-   Print("Balance: " + string(balance) + " Risk: " + string(risk) + " SL: " + string(stopLoss));
    double lotStep = MarketInfo(Symbol(),MODE_LOTSTEP);
    double minLot = MarketInfo(Symbol(),MODE_MINLOT);
    double maxLot = MarketInfo(Symbol(),MODE_MAXLOT);

@@ -3,8 +3,8 @@
 //|                                                             IKAR |
 //+------------------------------------------------------------------+
 
-#include <common/enums.mqh>
-#include <common/utils.mqh>
+#include <Tykee/common/enums.mqh>
+#include <Tykee/common/utils.mqh>
 //+------------------------------------------------------------------+
 //| Trend Envelope (TE) Crossover Entry                              |
 //+------------------------------------------------------------------+

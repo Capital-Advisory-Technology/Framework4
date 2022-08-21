@@ -8,8 +8,9 @@
 #property strict
 
 #include <SQLite3/Statement.mqh>
-#include <database/queries.mqh>
-#include <main/backtest.mqh>
+
+#include <Tykee/main/backtest.mqh>
+#include <Tykee/database/queries.mqh>
 
 class Database
   {
@@ -89,7 +90,6 @@ class Database
          do {
             if(r == SQLITE_ROW) {
                s.getColumn(0, datetimeInt);
-               Print("date time int" + datetimeInt);
             } else {
                break;
             }
