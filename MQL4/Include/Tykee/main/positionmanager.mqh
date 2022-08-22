@@ -45,14 +45,7 @@ class PositionManager {
       double lotSize = CalculateLotSize(AccountBalance(), riskPerTrade, stopLoss);
       double slPrice = GetSLprice(stopLoss, positionType);
       double tpPrice = GetTPprice(takeProfit, positionType);
-      
-      double SMA200 = iMA(Symbol(),Period(), 200, 0, MODE_SMA, PRICE_CLOSE, 1);
-      double EMA200 = iMA(Symbol(), Period(), 200, 0, MODE_EMA, PRICE_CLOSE, 1);
-      double SMA65 = iMA(Symbol(), Period(), 65, 0, MODE_SMA, PRICE_CLOSE, 1);
-      double EMA65 = iMA(Symbol(), Period(), 65, 0, MODE_EMA, PRICE_CLOSE, 1);
-      double RSI14 = iRSI(Symbol(), Period(), 14, PRICE_CLOSE, 1);
-      double ATR14 = iATR(Symbol(), Period(), 14, 1);
-      
+
       double openPrice;
       if (positionType == OP_BUY) openPrice = Ask; else openPrice = Bid;
       
@@ -61,6 +54,16 @@ class PositionManager {
       if  (number != -1) {
          Logger::log("Order send success");
          if (OrderSelect(0, SELECT_BY_POS)) {
+            double SMA200, EMA200, SMA65, EMA65, RSI14, ATR14;
+            if (backtestInfo.getShouldExportData()) {
+                SMA200 = iMA(Symbol(),Period(), 200, 0, MODE_SMA, PRICE_CLOSE, 1);
+                EMA200 = iMA(Symbol(), Period(), 200, 0, MODE_EMA, PRICE_CLOSE, 1);
+                SMA65 = iMA(Symbol(), Period(), 65, 0, MODE_SMA, PRICE_CLOSE, 1);
+                EMA65 = iMA(Symbol(), Period(), 65, 0, MODE_EMA, PRICE_CLOSE, 1);
+                RSI14 = iRSI(Symbol(), Period(), 14, PRICE_CLOSE, 1);
+                ATR14 = iATR(Symbol(), Period(), 14, 1);
+            }
+            
             openPosition = new Position(
                number,
                OrderOpenTime(), 

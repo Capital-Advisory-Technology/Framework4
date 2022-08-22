@@ -2,15 +2,10 @@
 //|                                                        entry.mqh |
 //|                                                             IKAR |
 //+------------------------------------------------------------------+
-<<<<<<< HEAD:MQL4/Include/Tykee/signals/entry.mqh
 
 #include <Tykee/common/enums.mqh>
 #include <Tykee/common/utils.mqh>
-=======
-#include <common/enums.mqh>
-#include <common/utils.mqh>
 
->>>>>>> 96c4987 (#15):MQL4/Include/signals/entry.mqh
 //+------------------------------------------------------------------+
 //| Trend Envelope (TE) Crossover Entry                              |
 //+------------------------------------------------------------------+
