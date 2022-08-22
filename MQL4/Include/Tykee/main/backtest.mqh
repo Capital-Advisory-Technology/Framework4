@@ -7,13 +7,14 @@
 class BacktestInfo {
 
  public: 
-      BacktestInfo::BacktestInfo(string cModelName, string cModelParams) {
+      BacktestInfo::BacktestInfo(string cModelName, string cModelParams, bool cShouldExportData) {
          this.initialBalance = AccountBalance();
          this.modelName = cModelName;
          this.modelParamsJson = cModelParams;
          this.db = new Database();
          this.symbolId = db.getSymbolId(Symbol());
          this.backtestLaunchTime = db.getDateTime();
+         this.shouldExportData = cShouldExportData;
       };
       
       ~BacktestInfo() {
@@ -73,8 +74,13 @@ class BacktestInfo {
          ArrayResize(positions, ArraySize(positions) + 1); 
          positions[ArraySize(positions) - 1] = position; 
       }
+      
+      bool getShouldExportData() {
+         return shouldExportData;
+      }
 
    private:
+      bool shouldExportData;
       string modelName;
       string modelParamsJson; 
       double profit; 
