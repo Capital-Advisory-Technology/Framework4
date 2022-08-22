@@ -15,6 +15,7 @@ class BacktestInfo {
          this.symbolId = db.getSymbolId(Symbol());
          this.backtestLaunchTime = db.getDateTime();
          this.shouldExportData = cShouldExportData;
+         this.period = Period();
       };
       
       ~BacktestInfo() {
@@ -49,7 +50,7 @@ class BacktestInfo {
          Print("Consecutive wins: " + string(consecutiveWins));
          Print("Consecutive losses: " + string(consecutiveLosses));
          
-         int modelId = db.getModelId(modelName, modelParamsJson);
+         int modelId = db.getModelId(modelName, modelParamsJson, period);
          string backtestSql = setBacktestDataQuery(
              symbolId, modelId,
              initialBalance,
@@ -98,6 +99,7 @@ class BacktestInfo {
       int consecutiveWins; 
       int consecutiveLosses;
       int symbolId;
+      int period;
       Position* positions[];
       Database* db;
       

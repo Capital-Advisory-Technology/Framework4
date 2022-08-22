@@ -21,9 +21,9 @@ class Database
       string dbPath;
       SQLite3* db;
       
-      int findModelId(string modelName, string modelInputs) {
+      int findModelId(string modelName, string modelInputs, int period) {
          int modelId = -1;
-         string query = findModelQuery(modelName, modelInputs);
+         string query = findModelQuery(modelName, modelInputs, period);
          Statement s(db, query);
          if(!s.isValid())Print(">> SQLite: Faild to execute getSymbolIdQuery....", db.getErrorMsg());
          
@@ -99,13 +99,13 @@ class Database
           return datetimeInt;
      }
      
-     int getModelId(string modelName, string modelInputs) {
-           int modelId = findModelId(modelName, modelInputs);
+     int getModelId(string modelName, string modelInputs, int period) {
+           int modelId = findModelId(modelName, modelInputs, period);
            if (modelId != -1) {
                return modelId;
            } else {
-               insertData(insertModelQuery(modelName, modelInputs));
-               return findModelId(modelName, modelInputs);
+               insertData(insertModelQuery(modelName, modelInputs, period));
+               return findModelId(modelName, modelInputs, period);
            }
       }
            

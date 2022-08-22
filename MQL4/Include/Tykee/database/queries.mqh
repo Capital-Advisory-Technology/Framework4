@@ -12,12 +12,12 @@ string getSymbolIdQuery(string symbol) {
    return StringFormat("select id, name from symbols where name = '%s';", symbol);
 }
 
-string insertModelQuery(string name, string inputs) {
-   return StringFormat("INSERT INTO models (name, inputs) VALUES ('%s', '%s')", name, inputs);
+string insertModelQuery(string name, string inputs, int period) {
+   return StringFormat("INSERT INTO models (name, inputs, period) VALUES ('%s', '%s', %d)", name, inputs, period);
 }
 
-string findModelQuery(string name, string inputs) {
-   return StringFormat("SELECT id FROM models WHERE name = '%s' AND inputs = '%s'", name, inputs);
+string findModelQuery(string name, string inputs, int period) {
+   return StringFormat("SELECT id FROM models WHERE name = '%s' AND inputs = '%s' AND period = %d", name, inputs, period);
 }
 
 string findBacktestQuery(int backtestLaunchTime) {
