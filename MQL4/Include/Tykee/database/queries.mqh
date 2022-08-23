@@ -49,14 +49,14 @@ string setBacktestDataQuery(
    int shortTrades,
    int consecutiveWins,
    int consecutiveLosses,
-   int backtestLaunchTime
-){    
+   int backtestLaunchTime,
+   int backtestDuration
+){
       string base = "";
       StringAdd(base,"INSERT INTO backtests ");
-      StringAdd(base,"(symbol_id, model_id, balance, profit, profit_factor, drawdown, longs_won, shorts_won, date_from, date_to, total_trades,long_trades,short_trades, consecutive_wins, consecutive_losses, backtest_launch_time) ");
-      StringAdd(base,StringFormat("VALUES (%d, %d, %f, %f,  %f,  %f,  %f,  %f, %d, %d, %d, %d, %d, %d, %d, %d)", symbolId, modelId, balance, profit, profitFactor, consecutiveDrawdown, longsWon, shortsWon, dateFrom, dateTo, totalTrades, longTrades, shortTrades, consecutiveWins, consecutiveLosses, backtestLaunchTime));
+      StringAdd(base,"(symbol_id, model_id, balance, profit, profit_factor, drawdown, longs_won, shorts_won, date_from, date_to, total_trades,long_trades,short_trades, consecutive_wins, consecutive_losses, backtest_launch_time, backtest_duration) ");
+      StringAdd(base,StringFormat("VALUES (%d, %d, %f, %f,  %f,  %f,  %f,  %f, %d, %d, %d, %d, %d, %d, %d, %d, %d)", symbolId, modelId, balance, profit, profitFactor, consecutiveDrawdown, longsWon, shortsWon, dateFrom, dateTo, totalTrades, longTrades, shortTrades, consecutiveWins, consecutiveLosses, backtestLaunchTime, backtestDuration));
       return base;
-      
  }
  
  string setPositionQuery(

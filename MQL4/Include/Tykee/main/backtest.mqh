@@ -33,6 +33,7 @@ class BacktestInfo {
       };
       
       void exportBacktestData() {
+         int backtestDuration = db.getDateTime() - backtestLaunchTime;
          doCalculations();
          Print("Model name: " + modelName);
          Print("Params: " + modelParamsJson);
@@ -60,7 +61,7 @@ class BacktestInfo {
              dateTo,totalTrades,
              longTrades, shortTrades,
              consecutiveWins, consecutiveLosses,
-             backtestLaunchTime
+             backtestLaunchTime, backtestDuration
          );
          
          db.insertData(backtestSql);
