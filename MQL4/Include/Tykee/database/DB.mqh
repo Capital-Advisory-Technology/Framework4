@@ -12,6 +12,9 @@
 #include <Tykee/main/backtest.mqh>
 #include <Tykee/database/queries.mqh>
 
+/*
+   Database class to establish connection with DB and execute queries.
+*/
 class Database
   {
    
@@ -108,7 +111,11 @@ class Database
                return findModelId(modelName, modelInputs, period);
            }
       }
-           
+      
+      /*
+         Use this to execute any sql which does not require data to
+         be collected f.e. INSERT, MODIFY etc. Dont execute SELECT queries with this.
+      */
       void insertData(string sql) {
          Statement s(db,sql);
          if(!s.isValid()) {

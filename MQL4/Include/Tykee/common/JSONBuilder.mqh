@@ -1,4 +1,8 @@
 
+/*
+   Custom JSONBuilder to create json from key-value pairs. 
+   Usage is in EA_TEMPLATE.
+*/
 class JSONBuilder {
 
    private:

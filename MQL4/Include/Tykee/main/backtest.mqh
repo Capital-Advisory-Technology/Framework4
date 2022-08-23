@@ -4,6 +4,11 @@
 #include <Tykee/database/DB.mqh>
 #include <Tykee/database/queries.mqh>
 
+/*
+   BacktestInfo class to store all relevant information about backtest.
+   Initialized once in OnInit(). Contains general information and all backtest 
+   positions to be exported when DeInit() happens.
+*/
 class BacktestInfo {
 
  public: 
@@ -33,6 +38,7 @@ class BacktestInfo {
       };
       
       void exportBacktestData() {
+         int backtestDuration = db.getDateTime() - backtestLaunchTime;
          doCalculations();
          Print("Model name: " + modelName);
          Print("Params: " + modelParamsJson);
@@ -60,7 +66,7 @@ class BacktestInfo {
              dateTo,totalTrades,
              longTrades, shortTrades,
              consecutiveWins, consecutiveLosses,
-             backtestLaunchTime
+             backtestLaunchTime, backtestDuration
          );
          
          db.insertData(backtestSql);

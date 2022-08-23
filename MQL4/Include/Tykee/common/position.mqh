@@ -2,7 +2,9 @@
 #include <Tykee/common/logger.mqh>
 #include <Tykee/database/DB.mqh>
 
-
+/*
+   Position "Data class". Just to hold state of position.
+*/
 class Position {
 
    private:
