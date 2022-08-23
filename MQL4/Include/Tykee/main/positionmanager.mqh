@@ -180,7 +180,7 @@ class PositionManager {
       double oCommission = NormalizeDouble(OrderCommission(), 2);
       double oSwap = NormalizeDouble(OrderSwap(), 2);
       double oNetProfit = NormalizeDouble(oGrossProfit - oCommission + oSwap, 2);
-      openPosition.setPositionClosed(OrderCloseTime(), OrderClosePrice(), oGrossProfit, oNetProfit, oCommission, oSwap, closeType);
+      openPosition.setPositionClosed(OrderCloseTime(), NormalizeDouble(OrderClosePrice(), Digits), oGrossProfit, oNetProfit, oCommission, oSwap, closeType);
       backtestInfo.savePosition(openPosition);
       openPosition = NULL;
    }
