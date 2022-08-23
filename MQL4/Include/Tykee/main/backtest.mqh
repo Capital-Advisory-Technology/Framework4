@@ -4,6 +4,11 @@
 #include <Tykee/database/DB.mqh>
 #include <Tykee/database/queries.mqh>
 
+/*
+   BacktestInfo class to store all relevant information about backtest.
+   Initialized once in OnInit(). Contains general information and all backtest 
+   positions to be exported when DeInit() happens.
+*/
 class BacktestInfo {
 
  public: 
