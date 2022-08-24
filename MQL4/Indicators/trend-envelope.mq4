@@ -1,4 +1,4 @@
-#property copyright "IKAR"
+#property copyright "Tykee"
 
 #property indicator_chart_window
 #property indicator_buffers 7
@@ -54,7 +54,7 @@ enum enPrices
   };
 
 
-extern ENUM_TIMEFRAMES TimeFrame       = PERIOD_CURRENT;  // Time frame
+extern ENUM_TIMEFRAMES TimeFrame       = PERIOD_H1;  // Time frame
 extern int             MaPeriod        = 36;              // Ma period
 extern int             MaFilterPass    = 1;               // M filter pass
 extern int             MaShift         = 0;               // Shift

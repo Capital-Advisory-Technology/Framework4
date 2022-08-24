@@ -14,10 +14,10 @@ OrderAction TE_Simple()
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
-   double TE_Buy = iCustom(NULL,0,"TrendEnvelope",0,1);
-   double TE_Sell = iCustom(NULL,0,"TrendEnvelope",1,1);
-   double TE_BuyPrev = iCustom(NULL,0,"TrendEnvelope",0,2);
-   double TE_SellPrev = iCustom(NULL,0,"TrendEnvelope",1,2);
+   double TE_Buy = iCustom(NULL,0,"trend-envelope",0,1);
+   double TE_Sell = iCustom(NULL,0,"trend-envelope",1,1);
+   double TE_BuyPrev = iCustom(NULL,0,"trend-envelope",0,2);
+   double TE_SellPrev = iCustom(NULL,0,"trend-envelope",1,2);
 
    if(LongCrossOver(TE_Buy, TE_Sell, TE_BuyPrev, TE_SellPrev))
       signal = OA_OPEN_LONG;
@@ -28,6 +28,34 @@ OrderAction TE_Simple()
    return signal;
 
   }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+OrderAction TE_Macro_Micro_Cross()
+  {
+   RefreshRates();
+   OrderAction signal = OA_IGNORE;
+
+   double TE_Buy = iCustom(NULL,0,"trend-envelope",0,1);
+   double TE_Sell = iCustom(NULL,0,"trend-envelope",1,1);
+   double TE_BuyPrev = iCustom(NULL,0,"trend-envelope",0,2);
+   double TE_SellPrev = iCustom(NULL,0,"trend-envelope",1,2);
+
+   double TE_Macro_Buy = iCustom(NULL,0,"trend-envelope-macro",0,1);
+   double TE_Macro_Sell = iCustom(NULL,0,"trend-envelope-macro",1,1);
+   double TE_Macro_BuyPrev = iCustom(NULL,0,"trend-envelope-macro",0,2);
+   double TE_Macro_SellPrev = iCustom(NULL,0,"trend-envelope-macro",1,2);
+
+   if(LongCrossOver(TE_Buy, TE_Sell, TE_BuyPrev, TE_SellPrev) && CheckForLong(TE_Macro_Buy, TE_Macro_Sell, TE_Macro_BuyPrev, TE_Macro_SellPrev))
+      signal = OA_OPEN_LONG;
+
+   if(ShortCrossOver(TE_Buy, TE_Sell, TE_BuyPrev, TE_SellPrev) && CheckForShort(TE_Macro_Buy, TE_Macro_Sell, TE_Macro_BuyPrev, TE_Macro_SellPrev))
+      signal = OA_OPEN_SHORT;
+      
+      return signal;
+  }
+
 
 //+------------------------------------------------------------------+
 //|  BDSS Crossover Entry                                            |
@@ -72,6 +100,23 @@ OrderAction Accelerator2_Simple()
 
   }
 //+------------------------------------------------------------------+
+OrderAction EMA_Baseline()
+  {
+   RefreshRates();
+   OrderAction signal = OA_IGNORE;
+
+   double EMA_baseline = iCustom(NULL,0,"EMA",0,1);
+
+   if(CheckForLongBaseline(EMA_baseline))
+      signal = OA_OPEN_LONG;
+
+   if(CheckForShortBaseline(EMA_baseline))
+      signal = OA_OPEN_SHORT;
+
+   return signal;
+
+  }
+//+------------------------------------------------------------------+
 OrderAction AMA_Simple_Baseline()
   {
    RefreshRates();
@@ -88,11 +133,11 @@ OrderAction AMA_Simple_Baseline()
    return signal;
   }
 //+------------------------------------------------------------------+
-OrderAction Aroon_Simple() 
-{
+OrderAction Aroon_Simple()
+  {
    RefreshRates();
    OrderAction signal = OA_IGNORE;
-   
+
    double Aroon_Buy = iCustom(NULL,0,"Aroon",0,1);
    double Aroon_Sell = iCustom(NULL,0,"Aroon",1,1);
    double Aroon_BuyPrev = iCustom(NULL,0,"Aroon",0,2);
@@ -105,6 +150,5 @@ OrderAction Aroon_Simple()
       signal = OA_OPEN_SHORT;
 
    return signal;
-   
-
-}
+  }
+//+------------------------------------------------------------------+
