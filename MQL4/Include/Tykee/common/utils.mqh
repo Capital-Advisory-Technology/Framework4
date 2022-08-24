@@ -56,20 +56,3 @@ bool CheckForShortBaseline(double baseline)
    return iOpen(NULL,0,0) <= baseline;
   }  
 //+------------------------------------------------------------------+
-bool isTokyoOpen()
-  {
-   return (Hour() >= TokyoOpen && Hour() < TokyoClose);
-  }
-//+------------------------------------------------------------------+
-bool isLondonOpen()
-  {
-   return (Hour() >= LondonOpen && Hour() < LondonClose);
-  }
-//+------------------------------------------------------------------+
-bool isNewYorkOpen()
-  {
-   return (Hour() >= NewYorkOpen && Hour() < NewYorkClose);
-  }
-//+------------------------------------------------------------------+
-
-//+------------------------------------------------------------------+
