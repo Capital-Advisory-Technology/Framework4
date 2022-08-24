@@ -1,4 +1,14 @@
 
+int TokyoOpen = 2;
+int TokyoClose = 10;
+
+int LondonOpen = 10;
+int LondonClose = 18;
+
+int NewYorkOpen = 15;
+int NewYorkClose = 23;
+
+
 #include <Tykee/common/logger.mqh>
 
 class Range {
@@ -50,7 +60,7 @@ class CustomSessionHours {
       
    private:
       Range* ranges[];
-      
+        
 };
 
 bool isTokyoOpen()

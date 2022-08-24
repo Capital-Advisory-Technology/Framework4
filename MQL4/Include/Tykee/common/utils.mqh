@@ -6,15 +6,6 @@
 #property link      ""
 #property strict
 
-int TokyoOpen = 2;
-int TokyoClose = 10;
-
-int LondonOpen = 10;
-int LondonClose = 18;
-
-int NewYorkOpen = 15;
-int NewYorkClose = 23;
-
 //+------------------------------------------------------------------+
 bool LongCrossOver(double buy, double sell, double buyPrev, double sellPrev)
   {
