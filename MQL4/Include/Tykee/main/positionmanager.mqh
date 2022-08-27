@@ -5,6 +5,7 @@
 #include <Tykee/common/position.mqh>
 #include <Tykee/common/enums.mqh>
 #include <Tykee/common/logger.mqh>
+#include <Tykee/common/session.mqh>
 
 /*
    Position manager meant for controlling when we can open/close position. 
@@ -27,9 +28,10 @@ class PositionManager {
       double breakEven;
       Position* openPosition;
       BacktestInfo* backtestInfo;
+      CustomSession* customSession;
      
    public:
-      PositionManager::PositionManager(BacktestInfo* cBacktestInfo, double cSLRatio, double cTPRatio, double cRiskPerTrade, int cSlippage, double cBreakEven) {
+      PositionManager::PositionManager(BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, double cRiskPerTrade, int cSlippage, double cBreakEven) {
         this.backtestInfo = cBacktestInfo;
         this.riskPerTrade = cRiskPerTrade;
         this.SLRatio = cSLRatio;
@@ -37,6 +39,8 @@ class PositionManager {
         this.slippage = cSlippage;
         this.openPosition = NULL;
         this.breakEven = cBreakEven;
+        this.customSession = cCustomSession;
+        backtestInfo.setCustomSessionObject(cCustomSession);
       }
       
       ~ PositionManager() {
@@ -51,6 +55,7 @@ class PositionManager {
       positions at once.
    */
    void openOrder(int positionType) {
+      if (!customSession.isTimeInCustomSession()) return;
       // Calculate values for order
       int stopLoss = CalculateSLTP(SLRatio, TPRatio, 0);
       int takeProfit = CalculateSLTP(SLRatio, TPRatio, 1);
