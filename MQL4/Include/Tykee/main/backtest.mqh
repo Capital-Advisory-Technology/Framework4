@@ -1,7 +1,6 @@
 #include <SQLite3/Statement.mqh>
 
 #include <Tykee/common/position.mqh>
-#include <Tykee/common/session.mqh>
 #include <Tykee/database/DB.mqh>
 #include <Tykee/database/queries.mqh>
 
@@ -67,8 +66,7 @@ class BacktestInfo {
              dateTo,totalTrades,
              longTrades, shortTrades,
              consecutiveWins, consecutiveLosses,
-             backtestLaunchTime, backtestDuration,
-             customSession.toJson()
+             backtestLaunchTime, backtestDuration
          );
          
          db.insertData(backtestSql);
@@ -86,10 +84,6 @@ class BacktestInfo {
       
       bool getShouldExportData() {
          return shouldExportData;
-      }
-      
-      void setCustomSessionObject(CustomSession* cCustomSession) {
-         this.customSession = cCustomSession;
       }
 
    private:
@@ -114,7 +108,6 @@ class BacktestInfo {
       int period;
       Position* positions[];
       Database* db;
-      CustomSession* customSession;
       
       void doCalculations() {
           int positionAmount = ArraySize(positions);
