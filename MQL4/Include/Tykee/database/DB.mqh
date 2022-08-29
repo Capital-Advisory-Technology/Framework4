@@ -23,6 +23,25 @@ class Database
       string filesPath;
       string dbPath;
       SQLite3* db;
+
+      int findStrategyId(string modelName) {
+         int strategyId = -1;
+         string query = findStrategyQuery(modelName);
+         Statement s(db, query);
+         if(!s.isValid())Print(">> SQLite: Faild to execute getSymbolIdQuery....", db.getErrorMsg());
+         
+         int r = s.step();
+         do {
+            if(r == SQLITE_ROW) {
+               s.getColumn(0, strategyId);
+            } else {
+               break;
+            }
+      
+            r=s.step();
+         } while(r != SQLITE_DONE);
+         return strategyId;
+      }
       
       int findModelId(string modelName, string modelInputs, int period) {
          int modelId = -1;
@@ -102,12 +121,23 @@ class Database
           return datetimeInt;
      }
      
+     int getStrategyId(string modelName) {
+           int strategyId = findStrategyId(modelName);
+           if (strategyId != -1) {
+               return strategyId;
+           } else {
+               insertData(insertStrategyQuery(modelName));
+               return findStrategyId(modelName);
+           }
+      }      
+
      int getModelId(string modelName, string modelInputs, int period) {
            int modelId = findModelId(modelName, modelInputs, period);
            if (modelId != -1) {
                return modelId;
            } else {
-               insertData(insertModelQuery(modelName, modelInputs, period));
+               int strategyId = getStrategyId(modelName);
+               insertData(insertModelQuery(strategyId, modelName, modelInputs, period));
                return findModelId(modelName, modelInputs, period);
            }
       }
