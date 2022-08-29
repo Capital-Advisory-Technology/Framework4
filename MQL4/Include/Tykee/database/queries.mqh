@@ -12,8 +12,16 @@ string getSymbolIdQuery(string symbol) {
    return StringFormat("select id, name from symbols where name = '%s';", symbol);
 }
 
-string insertModelQuery(string name, string inputs, int period) {
-   return StringFormat("INSERT INTO models (name, inputs, period) VALUES ('%s', '%s', %d)", name, inputs, period);
+string insertStrategyQuery(string name) {
+   return StringFormat("INSERT INTO strategies (name) VALUES ('%s')", name);
+}
+
+string insertModelQuery(int strategy_id, string name, string inputs, int period) {
+   return StringFormat("INSERT INTO models (strategy_id, name, inputs, period) VALUES (%d, '%s', '%s', %d)", strategy_id, name, inputs, period);
+}
+
+string findStrategyQuery(string name) {
+   return StringFormat("SELECT id FROM strategies WHERE name = '%s'", name);
 }
 
 string findModelQuery(string name, string inputs, int period) {
