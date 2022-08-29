@@ -61,7 +61,6 @@ class PositionManager {
       // Calculate values for order
       int stopLoss = CalculateSL(SLRatio, fixedSLTP);
       int takeProfit = CalculateTP(TPRatio, fixedSLTP);
-      Print("SL (points): ", stopLoss, " TP (points): ", takeProfit);
       double lotSize = CalculateLotSize(riskPerTrade, stopLoss);
       double slPrice = GetSLprice(stopLoss, positionType);
       double tpPrice = GetTPprice(takeProfit, positionType);
