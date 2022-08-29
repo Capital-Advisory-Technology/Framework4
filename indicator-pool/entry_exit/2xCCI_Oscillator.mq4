@@ -28,7 +28,7 @@ extern int TrendCCI_Period = 14;//14
 extern int EntryCCI_Period = 6;//6
 extern int Trend_period = 2;//6
 extern int  CountBars=1000; 
-extern bool Zero_Cross_Alert;
+extern bool Zero_Cross_Alert=false;
 
 extern int   LineSize1=2;
 extern int   LineSize2=3;

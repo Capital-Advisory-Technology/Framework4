@@ -26,12 +26,13 @@ class PositionManager {
       double TPRatio;
       int slippage;
       double breakEven;
+      bool fixedSLTP;
       Position* openPosition;
       BacktestInfo* backtestInfo;
       CustomSession* customSession;
      
    public:
-      PositionManager::PositionManager(BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, double cRiskPerTrade, int cSlippage, double cBreakEven) {
+      PositionManager::PositionManager(BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
         this.backtestInfo = cBacktestInfo;
         this.riskPerTrade = cRiskPerTrade;
         this.SLRatio = cSLRatio;
@@ -39,6 +40,7 @@ class PositionManager {
         this.slippage = cSlippage;
         this.openPosition = NULL;
         this.breakEven = cBreakEven;
+        this.fixedSLTP = cfixedSLTP;
         this.customSession = cCustomSession;
         backtestInfo.setCustomSessionObject(cCustomSession);
       }
@@ -57,9 +59,9 @@ class PositionManager {
    void openOrder(int positionType) {
       if (!customSession.isTimeInCustomSession()) return;
       // Calculate values for order
-      int stopLoss = CalculateSLTP(SLRatio, TPRatio, 0);
-      int takeProfit = CalculateSLTP(SLRatio, TPRatio, 1);
-      double lotSize = CalculateLotSize(AccountBalance(), riskPerTrade, stopLoss);
+      int stopLoss = CalculateSL(SLRatio, fixedSLTP);
+      int takeProfit = CalculateTP(TPRatio, fixedSLTP);
+      double lotSize = CalculateLotSize(riskPerTrade, stopLoss);
       double slPrice = GetSLprice(stopLoss, positionType);
       double tpPrice = GetTPprice(takeProfit, positionType);
 
