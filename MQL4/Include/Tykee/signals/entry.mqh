@@ -1,23 +1,23 @@
 //+------------------------------------------------------------------+
 //|                                                        entry.mqh |
-//|                                                            Tykee |
+//|                                            Copyright 2022, Tykee |
 //+------------------------------------------------------------------+
 
 #include <Tykee/common/enums.mqh>
 #include <Tykee/common/utils.mqh>
 
 //+------------------------------------------------------------------+
-//| Trend Envelope (TE) Crossover Entry                              |
+//| TE Crossover Entry (TESTED & NOT-MODIFIED)                       |
 //+------------------------------------------------------------------+
-OrderAction TE_Simple() // Fully-tested
+OrderAction TE_Simple() 
   {
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
-   double TE_Buy = iCustom(NULL,PERIOD_H1,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,0,1);
-   double TE_Sell = iCustom(NULL,PERIOD_H1,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,1,1);
-   double TE_BuyPrev = iCustom(NULL,PERIOD_H1,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,0,2);
-   double TE_SellPrev = iCustom(NULL,PERIOD_H1,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,1,2);
+   double TE_Buy = iCustom(NULL,0,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,0,1);
+   double TE_Sell = iCustom(NULL,0,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,1,1);
+   double TE_BuyPrev = iCustom(NULL,0,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,0,2);
+   double TE_SellPrev = iCustom(NULL,0,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,1,2);
 
    if(LongCrossOver(TE_Buy, TE_Sell, TE_BuyPrev, TE_SellPrev))
       signal = OA_OPEN_LONG;
@@ -29,17 +29,17 @@ OrderAction TE_Simple() // Fully-tested
   }
 
 //+------------------------------------------------------------------+
-//| Trend Envelope (TE) Crossover Entry w/ Macro                     |
+//| TE Crossover Entry w/ Macro (TESTED & NOT-MODIFIED)              |
 //+------------------------------------------------------------------+
-OrderAction TE_Macro_Micro_Cross() // Fully-tested
+OrderAction TE_Macro_Micro_Cross() 
   {
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
-   double TE_Buy = iCustom(NULL,PERIOD_H1,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,0,1);
-   double TE_Sell = iCustom(NULL,PERIOD_H1,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,1,1);
-   double TE_BuyPrev = iCustom(NULL,PERIOD_H1,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,0,2);
-   double TE_SellPrev = iCustom(NULL,PERIOD_H1,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,1,2);
+   double TE_Buy = iCustom(NULL,0,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,0,1);
+   double TE_Sell = iCustom(NULL,0,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,1,1);
+   double TE_BuyPrev = iCustom(NULL,0,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,0,2);
+   double TE_SellPrev = iCustom(NULL,0,"trend-envelope",PERIOD_H1,36,1,0,0.2,pr_habweighted,1,2);
 
    double TE_Macro_Buy = iCustom(NULL,PERIOD_D1,"trend-envelope",PERIOD_D1,36,1,0,0.2,pr_habweighted,0,1);
    double TE_Macro_Sell = iCustom(NULL,PERIOD_D1,"trend-envelope",PERIOD_D1,36,1,0,0.2,pr_habweighted,1,1);
@@ -51,18 +51,18 @@ OrderAction TE_Macro_Micro_Cross() // Fully-tested
 
    if(ShortCrossOver(TE_Buy, TE_Sell, TE_BuyPrev, TE_SellPrev) && CheckForShort(TE_Macro_Buy, TE_Macro_Sell, TE_Macro_BuyPrev, TE_Macro_SellPrev))
       signal = OA_OPEN_SHORT;
-      
-      return signal;
+
+   return signal;
   }
 
 //+------------------------------------------------------------------+
-//|  BDSS Crossover Entry                                            |
+//|  BDSS Crossover Entry (TESTED & MODIFIED)                        |
 //+------------------------------------------------------------------+
-OrderAction BDSS_Simple() // Fully-tested + Fully-modified
+OrderAction BDSS_Simple() 
   {
    RefreshRates();
    OrderAction signal = OA_IGNORE;
-   
+
    int SMMA_period = 8;
    int stochastic_period = 5;
 
@@ -81,7 +81,7 @@ OrderAction BDSS_Simple() // Fully-tested + Fully-modified
 
   }
 //+------------------------------------------------------------------+
-//| Accelerator2 Crossover Entry                                     |
+//| Accelerator2 Crossover Entry (TESTED & MODIFIED)                 |
 //+------------------------------------------------------------------+
 OrderAction Accelerator2_Simple()
   {
@@ -102,54 +102,9 @@ OrderAction Accelerator2_Simple()
    return signal;
   }
 //+------------------------------------------------------------------+
-//| EMA Baseline check                                               |
+//| Aroon Crossover Entry (TESTED & MODIFIED)                        |
 //+------------------------------------------------------------------+
-OrderAction EMA_Baseline() // Fully-tested + Fully-modified
-  {
-   RefreshRates();
-   OrderAction signal = OA_IGNORE;
-   
-   double MA_period = 65;
-   double set_price = 0; 
-
-   double EMA_baseline = iCustom(NULL,0,"EMA",MA_period,0.0,0,set_price,0,1);
-
-   if(CheckForLongBaseline(EMA_baseline))
-      signal = OA_OPEN_LONG;
-
-   if(CheckForShortBaseline(EMA_baseline))
-      signal = OA_OPEN_SHORT;
-
-   return signal;
-  }
-//+------------------------------------------------------------------+
-//| AMA Baseline check                                               |
-//+------------------------------------------------------------------+
-OrderAction AMA_Simple_Baseline() // Fully-tested + Fully-modified
-  {
-   RefreshRates();
-   OrderAction signal = OA_IGNORE;
-   
-   int AMA_period = 24;
-   int nfast = 2;
-   int nslow = 30;
-   double G = 2.0;
-   double dK = 2.0;  
-   
-   double AMA_baseline = iCustom(NULL,0,"AMA",AMA_period, nfast, nslow, G, dK,0,1);
-
-   if(CheckForLongBaseline(AMA_baseline))
-      signal = OA_OPEN_LONG;
-
-   if(CheckForShortBaseline(AMA_baseline))
-      signal = OA_OPEN_SHORT;
-
-   return signal;
-  }
-//+------------------------------------------------------------------+
-//| Aroon Crossover Entry                                            |
-//+------------------------------------------------------------------+
-OrderAction Aroon_Simple() // Fully-tested + Fully-modified
+OrderAction Aroon_Simple() 
   {
    RefreshRates();
    OrderAction signal = OA_IGNORE;
@@ -170,8 +125,106 @@ OrderAction Aroon_Simple() // Fully-tested + Fully-modified
    return signal;
   }
 //+------------------------------------------------------------------+
+//| ABI Crossover Entry (TESTED & MODIFIED)                          |
+//+------------------------------------------------------------------+
+OrderAction ABI_Simple() 
+  {
+   RefreshRates();
+   OrderAction signal = OA_IGNORE;
+
+   bool useRSI = false; // false uses Stochastic
+   double len = 10; // length
+   double Signal = 5; // signal period
+   double smooth = 5; // smooth period
+   enMaTypes MaMethod = ma_sma; // MA type
+   enPrices Price = pr_close; // Price
+
+   double ABI_Buy = iCustom(NULL,0,"ABI",useRSI,len,signal,smooth,MaMethod,Price,0,1);
+   double ABI_Sell = iCustom(NULL,0,"ABI",useRSI,len,signal,smooth,MaMethod,Price,1,1);
+   double ABI_BuyPrev = iCustom(NULL,0,"ABI",useRSI,len,signal,smooth,MaMethod,Price,0,2);
+   double ABI_SellPrev = iCustom(NULL,0,"ABI",useRSI,len,signal,smooth,MaMethod,Price,1,2);
+
+   if(LongCrossOver(ABI_Buy, ABI_Sell, ABI_BuyPrev, ABI_SellPrev))
+      signal = OA_OPEN_LONG;
+
+   if(ShortCrossOver(ABI_Buy, ABI_Sell, ABI_BuyPrev, ABI_SellPrev))
+      signal = OA_OPEN_SHORT;
+
+   return signal;
+  }
+//+------------------------------------------------------------------+
+//| DEMA Crossover Entry (NOT-WORKING)                               |
+//+------------------------------------------------------------------+
+OrderAction DEMA_Simple() 
+  {
+   RefreshRates();
+   OrderAction signal = OA_IGNORE;
+
+   double DEMA_period = 36;
+   enPrices Price = 2;
+   double Filter = 0; 
+   int FilterPeriod = 0;
+   enFilterWhat FilterOn = flt_prc;
 
 
+   double DEMA_Buy = iCustom(NULL,0,"DEMA",PERIOD_CURRENT,DEMA_period,Price,Filter,FilterPeriod,FilterOn,1,1);
+   double DEMA_Sell = iCustom(NULL,0,"DEMA",PERIOD_CURRENT,DEMA_period,Price,Filter,FilterPeriod,FilterOn,2,1);
+   double DEMA_BuyPrev = iCustom(NULL,0,"DEMA",PERIOD_CURRENT,DEMA_period,Price,Filter,FilterPeriod,FilterOn,1,2);
+   double DEMA_SellPrev = iCustom(NULL,0,"DEMA",PERIOD_CURRENT,DEMA_period,Price,Filter,FilterPeriod,FilterOn,2,2);
+
+   if(LongCrossOver(DEMA_Buy,DEMA_Sell, DEMA_BuyPrev, DEMA_SellPrev)) signal = OA_OPEN_LONG;
+
+   if(ShortCrossOver(DEMA_Buy,DEMA_Sell, DEMA_BuyPrev, DEMA_SellPrev)) signal = OA_OPEN_SHORT;
+
+   return signal;
+  }
+//+------------------------------------------------------------------+
+//| SSL Crossover Entry (TESTED & MODIFIED)                          |
+//+------------------------------------------------------------------+
+OrderAction SSL_Simple() 
+  {
+   RefreshRates();
+   OrderAction signal = OA_IGNORE;
+
+   int Lb = 10;
+
+   double SSL_Buy = iCustom(NULL,0,"SSL_Channel",Lb,1,1);
+   double SSL_Sell = iCustom(NULL,0,"SSL_Channel",Lb,0,1);
+   double SSL_BuyPrev = iCustom(NULL,0,"SSL_Channel",Lb,1,2);
+   double SSL_SellPrev = iCustom(NULL,0,"SSL_Channel",Lb,0,2);
+
+   if(LongCrossOver(SSL_Buy, SSL_Sell, SSL_BuyPrev, SSL_SellPrev)) signal = OA_OPEN_LONG;
+
+   if(ShortCrossOver(SSL_Buy, SSL_Sell, SSL_BuyPrev, SSL_SellPrev)) signal = OA_OPEN_SHORT;
+
+   return signal;
+  }
+//+------------------------------------------------------------------+
+//| SSL Crossover Entry (NOT-COMPLETED)                              |
+//+------------------------------------------------------------------+
+OrderAction linear_reg_Simple() {
+   RefreshRates();
+   OrderAction signal = OA_IGNORE;
+
+   int period = 35;
+   int price = 0; // OHLC representing 0,1,2,3 
+   int Shift = 0;
+
+   double lr_Buy = iCustom(NULL,0,"linear-regression",period,price,Shift,1,1);
+   double lr_Sell = iCustom(NULL,0,"linear-regression",period,price,Shift,2,1);
+   double lr_BuyPrev = iCustom(NULL,0,"linear-regression",period,price,Shift,1,2);
+   double lr_SellPrev = iCustom(NULL,0,"linear-regression",period,price,Shift,2,2);
+
+   double lr_inclusive = iCustom(NULL,0,"linear-regression",period,price,Shift,0,1);
+
+   
+
+}
+
+
+
+
+//+------------------------------------------------------------------+
 enum enPrices
   {
    pr_close,      // Close
@@ -209,4 +262,20 @@ enum enPrices
    pr_habtbiased2 // Heiken ashi (better formula) trend biased (extreme) price
   };
 
+enum enMaTypes
+  {
+   ma_sma,    // Simple moving average
+   ma_ema,    // Exponential moving average
+   ma_smma,   // Smoothed MA
+   ma_lwma,   // Linear weighted MA
+   ma_tema    // Triple exponential moving average - TEMA
+  };
+enum enFilterWhat
+ {
+   flt_prc,  // Filter the price
+   flt_val,  // Filter the Dema value
+   flt_both  // Filter both
+ };
 
+
+//+------------------------------------------------------------------+

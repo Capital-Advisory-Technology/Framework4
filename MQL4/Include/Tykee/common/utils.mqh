@@ -1,49 +1,58 @@
 //+------------------------------------------------------------------+
 //|                                                        utils.mqh |
-//|                                             Copyright 2022, IKAR |
+//|                                            Copyright 2022, Tykee |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2022, IKAR"
+#property copyright "Copyright 2022, Tykee"
 #property link      ""
 #property strict
 
-//+------------------------------------------------------------------+
+// Checks for long crossover
 bool LongCrossOver(double buy, double sell, double buyPrev, double sellPrev)
   {
    return buy > sell && sellPrev > buyPrev;
   }
-//+------------------------------------------------------------------+
+// Checks for short crossover
 bool ShortCrossOver(double buy, double sell, double buyPrev, double sellPrev)
   {
    return sell > buy && buyPrev > sellPrev;
   }
-//+------------------------------------------------------------------+
+// Checks if the values are bullish
 bool CheckForLong(double buy, double sell, double buyPrev, double sellPrev)
   {
    return buy > sell && buyPrev > sellPrev;
   }
-//+------------------------------------------------------------------+
+// Checks if the values are bearish
 bool CheckForShort(double buy, double sell, double buyPrev, double sellPrev)
   {
    return sell > buy && sellPrev > buyPrev;
   }
-//+------------------------------------------------------------------+
+// Checks for long crossover if one of the values is NULL
 bool LongCrossOverNull(double buy, double sellPrev)
   {
    return buy != NULL && sellPrev != NULL;
   }
-//+------------------------------------------------------------------+
+// Checks for short crossover if one of the values is NULL
 bool ShortCrossOverNull(double sell, double buyPrev)
   {
    return sell != NULL && buyPrev != NULL;
   }
-//+------------------------------------------------------------------+
+// Checks if the open price is above baseline
 bool CheckForLongBaseline(double baseline)
   {
    return iOpen(NULL,0,0) >= baseline;
   }
-//+------------------------------------------------------------------+  
+// Checks if the open price is below baseline  
 bool CheckForShortBaseline(double baseline)
   {
    return iOpen(NULL,0,0) <= baseline;
   }  
-//+------------------------------------------------------------------+
+// Checks if the value is above zero line
+bool CheckForAboveZeroLine(double buy, double buyPrev)
+  {
+   return buy > 0 && buyPrev < 0;
+  }  
+// Checks if the value is below zero line
+bool CheckForBelowZeroLine(double sell, double sellPrev)
+  {
+   return sell < 0 && sellPrev > 0;
+  }  
