@@ -16,7 +16,7 @@ class BacktestInfo {
       BacktestInfo::BacktestInfo(string cModelName, string cModelParams, bool cShouldExportData) {
          this.initialBalance = AccountBalance();
          this.modelName = cModelName;
-         this.modelParamsJson = cModelParams;
+         this.inputJson = cModelParams;
          this.db = new Database();
          this.symbolId = db.getSymbolId(Symbol());
          this.backtestLaunchTime = db.getDateTime();
@@ -42,7 +42,7 @@ class BacktestInfo {
          int backtestDuration = db.getDateTime() - backtestLaunchTime;
          doCalculations();
          Print("Model name: " + modelName);
-         Print("Params: " + modelParamsJson);
+         Print("Params: " + inputJson);
          Print("Profit: " + string(profit));
          Print("Profit factor: " + string(profitFactor));
          Print("Consecutive Drawdown: " + string(consecutiveDrawdown));
@@ -57,10 +57,10 @@ class BacktestInfo {
          Print("Consecutive wins: " + string(consecutiveWins));
          Print("Consecutive losses: " + string(consecutiveLosses));
          
-         int modelId = db.getModelId(modelName, modelParamsJson, period);
+         int strategyId = db.getStrategyId(modelName);
          string backtestSql = setBacktestDataQuery(
-             symbolId, modelId,
-             initialBalance,
+             symbolId, strategyId,
+             period, initialBalance,
              profit, profitFactor,
              consecutiveDrawdown,longsWon, 
              shortsWon,dateFrom,
@@ -68,7 +68,7 @@ class BacktestInfo {
              longTrades, shortTrades,
              consecutiveWins, consecutiveLosses,
              backtestLaunchTime, backtestDuration,
-             customSession.toJson()
+             customSession.toJson(), inputJson
          );
          
          db.insertData(backtestSql);
@@ -95,7 +95,7 @@ class BacktestInfo {
    private:
       bool shouldExportData;
       string modelName;
-      string modelParamsJson; 
+      string inputJson; 
       double profit; 
       double profitFactor; 
       double consecutiveDrawdown;
