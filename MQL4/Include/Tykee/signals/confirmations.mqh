@@ -11,9 +11,9 @@
 #include <Tykee/signals/entry.mqh>
 
 //+------------------------------------------------------------------+
-//| AMA Baseline check                                               |
+//| AMA Baseline check (TESTED & MODIFIED)                           |
 //+------------------------------------------------------------------+
-OrderAction AMA_Simple_Baseline() // Fully-tested + Fully-modified
+OrderAction AMA_Simple_Baseline() 
   {
    RefreshRates();
    OrderAction signal = OA_IGNORE;
@@ -35,9 +35,9 @@ OrderAction AMA_Simple_Baseline() // Fully-tested + Fully-modified
    return signal;
   }
 //+------------------------------------------------------------------+
-//| EMA Baseline check                                               |
+//| EMA Baseline check (TESTED & MODIFIED)                           |
 //+------------------------------------------------------------------+
-OrderAction EMA_Baseline() // Fully-tested + Fully-modified
+OrderAction EMA_Baseline() 
   {
    RefreshRates();
    OrderAction signal = OA_IGNORE;
@@ -56,9 +56,10 @@ OrderAction EMA_Baseline() // Fully-tested + Fully-modified
    return signal;
   }
 //+------------------------------------------------------------------+
-//| DEMA Baseline check                                              |
+//| DEMA Baseline check (TESTED & MODIFIED)                          |
 //+------------------------------------------------------------------+
-OrderAction DEMA_Baseline() { // Fully-tested + Fully-modified
+OrderAction DEMA_Baseline() 
+  { 
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
@@ -75,6 +76,6 @@ OrderAction DEMA_Baseline() { // Fully-tested + Fully-modified
    if(CheckForShortBaseline(DEMA_Baseline)) signal = OA_OPEN_SHORT;
 
    return signal; 
-}
+  }
 
 //+------------------------------------------------------------------+

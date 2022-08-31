@@ -36,6 +36,28 @@ bool ShortCrossOverNull(double sell, double buyPrev)
   {
    return sell != NULL && buyPrev != NULL;
   }
+// Checks for long signal with EMPTY_VALUE
+bool LongSignalEmptyValue(double buy, double sell) 
+  {
+   return buy != EMPTY_VALUE && sell == EMPTY_VALUE;
+  }
+// Checks for short signal with EMPTY_VALUE  
+bool ShortSignalEmptyValue(double buy, double sell) 
+  {
+   return sell != EMPTY_VALUE && buy == EMPTY_VALUE;
+  }
+// Checks for long crossover with EMPTY_VALUE  
+bool LongCrossOverEmptyValue(double buy, double sellPrev)
+  {
+    return buy != EMPTY_VALUE && sellPrev != EMPTY_VALUE;
+  }
+// Checks for short crossover with EMPTY_VALUE
+bool ShortCrossOverEmptyValue(double sell, double buyPrev)
+  {
+    return sell != EMPTY_VALUE && buyPrev != EMPTY_VALUE;
+  }
+
+
 // Checks if the open price is above baseline
 bool CheckForLongBaseline(double baseline)
   {
