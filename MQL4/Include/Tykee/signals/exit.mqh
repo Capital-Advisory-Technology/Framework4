@@ -1,8 +1,8 @@
 //+------------------------------------------------------------------+
 //|                                                         exit.mqh |
-//|                                                             IKAR |
+//|                                            Copyright 2022, Tykee |
 //+------------------------------------------------------------------+
-#property copyright "IKAR"
+#property copyright "Tykee"
 #property link      ""
 #property strict
 
@@ -17,10 +17,12 @@ OrderAction ExitRVI()
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
-   double RVIBuy = iCustom(NULL,0,"RelativeVigorIndex",0,1);
-   double RVISell = iCustom(NULL,0,"RelativeVigorIndex",1,1);
-   double RVIBuyPrev = iCustom(NULL,0,"RelativeVigorIndex",0,2);
-   double RVISellPrev = iCustom(NULL,0,"RelativeVigorIndex",1,2);
+   int period = 10;
+
+   double RVIBuy = iCustom(NULL,0,"RelativeVigorIndex",period,0,1);
+   double RVISell = iCustom(NULL,0,"RelativeVigorIndex",period,1,1);
+   double RVIBuyPrev = iCustom(NULL,0,"RelativeVigorIndex",period,0,2);
+   double RVISellPrev = iCustom(NULL,0,"RelativeVigorIndex",period,1,2);
 
    if(LongCrossOver(RVIBuy, RVISell, RVIBuyPrev, RVISellPrev))
      {
