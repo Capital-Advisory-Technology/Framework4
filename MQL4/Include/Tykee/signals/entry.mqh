@@ -7,10 +7,10 @@
 #include <Tykee/common/utils.mqh>
 
 // TE Crossover Entry (TESTED & MODIFIED)                           
-OrderAction TE_Simple(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_MaFilterPass, int TE_MaShift, double TE_Deviation) 
+OrderAction TE_Simple(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_MaFilterPass, int TE_MaShift, double TE_Deviation, int TE_enum_price) 
   {
    OrderAction signal = OA_IGNORE;
-   enPrices TE_Price = pr_habweighted;
+   enPrices TE_Price = TE_enum_price;
 
    double TE_Buy = iCustom(NULL, 0, "trend-envelope", TE_tf, TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_Price, 0, 1);
    double TE_Sell = iCustom(NULL, 0, "trend-envelope", TE_tf, TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_Price, 1, 1);
@@ -24,11 +24,11 @@ OrderAction TE_Simple(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_MaFilterPas
   }
 
 // TE Crossover Entry w/ Macro (TESTED & MODIFIED)                  
-OrderAction TE_Macro_Micro_Cross(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_MaFilterPass, int TE_MaShift, double TE_Deviation, ENUM_TIMEFRAMES mTE_tf, int mTE_MaPeriod, int mTE_MaFilterPass, int mTE_MaShift, double mTE_Deviation) 
+OrderAction TE_Macro_Micro_Cross(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_MaFilterPass, int TE_MaShift, double TE_Deviation, int TE_enum_price, ENUM_TIMEFRAMES mTE_tf, int mTE_MaPeriod, int mTE_MaFilterPass, int mTE_MaShift, double mTE_Deviation, int mTE_enum_price) 
   {
    OrderAction signal = OA_IGNORE;
-   enPrices TE_Price = pr_habweighted;
-   enPrices mTE_Price = pr_habweighted;
+   enPrices TE_Price = TE_enum_price;
+   enPrices mTE_Price = mTE_enum_price;
 
    double TE_Buy = iCustom(NULL, 0, "trend-envelope", TE_tf, TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_Price, 0, 1);
    double TE_Sell = iCustom(NULL, 0, "trend-envelope", TE_tf, TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_Price, 1, 1);
@@ -78,11 +78,11 @@ OrderAction Aroon_Simple(int Aroon_period)
    return signal;
   }
 // ABI Crossover Entry (TESTED & MODIFIED)                          
-OrderAction ABI_Simple(bool ABI_useRSI, double ABI_len, double ABI_Signal, double ABI_smooth) 
+OrderAction ABI_Simple(bool ABI_useRSI, double ABI_len, double ABI_Signal, double ABI_smooth, int ABI_enum_ma, int ABI_enum_price) 
   {
    OrderAction signal = OA_IGNORE;
-   enMaTypes ABI_MaMethod = ma_sma; // MA type
-   enPrices ABI_Price = pr_close; // Price
+   enMaTypes ABI_MaMethod = ABI_enum_ma; // MA type
+   enPrices ABI_Price = ABI_enum_price; // Price
 
    double ABI_Buy = iCustom(NULL, 0, "ABI", ABI_useRSI, ABI_len, ABI_Signal, ABI_smooth, ABI_MaMethod, ABI_Price, 0, 1);
    double ABI_Sell = iCustom(NULL, 0, "ABI", ABI_useRSI, ABI_len, ABI_Signal, ABI_smooth, ABI_MaMethod, ABI_Price, 1, 1);
@@ -95,11 +95,11 @@ OrderAction ABI_Simple(bool ABI_useRSI, double ABI_len, double ABI_Signal, doubl
    return signal;
   }
 // DEMA Crossover Entry (TESTED & MODIFIED)                         
-OrderAction DEMA_Simple(double DEMA_period, double DEMA_Filter, int DEMA_FilterPeriod) 
+OrderAction DEMA_Simple(double DEMA_period, double DEMA_Filter, int DEMA_FilterPeriod, int DEMA_enum_price, int DEMA_enum_filter) 
   {
    OrderAction signal = OA_IGNORE;
-   enPrices DEMA_Price = pr_hatbiased2;
-   enFilterWhat DEMA_FilterOn = flt_prc;
+   enPrices DEMA_Price = DEMA_enum_price;
+   enFilterWhat DEMA_FilterOn = DEMA_enum_filter;
 
    double DEMA_Buy = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_Filter, DEMA_FilterPeriod, DEMA_FilterOn, 3, 1);
    double DEMA_Sell = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_Filter, DEMA_FilterPeriod, DEMA_FilterOn, 4, 1);
@@ -154,6 +154,38 @@ OrderAction trendFlex2_Simple(int tf2_fast_period, int tf2_slow_period)
    if(LongCrossOver(TrendFlex_Buy,  TrendFlex_Sell,  TrendFlex_BuyPrev,  TrendFlex_SellPrev)) signal = OA_OPEN_LONG;
 
    if(ShortCrossOver(TrendFlex_Buy,  TrendFlex_Sell,  TrendFlex_BuyPrev,  TrendFlex_SellPrev)) signal = OA_OPEN_SHORT;
+
+   return signal;
+  }
+
+// Reflex Crossover Entry (TESTED & MODIFIED)
+OrderAction Reflex_Simple(int Reflex_Period) 
+  {
+   OrderAction signal = OA_IGNORE;
+
+   double reflex_Buy = iCustom(NULL, 0, "Reflex", Reflex_Period, 0, 1);
+   double reflex_Sell = iCustom(NULL, 0, "Reflex", Reflex_Period, 1, 1);
+   double reflex_BuyPrev = iCustom(NULL, 0, "Reflex", Reflex_Period, 0, 2);
+   double reflex_SellPrev = iCustom(NULL, 0, "Reflex", Reflex_Period, 1, 2);
+
+   if(reflex_Sell == EMPTY_VALUE && reflex_SellPrev != EMPTY_VALUE) signal = OA_OPEN_LONG;
+   if(reflex_Sell != EMPTY_VALUE && reflex_SellPrev == EMPTY_VALUE) signal = OA_OPEN_SHORT;
+
+   return signal;
+  }
+
+// mega-trend Crossover Entry (TESTED & MODIFIED)
+OrderAction MegaTrend_Simple(int megatrend_period, int megatrend_method, int megatrend_price) 
+  {
+   OrderAction signal = OA_IGNORE;
+
+   double megatrend_Buy = iCustom(NULL, 0, "mega-trend", megatrend_period, megatrend_method, megatrend_price, 0, 1);
+   double megatrend_Sell = iCustom(NULL, 0, "mega-trend", megatrend_period, megatrend_method, megatrend_price, 1, 1);
+   double megatrend_BuyPrev = iCustom(NULL, 0, "mega-trend", megatrend_period, megatrend_method, megatrend_price, 0, 2);
+   double megatrend_SellPrev = iCustom(NULL, 0, "mega-trend", megatrend_period, megatrend_method, megatrend_price, 1, 2);
+
+   if(LongCrossOverEmptyValue(megatrend_Buy, megatrend_SellPrev)) signal = OA_OPEN_LONG;
+   if(ShortCrossOverEmptyValue(megatrend_Sell, megatrend_BuyPrev)) signal = OA_OPEN_SHORT;
 
    return signal;
   }
