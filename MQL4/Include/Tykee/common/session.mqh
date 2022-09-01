@@ -75,18 +75,17 @@ class CustomSession {
                checkNewLimitPeriod(Month());
                
             default:
-               Logger::log("Position limit period is below current EA period. Please set it equal or larger");
+               Logger::log("Limit period is not supported");
                ExpertRemove();
          }
       }
     
       bool allowToOpen() {
+         bool hourExpression = isCustomSessionDayOfWeek() && isCustomSessionHour() && isCustomSessionMonth();
          bool minuteExpression = isCustomSessionDayOfWeek()
           && isCustomSessionHour()
           && isCustomSessionMinute()
           && isCustomSessionMonth();
-          
-         bool hourExpression = isCustomSessionDayOfWeek() && isCustomSessionHour() && isCustomSessionMonth();
          
          switch (Period()) {
             case PERIOD_M1:
@@ -108,10 +107,10 @@ class CustomSession {
                return hourExpression && !isPositionLimitExceeded();
                
             case PERIOD_D1:
-               return isCustomSessionDayOfWeek() && isCustomSessionMonth() && isPositionLimitExceeded();
+               return isCustomSessionDayOfWeek() && isCustomSessionMonth() && !isPositionLimitExceeded();
             
             case PERIOD_MN1:
-               return isCustomSessionMonth() && isPositionLimitExceeded();
+               return isCustomSessionMonth() && !isPositionLimitExceeded();
             
             default:
                return false;
