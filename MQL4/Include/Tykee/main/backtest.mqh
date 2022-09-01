@@ -41,21 +41,21 @@ class BacktestInfo {
       void exportBacktestData() {
          int backtestDuration = db.getDateTime() - backtestLaunchTime;
          doCalculations();
-         Print("Model name: " + modelName);
-         Print("Params: " + inputJson);
-         Print("Profit: " + string(profit));
-         Print("Profit factor: " + string(profitFactor));
-         Print("Consecutive Drawdown: " + string(consecutiveDrawdown));
-         Print("Long wons: " + string(longsWon));
-         Print("Short won: " + string(shortsWon));
-         Print("Initial balance: " + string(initialBalance));
-         Print("Date from: " + string(dateFrom));
-         Print("Date to: " + string(dateTo));
-         Print("Total trades: " + string(totalTrades));
-         Print("Long trades: " + string(longTrades));
-         Print("Short trades: " + string(shortTrades));
-         Print("Consecutive wins: " + string(consecutiveWins));
-         Print("Consecutive losses: " + string(consecutiveLosses));
+         Logger::log("Model name: " + modelName);
+         Logger::log("Params: " + inputJson);
+         Logger::log("Profit: " + string(profit));
+         Logger::log("Profit factor: " + string(profitFactor));
+         Logger::log("Consecutive Drawdown: " + string(consecutiveDrawdown));
+         Logger::log("Long wons: " + string(longsWon));
+         Logger::log("Short won: " + string(shortsWon));
+         Logger::log("Initial balance: " + string(initialBalance));
+         Logger::log("Date from: " + string(dateFrom));
+         Logger::log("Date to: " + string(dateTo));
+         Logger::log("Total trades: " + string(totalTrades));
+         Logger::log("Long trades: " + string(longTrades));
+         Logger::log("Short trades: " + string(shortTrades));
+         Logger::log("Consecutive wins: " + string(consecutiveWins));
+         Logger::log("Consecutive losses: " + string(consecutiveLosses));
          
          int strategyId = db.getStrategyId(modelName);
          string backtestSql = setBacktestDataQuery(

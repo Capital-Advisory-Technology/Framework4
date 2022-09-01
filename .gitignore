@@ -1,3 +1,7 @@
 *.ex4
 *.db
 *.dat
+.idea/vcs.xml
+.idea/MTCodeBase.iml
+.idea/modules.xml
+.idea/misc.xml
