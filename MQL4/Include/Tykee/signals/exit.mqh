@@ -8,16 +8,11 @@
 
 #include <Tykee/common/enums.mqh>
 #include <Tykee/common/utils.mqh>
-//+------------------------------------------------------------------+
-//| Relative Vigor Index (RVI) Crossover Exit                        |
-//+------------------------------------------------------------------+
-OrderAction ExitRVI()
+
+// Relative Vigor Index (RVI) Crossover Exit                        
+OrderAction ExitRVI(int RVI_period)
   {
-
-   RefreshRates();
    OrderAction signal = OA_IGNORE;
-
-   int RVI_period = 10;
 
    double RVIBuy = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,0,1);
    double RVISell = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,1,1);
@@ -33,7 +28,6 @@ OrderAction ExitRVI()
         {
          signal = OA_CLOSE;
         }
-
    return signal;
   }
 
