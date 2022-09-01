@@ -28,7 +28,7 @@ class Database
          int strategyId = -1;
          string query = findStrategyQuery(modelName);
          Statement s(db, query);
-         if(!s.isValid())Print(">> SQLite: Faild to execute getSymbolIdQuery....", db.getErrorMsg());
+         if(!s.isValid())Logger::log(">> SQLite: Faild to execute getSymbolIdQuery...." + db.getErrorMsg());
          
          int r = s.step();
          do {
@@ -119,17 +119,17 @@ class Database
       void insertData(string sql) {
          Statement s(db,sql);
          if(!s.isValid()) {
-            Print(db.getErrorMsg());
+            Logger::log(db.getErrorMsg());
             return;
          }
          
          int r = s.step();
          if(r == SQLITE_OK) {
-           Print(">>> Step finished.");
+           Logger::log(">>> Step finished.");
          } else if(r==SQLITE_DONE) {
            // Ignore
          } else
-           Print(">>> Error executing statement: ",db.getErrorMsg());
+           Logger::log(">>> Error executing statement: " + db.getErrorMsg());
          }
             
       int findBacktestId(int backtestLaunchTime) {

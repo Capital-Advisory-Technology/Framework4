@@ -35,7 +35,11 @@ class Range {
 class CustomSession {
       
    public:
-      CustomSession::CustomSession() {}
+      CustomSession::CustomSession() {
+         positionsInPeriod = 0;
+         limitPeriod = PERIOD_MN1;
+         allowToOpen();
+      }
         
       void addMinuteRange(int beginning, int end) {
          ArrayResize(minuteRanges, ArraySize(minuteRanges) + 1); 
@@ -57,29 +61,74 @@ class CustomSession {
          monthRanges[ArraySize(monthRanges) - 1] = new Range(beginning, end);
       }
       
-      bool isTimeInCustomSession() {
-         bool minuteExpression = isCustomSessionDayOfWeek() && isCustomSessionHour() && isCustomSessionMinute() && isCustomSessionMonth();
+      void refresh() {   
+          switch (limitPeriod) {   
+            case PERIOD_H1:
+               checkNewLimitPeriod(Hour());
+               break;
+           
+            case PERIOD_D1:
+               checkNewLimitPeriod(Day());
+               break;
+           
+            case PERIOD_MN1:
+               checkNewLimitPeriod(Month());
+               
+            default:
+               Logger::log("Limit period is not supported");
+               ExpertRemove();
+         }
+      }
+    
+      bool allowToOpen() {
+         bool hourExpression = isCustomSessionDayOfWeek() && isCustomSessionHour() && isCustomSessionMonth();
+         bool minuteExpression = isCustomSessionDayOfWeek()
+          && isCustomSessionHour()
+          && isCustomSessionMinute()
+          && isCustomSessionMonth();
+         
          switch (Period()) {
             case PERIOD_M1:
-               return minuteExpression;
+               return minuteExpression && !isPositionLimitExceeded();
                
             case PERIOD_M5:
-               return minuteExpression;
+               return minuteExpression && !isPositionLimitExceeded();
             
             case PERIOD_M30:
-               return minuteExpression;
+               return minuteExpression && !isPositionLimitExceeded();
                
             case PERIOD_M15:
-               return minuteExpression;
+               return minuteExpression && !isPositionLimitExceeded();
+            
+            case PERIOD_H1:
+               return hourExpression && !isPositionLimitExceeded();
             
             case PERIOD_H4:
-               return isCustomSessionDayOfWeek() && isCustomSessionHour() && isCustomSessionMonth();
+               return hourExpression && !isPositionLimitExceeded();
                
             case PERIOD_D1:
-               return isCustomSessionDayOfWeek() && isCustomSessionMonth();
+               return isCustomSessionDayOfWeek() && isCustomSessionMonth() && !isPositionLimitExceeded();
+            
+            case PERIOD_MN1:
+               return isCustomSessionMonth() && !isPositionLimitExceeded();
+            
             default:
                return false;
          }
+      }
+      
+      void onPositionOpened() {
+         positionsInPeriod++;
+      }
+      
+      void setPositionLimit(int limit, int period) {
+         if (period < Period()) {
+            Logger::log("Position limit period is below current EA period. Please set it equal or larger");
+            ExpertRemove();
+            return;
+         }
+         limitPeriod = period;
+         positionLimit = limit;
       }
       
       string toJson() {
@@ -112,6 +161,11 @@ class CustomSession {
             range["to"] = monthRanges[i].getEnd();
             json["month_ranges"].Add(range);
         }
+        
+        CJAVal timeLimit;
+        timeLimit["period"] = limitPeriod;
+        timeLimit["limit"] = positionLimit;
+        json["time_limit"] = timeLimit;
         return json.Serialize();
       }
          
@@ -120,23 +174,32 @@ class CustomSession {
       Range* hourRanges[];
       Range* dayRanges[];
       Range* monthRanges[];
+      int positionLimit;
+      int positionsInPeriod;
+      int limitPeriod;
+      int lastTimeValue;
       
-       bool isCustomSessionMinute() {
+      
+      bool isCustomSessionMinute() {
          int minute = Minute();
          for (int i = 0; i < ArraySize(minuteRanges); i++) {
             Range* range = minuteRanges[i];
-            if (minute >= range.getBeginning() && minute <= range.getEnd()) {
+            if (minute >= range.getBeginning() && minute < range.getEnd()) {
                return true;
             }
          }
          return false;
       }
       
+      bool isPositionLimitExceeded() {
+         return positionsInPeriod == positionLimit;
+      }
+      
        bool isCustomSessionHour() {
          int hour = Hour();
          for (int i = 0; i < ArraySize(hourRanges); i++) {
             Range* range = hourRanges[i];
-            if (hour >= range.getBeginning() && hour <= range.getEnd()) {
+            if (hour >= range.getBeginning() && hour < range.getEnd()) {
                return true;
             }
          }
@@ -147,7 +210,7 @@ class CustomSession {
          int day = DayOfWeek();
          for (int i = 0; i < ArraySize(dayRanges); i++) {
             Range* range = dayRanges[i];
-            if (day >= range.getBeginning() && day <= range.getEnd()) {
+            if (day >= range.getBeginning() && day < range.getEnd()) {
                return true;
             }
          }
@@ -158,11 +221,18 @@ class CustomSession {
          int month = Month();
          for (int i = 0; i < ArraySize(monthRanges); i++) {
             Range* range = monthRanges[i];
-            if (month >= range.getBeginning() && month <= range.getEnd()) {
+            if (month >= range.getBeginning() && month < range.getEnd()) {
                return true;
             }
          }
          return false;
+      }
+      
+      void checkNewLimitPeriod(int currentTime) {
+         if (lastTimeValue != currentTime) {
+            lastTimeValue = currentTime;
+            positionsInPeriod = 0;
+        }
       }  
 };
 

@@ -57,7 +57,7 @@ class PositionManager {
       positions at once.
    */
    void openOrder(int positionType) {
-      if (!customSession.isTimeInCustomSession()) return;
+      if (!customSession.allowToOpen()) return;
       // Calculate values for order
       int stopLoss = CalculateSL(SLRatio, fixedSLTP);
       int takeProfit = CalculateTP(TPRatio, fixedSLTP);
@@ -100,6 +100,8 @@ class PositionManager {
                RSI14, 
                ATR14
            );
+
+           customSession.onPositionOpened();
          } else {
            Logger::log("Select position error: " + string(GetLastError()));
          }
