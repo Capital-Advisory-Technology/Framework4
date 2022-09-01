@@ -85,13 +85,13 @@ OrderAction BDSS_Simple()
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
-   int SMMA_period = 8;
-   int stochastic_period = 5;
+   int BDSS_SMMA_period = 8;
+   int BDSS_stochastic_period = 5;
 
-   double BDSS_Buy = iCustom(NULL, 0, "BDSS", SMMA_period, stochastic_period, 1, 1);
-   double BDSS_Sell = iCustom(NULL, 0, "BDSS", SMMA_period, stochastic_period, 2, 1);
-   double BDSS_BuyPrev = iCustom(NULL, 0, "BDSS", SMMA_period, stochastic_period, 1, 2);
-   double BDSS_SellPrev = iCustom(NULL, 0, "BDSS", SMMA_period, stochastic_period, 2, 2);
+   double BDSS_Buy = iCustom(NULL, 0, "BDSS", BDSS_SMMA_period, BDSS_stochastic_period, 1, 1);
+   double BDSS_Sell = iCustom(NULL, 0, "BDSS", BDSS_SMMA_period, BDSS_stochastic_period, 2, 1);
+   double BDSS_BuyPrev = iCustom(NULL, 0, "BDSS", BDSS_SMMA_period, BDSS_stochastic_period, 1, 2);
+   double BDSS_SellPrev = iCustom(NULL, 0, "BDSS", BDSS_SMMA_period, BDSS_stochastic_period, 2, 2);
 
    if(LongCrossOver(BDSS_Buy,  BDSS_Sell,  BDSS_BuyPrev,  BDSS_SellPrev))
       signal = OA_OPEN_LONG;
@@ -133,17 +133,17 @@ OrderAction ABI_Simple()
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
-   bool useRSI = false; // false uses Stochastic
-   double len = 10; // length
-   double Signal = 5; // signal period
-   double smooth = 5; // smooth period
-   enMaTypes MaMethod = ma_sma; // MA type
-   enPrices Price = pr_close; // Price
+   bool ABI_useRSI = false; // false uses Stochastic
+   double ABI_len = 10; // length
+   double ABI_Signal = 5; // signal period
+   double ABI_smooth = 5; // smooth period
+   enMaTypes ABI_MaMethod = ma_sma; // MA type
+   enPrices ABI_Price = pr_close; // Price
 
-   double ABI_Buy = iCustom(NULL, 0, "ABI", useRSI, len, signal, smooth, MaMethod, Price, 0, 1);
-   double ABI_Sell = iCustom(NULL, 0, "ABI", useRSI, len, signal, smooth, MaMethod, Price, 1, 1);
-   double ABI_BuyPrev = iCustom(NULL, 0, "ABI", useRSI, len, signal, smooth, MaMethod, Price, 0, 2);
-   double ABI_SellPrev = iCustom(NULL, 0, "ABI", useRSI, len, signal, smooth, MaMethod, Price, 1, 2);
+   double ABI_Buy = iCustom(NULL, 0, "ABI", ABI_useRSI, ABI_len, ABI_Signal, ABI_smooth, ABI_MaMethod, ABI_Price, 0, 1);
+   double ABI_Sell = iCustom(NULL, 0, "ABI", ABI_useRSI, ABI_len, ABI_Signal, ABI_smooth, ABI_MaMethod, ABI_Price, 1, 1);
+   double ABI_BuyPrev = iCustom(NULL, 0, "ABI", ABI_useRSI, ABI_len, ABI_Signal, ABI_smooth, ABI_MaMethod, ABI_Price, 0, 2);
+   double ABI_SellPrev = iCustom(NULL, 0, "ABI", ABI_useRSI, ABI_len, ABI_Signal, ABI_smooth, ABI_MaMethod, ABI_Price, 1, 2);
 
    if(LongCrossOver(ABI_Buy,  ABI_Sell,  ABI_BuyPrev,  ABI_SellPrev))
       signal = OA_OPEN_LONG;
@@ -162,13 +162,13 @@ OrderAction DEMA_Simple()
    OrderAction signal = OA_IGNORE;
 
    double DEMA_period = 120;
-   enPrices Price = pr_hatbiased2;
-   double Filter = 3; 
-   int FilterPeriod = 0;
-   enFilterWhat FilterOn = flt_prc;
+   enPrices DEMA_Price = pr_hatbiased2;
+   double DEMA_Filter = 3; 
+   int DEMA_FilterPeriod = 0;
+   enFilterWhat DEMA_FilterOn = flt_prc;
 
-   double DEMA_Buy = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, DEMA_period, Price, Filter, FilterPeriod, FilterOn, 3, 1);
-   double DEMA_Sell = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, DEMA_period, Price, Filter, FilterPeriod, FilterOn, 4, 1);
+   double DEMA_Buy = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_Filter, DEMA_FilterPeriod, DEMA_FilterOn, 3, 1);
+   double DEMA_Sell = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_Filter, DEMA_FilterPeriod, DEMA_FilterOn, 4, 1);
 
    if(LongSignalEmptyValue(DEMA_Buy,  DEMA_Sell)) signal = OA_OPEN_LONG;
 
@@ -184,12 +184,12 @@ OrderAction SSL_Simple()
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
-   int Lb = 10;
+   int SSL_Lb = 10;
 
-   double SSL_Buy = iCustom(NULL, 0, "SSL_Channel", Lb, 1, 1);
-   double SSL_Sell = iCustom(NULL, 0, "SSL_Channel", Lb, 0, 1);
-   double SSL_BuyPrev = iCustom(NULL, 0, "SSL_Channel", Lb, 1, 2);
-   double SSL_SellPrev = iCustom(NULL, 0, "SSL_Channel", Lb, 0, 2);
+   double SSL_Buy = iCustom(NULL, 0, "SSL_Channel", SSL_Lb, 1, 1);
+   double SSL_Sell = iCustom(NULL, 0, "SSL_Channel", SSL_Lb, 0, 1);
+   double SSL_BuyPrev = iCustom(NULL, 0, "SSL_Channel", SSL_Lb, 1, 2);
+   double SSL_SellPrev = iCustom(NULL, 0, "SSL_Channel", SSL_Lb, 0, 2);
 
    if(LongCrossOver(SSL_Buy,  SSL_Sell,  SSL_BuyPrev,  SSL_SellPrev)) signal = OA_OPEN_LONG;
 
@@ -205,14 +205,14 @@ OrderAction linear_reg_Simple()
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
-   int period = 120;
-   int price = 1; // OHLC representing 0, 1, 2, 3 
-   int Shift = 0;
+   int lr_period = 120;
+   int lr_price = 1; // OHLC representing 0, 1, 2, 3 
+   int lr_Shift = 0;
 
-   double lr_Buy = iCustom(NULL, 0, "linear-regression", period, price, Shift, 1, 1);
-   double lr_Sell = iCustom(NULL, 0, "linear-regression", period, price, Shift, 2, 1);
-   double lr_BuyPrev = iCustom(NULL, 0, "linear-regression", period, price, Shift, 1, 2);
-   double lr_SellPrev = iCustom(NULL, 0, "linear-regression", period, price, Shift, 2, 2);
+   double lr_Buy = iCustom(NULL, 0, "linear-regression", lr_period, lr_price, lr_Shift, 1, 1);
+   double lr_Sell = iCustom(NULL, 0, "linear-regression", lr_period, lr_price, lr_Shift, 2, 1);
+   double lr_BuyPrev = iCustom(NULL, 0, "linear-regression", lr_period, lr_price, lr_Shift, 1, 2);
+   double lr_SellPrev = iCustom(NULL, 0, "linear-regression", lr_period, lr_price, lr_Shift, 2, 2);
 
    if(LongCrossOverEmptyValue(lr_Buy, lr_SellPrev)) signal = OA_OPEN_LONG;
 
@@ -228,13 +228,13 @@ OrderAction trendFlex2_Simple()
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
-   int fast_period = 20;
-   int slow_period = 50;
+   int tf2_fast_period = 20;
+   int tf2_slow_period = 50;
 
-   double TrendFlex_Buy = iCustom(NULL, 0, "trend-flex2", fast_period, slow_period, 0, 1);
-   double TrendFlex_Sell = iCustom(NULL, 0, "trend-flex2", fast_period, slow_period, 1, 1);
-   double TrendFlex_BuyPrev = iCustom(NULL, 0, "trend-flex2", fast_period, slow_period, 0, 2);
-   double TrendFlex_SellPrev = iCustom(NULL, 0, "trend-flex2", fast_period, slow_period, 1, 2);
+   double TrendFlex_Buy = iCustom(NULL, 0, "trend-flex2", tf2_fast_period, tf2_slow_period, 0, 1);
+   double TrendFlex_Sell = iCustom(NULL, 0, "trend-flex2", tf2_fast_period, tf2_slow_period, 1, 1);
+   double TrendFlex_BuyPrev = iCustom(NULL, 0, "trend-flex2", tf2_fast_period, tf2_slow_period, 0, 2);
+   double TrendFlex_SellPrev = iCustom(NULL, 0, "trend-flex2", tf2_fast_period, tf2_slow_period, 1, 2);
 
    if(LongCrossOver(TrendFlex_Buy,  TrendFlex_Sell,  TrendFlex_BuyPrev,  TrendFlex_SellPrev))
       signal = OA_OPEN_LONG;

@@ -17,12 +17,12 @@ OrderAction ExitRVI()
    RefreshRates();
    OrderAction signal = OA_IGNORE;
 
-   int period = 10;
+   int RVI_period = 10;
 
-   double RVIBuy = iCustom(NULL,0,"RelativeVigorIndex",period,0,1);
-   double RVISell = iCustom(NULL,0,"RelativeVigorIndex",period,1,1);
-   double RVIBuyPrev = iCustom(NULL,0,"RelativeVigorIndex",period,0,2);
-   double RVISellPrev = iCustom(NULL,0,"RelativeVigorIndex",period,1,2);
+   double RVIBuy = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,0,1);
+   double RVISell = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,1,1);
+   double RVIBuyPrev = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,0,2);
+   double RVISellPrev = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,1,2);
 
    if(LongCrossOver(RVIBuy, RVISell, RVIBuyPrev, RVISellPrev))
      {
