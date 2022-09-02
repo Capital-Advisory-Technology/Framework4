@@ -47,9 +47,32 @@ OrderAction DEMA_Baseline(double DEMA_period, double DEMA_Filter, int DEMA_Filte
    enFilterWhat DEMA_FilterOn = DEMA_enum_filter;
 
    double DEMA_Baseline = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_Filter, DEMA_FilterPeriod, DEMA_FilterOn, 0, 1);
-
    if(CheckForLongBaseline(DEMA_Baseline)) signal = OA_OPEN_LONG;
    if(CheckForShortBaseline(DEMA_Baseline)) signal = OA_OPEN_SHORT;
-
    return signal; 
   }
+
+//+------------------------------------------------------------------+
+
+
+// Trend Intensity 2 Baseline value check (TESTED & MODIFIED)
+OrderAction Trend_intensity2_Simple(int len, int TI2_price, ENUM_MA_METHOD ma_method, double high_level, double low_level) {
+  addToConfirmationFunctionList("Trend_intensity2_Confirmation");
+   OrderAction signal = OA_IGNORE;
+   enPrices price = TI2_price; // Price to use
+   double ti2 = iCustom(NULL,0,"trend-intensity2",len,price,ma_method,high_level,low_level,0,1);
+   if(ti2 <= -1) signal = OA_OPEN_LONG;
+   if(ti2 >= 101) signal = OA_OPEN_SHORT;
+   return signal;
+}
+
+// VIDYA Baseline check (TESTED & MODIFIED)                                         |
+OrderAction VIDYA_Baseline(int period, int histper) { 
+  addToConfirmationFunctionList("VIDYA_Baseline");
+   OrderAction signal = OA_IGNORE;
+   double VIDYA_Baseline = iCustom(NULL,0,"VIDYA",period,histper,0,1);
+   if(CheckForLongBaseline(VIDYA_Baseline)) signal = OA_OPEN_LONG;
+   if(CheckForShortBaseline(VIDYA_Baseline)) signal = OA_OPEN_SHORT;
+   return signal;
+}
+

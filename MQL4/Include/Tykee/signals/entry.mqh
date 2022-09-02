@@ -203,6 +203,35 @@ OrderAction MegaTrend_Simple(int megatrend_period, int megatrend_method, int meg
   }
 
 //+------------------------------------------------------------------+
+
+
+// Trend Flex Crossover Entry / Confirmation  (TESTED & MODIFIED)
+
+OrderAction trend_flex_Simple(int fast_period, int slow_period) {
+    addToEntryFunctionList("trend_flex_Simple");
+   OrderAction signal = OA_IGNORE;
+   double tf_Buy = iCustom(NULL,0,"trend-flex",fast_period,slow_period,0,1);
+   double tf_Sell = iCustom(NULL,0,"trend-flex",fast_period,slow_period,1,1);
+   double tf_BuyPrev = iCustom(NULL,0,"trend-flex",fast_period,slow_period,0,2);
+   double tf_SellPrev = iCustom(NULL,0,"trend-flex",fast_period,slow_period,1,2);
+   if(LongCrossOver(tf_Buy, tf_Sell, tf_BuyPrev, tf_SellPrev)) signal = OA_OPEN_LONG;
+   if(ShortCrossOver(tf_Buy, tf_Sell, tf_BuyPrev, tf_SellPrev)) signal = OA_OPEN_SHORT;
+   return signal;
+}
+
+// ZL MACD Crossover Entry / Confirmation
+OrderAction zl_macd_Simple(int fast_ema, int slow_ema, int signal_ema) {
+   addToEntryFunctionList("zl_macd_Simple");
+   OrderAction signal = OA_IGNORE;
+   double zl_Buy = iCustom(NULL,0,"zl_macd",fast_ema,slow_ema,signal_ema,0,1);
+   double zl_Sell = iCustom(NULL,0,"zl_macd",fast_ema,slow_ema,signal_ema,1,1);
+   double zl_BuyPrev = iCustom(NULL,0,"zl_macd",fast_ema,slow_ema,signal_ema,0,2);
+   double zl_SellPrev = iCustom(NULL,0,"zl_macd",fast_ema,slow_ema,signal_ema,1,2);
+   if(LongCrossOver(zl_Buy, zl_Sell, zl_BuyPrev, zl_SellPrev)) signal = OA_OPEN_LONG;
+   if(ShortCrossOver(zl_Buy, zl_Sell, zl_BuyPrev, zl_SellPrev)) signal = OA_OPEN_SHORT;
+   return signal;
+}
+//+------------------------------------------------------------------+
 enum enPrices
   {
    pr_close,       // Close
