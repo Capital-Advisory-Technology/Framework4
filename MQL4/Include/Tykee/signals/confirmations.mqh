@@ -13,6 +13,7 @@
 // AMA Baseline check (TESTED & MODIFIED)                           
 OrderAction AMA_Simple_Baseline(int AMA_period, int AMA_nfast, int AMA_nslow, double AMA_g, double AMA_dK) 
   {
+  addToConfirmationFunctionList("AMA_Simple_Baseline");
    OrderAction signal = OA_IGNORE;
 
    double AMA_baseline = iCustom(NULL, 0, "AMA", AMA_period, AMA_nfast, AMA_nslow, AMA_g, AMA_dK, 0, 1);
@@ -26,8 +27,9 @@ OrderAction AMA_Simple_Baseline(int AMA_period, int AMA_nfast, int AMA_nslow, do
 // EMA Baseline check (TESTED & MODIFIED)                           
 OrderAction EMA_Baseline(double EMA_period, double EMA_set_price) 
   {
-   OrderAction signal = OA_IGNORE;
+    addToConfirmationFunctionList("EMA_Baseline");
 
+   OrderAction signal = OA_IGNORE;
    double EMA_baseline = iCustom(NULL, 0, "EMA", EMA_period, 0.0, 0, EMA_set_price, 0, 1);
 
    if(CheckForLongBaseline(EMA_baseline)) signal = OA_OPEN_LONG;
@@ -39,6 +41,7 @@ OrderAction EMA_Baseline(double EMA_period, double EMA_set_price)
 // DEMA Baseline check (TESTED & MODIFIED)                          
 OrderAction DEMA_Baseline(double DEMA_period, double DEMA_Filter, int DEMA_FilterPeriod, int DEMA_enum_price, int DEMA_enum_filter) 
   { 
+    addToConfirmationFunctionList("DEMA_Baseline");
    OrderAction signal = OA_IGNORE;
    enPrices DEMA_Price = DEMA_enum_price; 
    enFilterWhat DEMA_FilterOn = DEMA_enum_filter;
