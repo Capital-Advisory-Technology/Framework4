@@ -5,6 +5,10 @@
 #include <Tykee/database/DB.mqh>
 #include <Tykee/database/queries.mqh>
 
+static string entryFunctionList[];
+static string exitFunctionList[];
+static string confirmFunctionList[];
+
 /*
    BacktestInfo class to store all relevant information about backtest.
    Initialized once in OnInit(). Contains general information and all backtest 
@@ -12,7 +16,7 @@
 */
 class BacktestInfo {
 
- public: 
+ public:
       BacktestInfo::BacktestInfo(string cModelName, string cModelParams, bool cShouldExportData) {
          this.initialBalance = AccountBalance();
          this.modelName = cModelName;
@@ -68,9 +72,11 @@ class BacktestInfo {
              longTrades, shortTrades,
              consecutiveWins, consecutiveLosses,
              backtestLaunchTime, backtestDuration,
-             customSession.toJson(), inputJson
+             customSession.toJson(), inputJson,
+             stringListToJson(entryFunctionList), stringListToJson(exitFunctionList),
+             stringListToJson(confirmFunctionList)
          );
-         
+
          db.insertData(backtestSql);
          int backtestId = db.findBacktestId(backtestLaunchTime);
          
@@ -90,6 +96,15 @@ class BacktestInfo {
       
       void setCustomSessionObject(CustomSession* cCustomSession) {
          this.customSession = cCustomSession;
+      }
+
+       string stringListToJson(string &list[]) {
+         if (ArraySize(list) == 0) return "[]";
+         CJAVal json;
+         for (int i = 0;i < ArraySize(list); i++) {
+            json.Add(list[i]);
+         }
+         return json.Serialize();
       }
 
    private:
@@ -185,3 +200,31 @@ class BacktestInfo {
          shortsWon = NormalizeDouble(double(tempShortsWon) / shortTrades, 2);
       }
 };
+
+ void addToEntryFunctionList(string name) {
+   bool shouldAdd = true;   
+   for (int i = 0; i < ArraySize(entryFunctionList); i++) {
+      if (entryFunctionList[i] == name) return;
+   }
+
+   ArrayResize(entryFunctionList, ArraySize(entryFunctionList) + 1); 
+   entryFunctionList[ArraySize(entryFunctionList) - 1] = name;
+}
+
+ void addToExitFunctionList(string name) {
+   bool shouldAdd = true;   
+   for (int i = 0; i < ArraySize(exitFunctionList); i++) {
+      if (exitFunctionList[i] == name) return;
+   }
+   ArrayResize(exitFunctionList, ArraySize(exitFunctionList) + 1); 
+   exitFunctionList[ArraySize(exitFunctionList) - 1] = name;
+}
+
+ void addToConfirmationFunctionList(string name) {
+   bool shouldAdd = true;   
+   for (int i = 0; i < ArraySize(confirmFunctionList); i++) {
+      if (confirmFunctionList[i] == name) return;
+   }
+   ArrayResize(confirmFunctionList, ArraySize(confirmFunctionList) + 1); 
+   confirmFunctionList[ArraySize(confirmFunctionList) - 1] = name;
+}

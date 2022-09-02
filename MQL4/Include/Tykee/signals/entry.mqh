@@ -5,10 +5,12 @@
 
 #include <Tykee/common/enums.mqh>
 #include <Tykee/common/utils.mqh>
+#include <Tykee/main/backtest.mqh>
 
 // TE Crossover Entry (TESTED & MODIFIED)                           
 OrderAction TE_Simple(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_MaFilterPass, int TE_MaShift, double TE_Deviation, int TE_enum_price) 
   {
+  addToEntryFunctionList("TE_SIMPLE");
    OrderAction signal = OA_IGNORE;
    enPrices TE_Price = TE_enum_price;
 
@@ -26,6 +28,7 @@ OrderAction TE_Simple(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_MaFilterPas
 // TE Crossover Entry w/ Macro (TESTED & MODIFIED)                  
 OrderAction TE_Macro_Micro_Cross(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_MaFilterPass, int TE_MaShift, double TE_Deviation, int TE_enum_price, ENUM_TIMEFRAMES mTE_tf, int mTE_MaPeriod, int mTE_MaFilterPass, int mTE_MaShift, double mTE_Deviation, int mTE_enum_price) 
   {
+    addToEntryFunctionList("TE_Macro_Micro_Cross");
    OrderAction signal = OA_IGNORE;
    enPrices TE_Price = TE_enum_price;
    enPrices mTE_Price = mTE_enum_price;
@@ -49,6 +52,7 @@ OrderAction TE_Macro_Micro_Cross(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_
 //  BDSS Crossover Entry (TESTED & MODIFIED)                        
 OrderAction BDSS_Simple(int BDSS_SMMA_period, int BDSS_stochastic_period) 
   {
+    addToEntryFunctionList("BDSS_Simple");
    OrderAction signal = OA_IGNORE;
 
    double BDSS_Buy = iCustom(NULL, 0, "BDSS", BDSS_SMMA_period, BDSS_stochastic_period, 1, 1);
@@ -65,6 +69,7 @@ OrderAction BDSS_Simple(int BDSS_SMMA_period, int BDSS_stochastic_period)
 // Aroon Crossover Entry (TESTED & MODIFIED)                        
 OrderAction Aroon_Simple(int Aroon_period) 
   {
+    addToEntryFunctionList("Aroon_Simple");
    OrderAction signal = OA_IGNORE;
 
    double Aroon_Buy = iCustom(NULL, 0, "Aroon", Aroon_period, false, false, 0, 1);
@@ -80,6 +85,7 @@ OrderAction Aroon_Simple(int Aroon_period)
 // ABI Crossover Entry (TESTED & MODIFIED)                          
 OrderAction ABI_Simple(bool ABI_useRSI, double ABI_len, double ABI_Signal, double ABI_smooth, int ABI_enum_ma, int ABI_enum_price) 
   {
+    addToEntryFunctionList("ABI_Simple");
    OrderAction signal = OA_IGNORE;
    enMaTypes ABI_MaMethod = ABI_enum_ma; // MA type
    enPrices ABI_Price = ABI_enum_price; // Price
@@ -97,6 +103,7 @@ OrderAction ABI_Simple(bool ABI_useRSI, double ABI_len, double ABI_Signal, doubl
 // DEMA Crossover Entry (TESTED & MODIFIED)                         
 OrderAction DEMA_Simple(double DEMA_period, double DEMA_Filter, int DEMA_FilterPeriod, int DEMA_enum_price, int DEMA_enum_filter) 
   {
+    addToEntryFunctionList("DEMA_Simple");
    OrderAction signal = OA_IGNORE;
    enPrices DEMA_Price = DEMA_enum_price;
    enFilterWhat DEMA_FilterOn = DEMA_enum_filter;
@@ -112,6 +119,7 @@ OrderAction DEMA_Simple(double DEMA_period, double DEMA_Filter, int DEMA_FilterP
 // SSL Crossover Entry (TESTED & MODIFIED)                          
 OrderAction SSL_Simple(int SSL_Lb) 
   {
+    addToEntryFunctionList("SSL_Simple");
    OrderAction signal = OA_IGNORE;
 
    double SSL_Buy = iCustom(NULL, 0, "SSL_Channel", SSL_Lb, 1, 1);
@@ -128,6 +136,7 @@ OrderAction SSL_Simple(int SSL_Lb)
 // linear-reg Crossover Entry (TESTED & MODIFIED)                   
 OrderAction linear_reg_Simple(int lr_period, int lr_price, int lr_Shift) 
   {
+    addToEntryFunctionList("linear_reg_Simple");
    OrderAction signal = OA_IGNORE;
 
    double lr_Buy = iCustom(NULL, 0, "linear-regression", lr_period, lr_price, lr_Shift, 1, 1);
@@ -144,6 +153,7 @@ OrderAction linear_reg_Simple(int lr_period, int lr_price, int lr_Shift)
 // trend-flex2 Crossover Entry (TESTED & MODIFIED)                  
 OrderAction trendFlex2_Simple(int tf2_fast_period, int tf2_slow_period) 
   {
+    addToEntryFunctionList("trendFlex2_Simple");
    OrderAction signal = OA_IGNORE;
 
    double TrendFlex_Buy = iCustom(NULL, 0, "trend-flex2", tf2_fast_period, tf2_slow_period, 0, 1);
@@ -161,6 +171,7 @@ OrderAction trendFlex2_Simple(int tf2_fast_period, int tf2_slow_period)
 // Reflex Crossover Entry (TESTED & MODIFIED)
 OrderAction Reflex_Simple(int Reflex_Period) 
   {
+    addToEntryFunctionList("Reflex_Simple");
    OrderAction signal = OA_IGNORE;
 
    double reflex_Buy = iCustom(NULL, 0, "Reflex", Reflex_Period, 0, 1);
@@ -177,6 +188,7 @@ OrderAction Reflex_Simple(int Reflex_Period)
 // mega-trend Crossover Entry (TESTED & MODIFIED)
 OrderAction MegaTrend_Simple(int megatrend_period, int megatrend_method, int megatrend_price) 
   {
+   addToEntryFunctionList("MegaTrend_Simple");
    OrderAction signal = OA_IGNORE;
 
    double megatrend_Buy = iCustom(NULL, 0, "mega-trend", megatrend_period, megatrend_method, megatrend_price, 0, 1);

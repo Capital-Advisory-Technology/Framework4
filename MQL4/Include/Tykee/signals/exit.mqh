@@ -12,6 +12,7 @@
 // Relative Vigor Index (RVI) Crossover Exit                        
 OrderAction ExitRVI(int RVI_period)
   {
+    addToExitFunctionList("ExitRVI");
    OrderAction signal = OA_IGNORE;
 
    double RVIBuy = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,0,1);
