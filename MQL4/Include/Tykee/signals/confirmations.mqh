@@ -14,31 +14,25 @@
 // AMA Baseline check (TESTED & MODIFIED)                           
 OrderAction AMA_Simple_Baseline(int AMA_period, int AMA_nfast, int AMA_nslow, double AMA_g, double AMA_dK) 
   {
-  addToConfirmationFunctionList("AMA_Simple_Baseline");
+   addToConfirmationFunctionList("AMA_Simple_Baseline");
    OrderAction signal = OA_IGNORE;
-
    double AMA_baseline = iCustom(NULL, 0, "AMA", AMA_period, AMA_nfast, AMA_nslow, AMA_g, AMA_dK, 0, 1);
-
    if(CheckForLongBaseline(AMA_baseline)) signal = OA_OPEN_LONG;
    if(CheckForShortBaseline(AMA_baseline)) signal = OA_OPEN_SHORT;
-
    return signal;
   }
-
 // EMA Baseline check (TESTED & MODIFIED)                           
 OrderAction EMA_Baseline(double EMA_period, double EMA_set_price) 
   {
-    addToConfirmationFunctionList("EMA_Baseline");
+   addToConfirmationFunctionList("EMA_Baseline");
 
    OrderAction signal = OA_IGNORE;
    double EMA_baseline = iCustom(NULL, 0, "EMA", EMA_period, 0.0, 0, EMA_set_price, 0, 1);
-
    if(CheckForLongBaseline(EMA_baseline)) signal = OA_OPEN_LONG;
    if(CheckForShortBaseline(EMA_baseline)) signal = OA_OPEN_SHORT;
 
    return signal;
   }
-
 // DEMA Baseline check (TESTED & MODIFIED)                          
 OrderAction DEMA_Baseline(double DEMA_period, double DEMA_Filter, int DEMA_FilterPeriod, int DEMA_enum_price, int DEMA_enum_filter) 
   { 
@@ -46,7 +40,6 @@ OrderAction DEMA_Baseline(double DEMA_period, double DEMA_Filter, int DEMA_Filte
    OrderAction signal = OA_IGNORE;
    enPrices DEMA_Price = DEMA_enum_price; 
    enFilterWhat DEMA_FilterOn = DEMA_enum_filter;
-
    double DEMA_Baseline = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_Filter, DEMA_FilterPeriod, DEMA_FilterOn, 0, 1);
 
    if(CheckForLongBaseline(DEMA_Baseline)) signal = OA_OPEN_LONG;
@@ -55,7 +48,6 @@ OrderAction DEMA_Baseline(double DEMA_period, double DEMA_Filter, int DEMA_Filte
    return signal; 
   }
 
-//+------------------------------------------------------------------+
 // Trend Intensity 2 Baseline value check (TESTED & MODIFIED)
 OrderAction Trend_intensity2_Simple(int len, int TI2_price, ENUM_MA_METHOD ma_method, double high_level, double low_level) {
   addToConfirmationFunctionList("Trend_intensity2_Confirmation");
@@ -67,8 +59,8 @@ OrderAction Trend_intensity2_Simple(int len, int TI2_price, ENUM_MA_METHOD ma_me
    return signal;
 }
 
-// VIDYA Baseline check (TESTED & MODIFIED)                                         |
-OrderAction VIDYA_Baseline(int period, int histper) {
+// VIDYA Baseline check (TESTED & MODIFIED)                                         
+OrderAction VIDYA_Baseline(int period, int histper) { 
   addToConfirmationFunctionList("VIDYA_Baseline");
    OrderAction signal = OA_IGNORE;
    double VIDYA_Baseline = iCustom(NULL,0,"VIDYA",period,histper,0,1);
@@ -76,8 +68,9 @@ OrderAction VIDYA_Baseline(int period, int histper) {
    if(CheckForShortBaseline(VIDYA_Baseline)) signal = OA_OPEN_SHORT;
    return signal;
 }
-// Trend Lord Trend Confirmation (TESTED & MODIFIED)
-OrderAction Trend_Lord_Confirmation(int Trend_Lord_len, ENUM_MA_METHOD Trend_Lord_mode, ENUM_APPLIED_PRICE Trend_Lord_price)
+
+// Trend Lord Trend Confirmation (TESTED & MODIFIED) 
+OrderAction Trend_Lord_Confirmation(int Trend_Lord_len, ENUM_MA_METHOD Trend_Lord_mode, ENUM_APPLIED_PRICE Trend_Lord_price) 
   {
   addToConfirmationFunctionList("Trend_Lord_Confirmation");
   OrderAction signal = OA_IGNORE;
@@ -97,7 +90,7 @@ OrderAction Waddah_Confirmation(int WDH_sensetive, int WDH_deadZone, int WDH_exp
     double WaddahBuy = iCustom(NULL, 0, "Waddah", WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 0, 1);
     double WaddahSell = iCustom(NULL, 0, "Waddah", WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 1, 1);
     double WaddahBaseline = iCustom(NULL, 0, "Waddah", WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 2, 1);
-
+    
     if(WaddahBuy > WaddahBaseline) signal = OA_OPEN_LONG;
     if(WaddahSell > WaddahBaseline) signal = OA_OPEN_SHORT;
 
@@ -122,4 +115,3 @@ OrderAction RSI_Confirmation(int RSI_period)
     if(RSI_Line > 30 && RSI_Line < 70) signal = OA_CONFIRMED;
     return signal;
   }
-
