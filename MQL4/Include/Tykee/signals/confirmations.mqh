@@ -9,6 +9,7 @@
 #include <Tykee/common/enums.mqh>
 #include <Tykee/common/utils.mqh>
 #include <Tykee/signals/entry.mqh>
+#include <Tykee/main/backtest.mqh>
 
 // AMA Baseline check (TESTED & MODIFIED)                           
 OrderAction AMA_Simple_Baseline(int AMA_period, int AMA_nfast, int AMA_nslow, double AMA_g, double AMA_dK) 
