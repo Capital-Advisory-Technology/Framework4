@@ -17,14 +17,14 @@ bool ShortCrossOver(double buy, double sell, double buyPrev, double sellPrev)
    return sell > buy && buyPrev > sellPrev;
   }
 // Checks if the values are bullish
-bool CheckForLong(double buy, double sell, double buyPrev, double sellPrev)
+bool CheckForLong(double buy, double sell)
   {
-   return buy > sell && buyPrev > sellPrev;
+   return buy > sell;
   }
 // Checks if the values are bearish
-bool CheckForShort(double buy, double sell, double buyPrev, double sellPrev)
+bool CheckForShort(double buy, double sell)
   {
-   return sell > buy && sellPrev > buyPrev;
+   return sell > buy;
   }
 // Checks for long crossover if one of the values is NULL
 bool LongCrossOverNull(double buy, double sellPrev)
@@ -56,7 +56,6 @@ bool ShortCrossOverEmptyValue(double sell, double buyPrev)
   {
     return sell != EMPTY_VALUE && buyPrev != EMPTY_VALUE;
   }
-
 
 // Checks if the open price is above baseline
 bool CheckForLongBaseline(double baseline)

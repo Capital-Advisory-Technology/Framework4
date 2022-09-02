@@ -10,6 +10,7 @@ enum OrderAction
 {
    OA_OPEN_LONG,
    OA_OPEN_SHORT,
+   OA_CONFIRMED,
    OA_CLOSE,
    OA_IGNORE   
 };
