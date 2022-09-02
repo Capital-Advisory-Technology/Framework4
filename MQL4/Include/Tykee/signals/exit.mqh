@@ -8,6 +8,8 @@
 
 #include <Tykee/common/enums.mqh>
 #include <Tykee/common/utils.mqh>
+#include <Tykee/main/positionmanager.mqh>
+#include <Tykee/main/backtest.mqh>
 
 // Relative Vigor Index (RVI) Crossover Exit                        
 OrderAction ExitRVI(int RVI_period)

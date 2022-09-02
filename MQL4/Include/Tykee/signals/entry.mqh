@@ -43,8 +43,8 @@ OrderAction TE_Macro_Micro_Cross(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_
    double TE_Macro_BuyPrev = iCustom(NULL, mTE_tf, "trend-envelope", mTE_tf, mTE_MaPeriod, mTE_MaFilterPass, mTE_MaShift, mTE_Deviation, mTE_Price, 0, 2);
    double TE_Macro_SellPrev = iCustom(NULL, mTE_tf, "trend-envelope", mTE_tf, mTE_MaPeriod, mTE_MaFilterPass, mTE_MaShift, mTE_Deviation, mTE_Price, 1, 2);
 
-   if(LongCrossOver(TE_Buy,  TE_Sell,  TE_BuyPrev,  TE_SellPrev) && CheckForLong(TE_Macro_Buy,  TE_Macro_Sell,  TE_Macro_BuyPrev,  TE_Macro_SellPrev)) signal = OA_OPEN_LONG;
-   if(ShortCrossOver(TE_Buy,  TE_Sell,  TE_BuyPrev,  TE_SellPrev) && CheckForShort(TE_Macro_Buy,  TE_Macro_Sell,  TE_Macro_BuyPrev,  TE_Macro_SellPrev)) signal = OA_OPEN_SHORT;
+   if(LongCrossOver(TE_Buy,  TE_Sell,  TE_BuyPrev,  TE_SellPrev) && CheckForLong(TE_Macro_Buy,  TE_Macro_Sell)) signal = OA_OPEN_LONG;
+   if(ShortCrossOver(TE_Buy,  TE_Sell,  TE_BuyPrev,  TE_SellPrev) && CheckForShort(TE_Macro_Buy,  TE_Macro_Sell)) signal = OA_OPEN_SHORT;
 
    return signal;
   }
@@ -202,11 +202,7 @@ OrderAction MegaTrend_Simple(int megatrend_period, int megatrend_method, int meg
    return signal;
   }
 
-//+------------------------------------------------------------------+
-
-
 // Trend Flex Crossover Entry / Confirmation  (TESTED & MODIFIED)
-
 OrderAction trend_flex_Simple(int fast_period, int slow_period) {
     addToEntryFunctionList("trend_flex_Simple");
    OrderAction signal = OA_IGNORE;
@@ -218,7 +214,6 @@ OrderAction trend_flex_Simple(int fast_period, int slow_period) {
    if(ShortCrossOver(tf_Buy, tf_Sell, tf_BuyPrev, tf_SellPrev)) signal = OA_OPEN_SHORT;
    return signal;
 }
-
 // ZL MACD Crossover Entry / Confirmation
 OrderAction zl_macd_Simple(int fast_ema, int slow_ema, int signal_ema) {
    addToEntryFunctionList("zl_macd_Simple");
@@ -231,7 +226,7 @@ OrderAction zl_macd_Simple(int fast_ema, int slow_ema, int signal_ema) {
    if(ShortCrossOver(zl_Buy, zl_Sell, zl_BuyPrev, zl_SellPrev)) signal = OA_OPEN_SHORT;
    return signal;
 }
-//+------------------------------------------------------------------+
+
 enum enPrices
   {
    pr_close,       // Close

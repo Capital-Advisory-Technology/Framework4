@@ -199,7 +199,7 @@ class CustomSession {
          int hour = Hour();
          for (int i = 0; i < ArraySize(hourRanges); i++) {
             Range* range = hourRanges[i];
-            if (hour >= range.getBeginning() && hour < range.getEnd()) {
+            if (hour >= range.getBeginning() && hour <= range.getEnd()) {
                return true;
             }
          }
@@ -210,7 +210,7 @@ class CustomSession {
          int day = DayOfWeek();
          for (int i = 0; i < ArraySize(dayRanges); i++) {
             Range* range = dayRanges[i];
-            if (day >= range.getBeginning() && day < range.getEnd()) {
+            if (day >= range.getBeginning() && day <= range.getEnd()) {
                return true;
             }
          }
@@ -221,7 +221,7 @@ class CustomSession {
          int month = Month();
          for (int i = 0; i < ArraySize(monthRanges); i++) {
             Range* range = monthRanges[i];
-            if (month >= range.getBeginning() && month < range.getEnd()) {
+            if (month >= range.getBeginning() && month <= range.getEnd()) {
                return true;
             }
          }
