@@ -7,6 +7,8 @@
 #include <Tykee/common/logger.mqh>
 #include <Tykee/common/session.mqh>
 
+static int openPositionType;
+
 /*
    Position manager meant for controlling when we can open/close position. 
    This class should be initialized in EA's onInit() function. PositionManager is linked together
@@ -101,6 +103,7 @@ class PositionManager {
                ATR14
            );
 
+           openPositionType = positionType;
            customSession.onPositionOpened();
          } else {
            Logger::log("Select position error: " + string(GetLastError()));

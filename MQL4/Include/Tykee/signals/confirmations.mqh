@@ -78,6 +78,7 @@ OrderAction VIDYA_Baseline(int period, int histper) {
 // Trend Lord Trend Confirmation (TESTED & MODIFIED)
 OrderAction Trend_Lord_Confirmation(int Trend_Lord_len, ENUM_MA_METHOD Trend_Lord_mode, ENUM_APPLIED_PRICE Trend_Lord_price)
   {
+  addToConfirmationFunctionList("Trend_Lord_Confirmation");
   OrderAction signal = OA_IGNORE;
   double TrendLordBuy = iCustom(NULL, 0, "trend-lord",Trend_Lord_len,Trend_Lord_mode,Trend_Lord_price,0,1);
   double TrendLordSell = iCustom(NULL, 0, "trend-lord",Trend_Lord_len,Trend_Lord_mode,Trend_Lord_price,1,1);
@@ -90,6 +91,7 @@ OrderAction Trend_Lord_Confirmation(int Trend_Lord_len, ENUM_MA_METHOD Trend_Lor
 // Waddah Confirmation (TESTED & MODIFIED)
 OrderAction Waddah_Confirmation(int WDH_sensetive, int WDH_deadZone, int WDH_explosionPower, int WDH_trendPower)
   {
+    addToConfirmationFunctionList("Waddah_Confirmation");
     OrderAction signal = OA_IGNORE;
     double WaddahBuy = iCustom(NULL, 0, "Waddah", WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 0, 1);
     double WaddahSell = iCustom(NULL, 0, "Waddah", WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 1, 1);
@@ -103,6 +105,7 @@ OrderAction Waddah_Confirmation(int WDH_sensetive, int WDH_deadZone, int WDH_exp
 // Low-Pass-Filter Baseline (TESTED & MODIFIED)
 OrderAction Low_Pass_Filter_Baseline(int LPF_price, int LPF_order, int LPF_filterPeriod, int LPF_PreSmooth, int LPF_PreSmoothMode, double LPF_PctFilter)
   {
+    addToConfirmationFunctionList("Low_Pass_Filter_Baseline");
     OrderAction signal = OA_IGNORE;
     double LowPassBaseline = iCustom(NULL, 0, "low-pass-filter", LPF_price,LPF_order,LPF_filterPeriod,LPF_PreSmooth,LPF_PreSmoothMode,LPF_PctFilter, 0, 1);
     if(CheckForLongBaseline(LowPassBaseline)) signal = OA_OPEN_LONG;
@@ -112,6 +115,7 @@ OrderAction Low_Pass_Filter_Baseline(int LPF_price, int LPF_order, int LPF_filte
 // RSI Confirmation (70 & 30 lvl's) (TESTED & MODIFIED) (OA_CONFIRMED)
 OrderAction RSI_Confirmation(int RSI_period)
   {
+    addToConfirmationFunctionList("RSI_Confirmation");
     OrderAction signal = OA_IGNORE;
     double RSI_Line = iCustom(NULL, 0, "RSI", RSI_period, 0, 1);
     if(RSI_Line > 30 && RSI_Line < 70) signal = OA_CONFIRMED;

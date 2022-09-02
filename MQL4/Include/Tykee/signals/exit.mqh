@@ -20,6 +20,8 @@ OrderAction ExitRVI(int RVI_period)
    double RVIBuyPrev = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,0,2);
    double RVISellPrev = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,1,2);
 
+   Print("CHECK OPEN POSITIUON TYPE " + openPositionType);
+
    if(LongCrossOver(RVIBuy, RVISell, RVIBuyPrev, RVISellPrev))
      {
       signal = OA_CLOSE;
