@@ -197,8 +197,8 @@ class BacktestInfo {
                shortTrades++;
             }
          }
-         longsWon = NormalizeDouble(double(tempLongsWon) / longTrades, 2);
-         shortsWon = NormalizeDouble(double(tempShortsWon) / shortTrades, 2);
+         longsWon = NormalizeDouble(double(tempLongsWon) / longTrades * 100, 2);
+         shortsWon = NormalizeDouble(double(tempShortsWon) / shortTrades * 100, 2);
       }
 };
 
