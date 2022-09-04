@@ -43,6 +43,7 @@ class BacktestInfo {
       };
       
       void exportBacktestData() {
+         if (!shouldExportData) return;
          int backtestDuration = db.getDateTime() - backtestLaunchTime;
          doCalculations();
          Logger::log("Model name: " + modelName);
