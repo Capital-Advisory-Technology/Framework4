@@ -4,6 +4,7 @@
 #include <Tykee/common/session.mqh>
 #include <Tykee/database/DB.mqh>
 #include <Tykee/database/queries.mqh>
+#include <Tykee/common/extensions.mqh>
 
 static string entryFunctionList[];
 static string exitFunctionList[];
@@ -75,14 +76,13 @@ class BacktestInfo {
              backtestLaunchTime, backtestDuration,
              customSession.toJson(), inputJson,
              stringListToJson(entryFunctionList), stringListToJson(exitFunctionList),
-             stringListToJson(confirmFunctionList)
+             stringListToJson(confirmFunctionList), AccountCurrency()
          );
 
          db.insertData(backtestSql);
          int backtestId = db.findBacktestId(backtestLaunchTime);
-         
          for (int i = 0; i < ArraySize(positions); i++) {
-            positions[i].exportToDatabase(db, backtestId);
+            db.insertData(positions[i].getSql(backtestId));
          }
       }
       
@@ -97,15 +97,6 @@ class BacktestInfo {
       
       void setCustomSessionObject(CustomSession* cCustomSession) {
          this.customSession = cCustomSession;
-      }
-
-       string stringListToJson(string &list[]) {
-         if (ArraySize(list) == 0) return "[]";
-         CJAVal json;
-         for (int i = 0;i < ArraySize(list); i++) {
-            json.Add(list[i]);
-         }
-         return json.Serialize();
       }
 
    private:
@@ -181,6 +172,44 @@ class BacktestInfo {
          profitFactor = NormalizeDouble(MathAbs(grossProfit / grossLoss), 2);
       }
       
+      string toJson(int backtestId, int backtestDuration) {
+         CJAVal json;
+         CJAVal backtestObject;
+         backtestObject["symbol_id"] = symbolId;
+         backtestObject["period"] = period;
+         backtestObject["initial_balance"] = initialBalance;
+         backtestObject["profit"] = profit;
+         backtestObject["profit_factor"] = profitFactor;
+         backtestObject["consecutive_drawdown"] = consecutiveDrawdown;
+         backtestObject["longs_won"] = longsWon;
+         backtestObject["short_won"] = shortsWon;
+         backtestObject["date_from"] = dateFrom;
+         backtestObject["date_to"] = dateTo;
+         backtestObject["total_trades"] = totalTrades;
+         backtestObject["long_trades"] = longTrades;
+         backtestObject["short_trades"] = shortTrades;
+         backtestObject["consecutive_wins"] = consecutiveWins;
+         backtestObject["consecutive_losses"] = consecutiveLosses;
+         backtestObject["backtest_launch_time"] = backtestLaunchTime;
+         backtestObject["backtest_duration"] = backtestDuration;
+         backtestObject["custom_session"] = customSession.toJson();
+         backtestObject["input_json"] = inputJson;
+         backtestObject["entry_list"] = stringListToJson(entryFunctionList);
+         backtestObject["exit_list"] = stringListToJson(exitFunctionList);
+         backtestObject["confirmation_list"] = stringListToJson(confirmFunctionList);
+         backtestObject["account_currency"] = AccountCurrency();
+         CJAVal positionObject;
+         for (int i = 0; i < 5; i++) {
+            positionObject.Add(positions[i].toJson(backtestId));
+         }
+         
+         json["backtest_info"] = backtestObject;
+         json["strategy_name"] = modelName;
+         json["positions"] = positionObject;
+         Print(filterJson(json.Serialize()));
+         return json.Serialize(); 
+      }
+
       void setTradeOveralls(int positionAmount) {
          int tempLongsWon = 0;
          int tempShortsWon = 0;

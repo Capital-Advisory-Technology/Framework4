@@ -1,6 +1,7 @@
 #include <Tykee/common/enums.mqh>
 #include <Tykee/common/logger.mqh>
 #include <Tykee/database/DB.mqh>
+#include <libs/JAson.mqh>
 
 /*
    Position "Data class". Just to hold state of position.
@@ -102,22 +103,51 @@ class Position {
       };
       
       
-      void exportToDatabase(Database* db, int backtestId) {
-         string positionSql = setPositionQuery(
+      string getSql(int backtestId) {
+         return setPositionQuery(
                  backtestId, number,
                  openTime, closeTime,
                  grossProfit, netProfit,
-                 positionType,
-                 balance,lotSize,
-                 openPrice,closePrice,
-                 slPrice,tpPrice,
-                 commission, swap,
-                 SMA200,EMA200,
-                 SMA65,EMA65,
-                 RSI14, ATR14,
-                 breakEvenFlag,closeType
+                 positionType,balance,
+                 lotSize,openPrice,
+                 closePrice,slPrice,
+                 tpPrice,commission,
+                 swap,SMA200,
+                 EMA200,SMA65,
+                 EMA65,RSI14, 
+                 ATR14,breakEvenFlag,
+                 closeType
               );
-          db.insertData(positionSql);   
+      }
+      
+      string toJson(int backtestId) {
+         CJAVal json;
+         
+         json["backtest_id"] = backtestId;
+         json["number"] = number;
+         json["open_time"] = openTime;
+         json["close_time"] = closeTime;
+         json["grossProfit"] = grossProfit;
+         json["netProfit"] = netProfit;
+         json["positionType"] = positionType;
+         json["balance"] = balance;
+         json["lotSize"] = lotSize;
+         json["openPrice"] = openPrice;
+         json["closePrice"] = closePrice;
+         json["slPrice"] = slPrice;
+         json["tpPrice"] = tpPrice;
+         json["commission"] = commission;
+         json["swap"] = swap;
+         json["SMA200"] = SMA200;
+         json["EMA200"] = EMA200;
+         json["SMA65"] = SMA65;
+         json["EMA65"] = EMA65;
+         json["RSI14"] = RSI14;
+         json["ATR14"] = ATR14;
+         json["breakEvenFlag"] = breakEvenFlag;
+         json["closeType"] = closeType;
+         
+         return json.Serialize();
       }
       
       void setBreakEvenFlag(bool positive) {
