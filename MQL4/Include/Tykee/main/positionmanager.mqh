@@ -85,6 +85,7 @@ class PositionManager {
                 EMA65 = iMA(Symbol(), Period(), 65, 0, MODE_EMA, PRICE_CLOSE, 1);
                 RSI14 = iRSI(Symbol(), Period(), 14, PRICE_CLOSE, 1);
                 ATR14 = iATR(Symbol(), Period(), 14, 1);
+                ATR14 = iCustom(NULL, Period(), "Adaptive_ATR", 14, 0, 1); 
             }
             
             openPosition = new Position(

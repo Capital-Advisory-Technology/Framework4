@@ -40,12 +40,12 @@ string setBacktestDataQuery(
    int backtestLaunchTime, int backtestDuration,
    string customSessionJson, string inputs,
    string entryFunctionList, string exitFunctionList,
-   string confirmationFunctionList
+   string confirmationFunctionList, string currency
 ){
       string base = "";
       StringAdd(base,"INSERT INTO backtests ");
       StringAdd(base,"(symbol_id, strategy_id, period, balance, profit, profit_factor, drawdown, longs_won, shorts_won, date_from, date_to, total_trades,long_trades,short_trades, consecutive_wins, consecutive_losses, backtest_launch_time, backtest_duration, session_limits, inputs, entry_list, exit_list, confirmation_list) ");
-      StringAdd(base,StringFormat("VALUES (%d, %d, %d, %f, %f,  %f,  %f,  %f,  %f, %d, %d, %d, %d, %d, %d, %d, %d, %d, '%s', '%s', '%s', '%s', '%s')", symbolId, strategyId, period, balance, profit, profitFactor, consecutiveDrawdown, longsWon, shortsWon, dateFrom, dateTo, totalTrades, longTrades, shortTrades, consecutiveWins, consecutiveLosses, backtestLaunchTime, backtestDuration, customSessionJson, inputs, entryFunctionList, exitFunctionList, confirmationFunctionList));
+      StringAdd(base,StringFormat("VALUES (%d, %d, %d, %f, %f,  %f,  %f,  %f,  %f, %d, %d, %d, %d, %d, %d, %d, %d, %d, '%s', '%s', '%s', '%s', '%s', '%s')", symbolId, strategyId, period, balance, profit, profitFactor, consecutiveDrawdown, longsWon, shortsWon, dateFrom, dateTo, totalTrades, longTrades, shortTrades, consecutiveWins, consecutiveLosses, backtestLaunchTime, backtestDuration, customSessionJson, inputs, entryFunctionList, exitFunctionList, confirmationFunctionList, currency));
       return base;
  }
  
