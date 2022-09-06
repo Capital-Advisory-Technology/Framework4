@@ -197,6 +197,7 @@ class BacktestInfo {
          backtestObject["entry_list"] = stringListToJson(entryFunctionList);
          backtestObject["exit_list"] = stringListToJson(exitFunctionList);
          backtestObject["confirmation_list"] = stringListToJson(confirmFunctionList);
+         backtestObject["account_currency"] = AccountCurrency();
          CJAVal positionObject;
          for (int i = 0; i < 5; i++) {
             positionObject.Add(positions[i].toJson(backtestId));
