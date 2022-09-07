@@ -24,11 +24,11 @@ double CalculateLotSize(double risk, int stopLoss)
 //+------------------------------------------------------------------+
 //| Calculates StopLoss or TakeProfit                                |
 //+------------------------------------------------------------------+
-int CalculateSL(double stopLossRatio, bool fixed) {
+int CalculateSL(double stopLossRatio, int ATRPeriod, bool fixed) {
   int stopLoss;
   if(fixed) stopLoss = (int)MathRound(stopLossRatio);
   else {
-    double atr=iCustom(NULL, Period(), "Adaptive_ATR", 0, 1); 
+    double atr = iCustom(NULL, Period(), "Adaptive_ATR", ATRPeriod, 0, 1); 
     stopLoss = (int)(atr / Point * stopLossRatio);
   }
 
