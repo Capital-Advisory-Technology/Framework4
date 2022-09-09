@@ -26,6 +26,7 @@ class PositionManager {
       double riskPerTrade;
       double SLRatio;
       double TPRatio;
+      int ATRPeriod;
       int slippage;
       double breakEven;
       bool fixedSLTP;
@@ -34,11 +35,12 @@ class PositionManager {
       CustomSession* customSession;
      
    public:
-      PositionManager::PositionManager(BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
+      PositionManager::PositionManager(BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
         this.backtestInfo = cBacktestInfo;
         this.riskPerTrade = cRiskPerTrade;
         this.SLRatio = cSLRatio;
         this.TPRatio = cTPRatio;
+        this.ATRPeriod = cATRPeriod;
         this.slippage = cSlippage;
         this.openPosition = NULL;
         this.breakEven = cBreakEven;
@@ -61,7 +63,7 @@ class PositionManager {
    void openOrder(int positionType) {
       if (!customSession.allowToOpen()) return;
       // Calculate values for order
-      int stopLoss = CalculateSL(SLRatio, fixedSLTP);
+      int stopLoss = CalculateSL(SLRatio, ATRPeriod, fixedSLTP);
       int takeProfit = CalculateTP(TPRatio, fixedSLTP);
       double lotSize = CalculateLotSize(riskPerTrade, stopLoss);
       double slPrice = GetSLprice(stopLoss, positionType);
@@ -84,8 +86,7 @@ class PositionManager {
                 SMA65 = iMA(Symbol(), Period(), 65, 0, MODE_SMA, PRICE_CLOSE, 1);
                 EMA65 = iMA(Symbol(), Period(), 65, 0, MODE_EMA, PRICE_CLOSE, 1);
                 RSI14 = iRSI(Symbol(), Period(), 14, PRICE_CLOSE, 1);
-                ATR14 = iATR(Symbol(), Period(), 14, 1);
-                ATR14 = iCustom(NULL, Period(), "Adaptive_ATR", 14, 0, 1); 
+                ATR14 = iCustom(NULL, Period(), "Adaptive_ATR", this.ATRPeriod, 0, 1); 
             }
             
             openPosition = new Position(

@@ -16,7 +16,7 @@ bool CheckForBreakEven(double breakeven) {
       double osl = NormalizeDouble(OrderStopLoss(), Digits);
       double otp = NormalizeDouble(OrderTakeProfit(), Digits);
       //--- Skip if the Open Order has stopLossPrice = openPrice or stopLoss in range openPrice +- 10 points
-      if (oop == osl || (oop + (10 *Point) > osl && oop - (10 *Point) < osl)) {
+      if (oop == osl || (oop + (10 * Point) > osl && oop - (10 * Point) < osl)) {
          return false;
       } else {
          double high = iHigh(OrderSymbol(), PERIOD_CURRENT,1);   
@@ -28,14 +28,14 @@ bool CheckForBreakEven(double breakeven) {
             breakEvenPrice = NormalizeDouble(((otp - oop) * breakeven + oop), Digits);
             if (Bid >= breakEvenPrice || high >= breakEvenPrice) {
                orderModify = OrderModify(oticket, oop, oop, otp, 0, clrOrange);
-               if (!orderModify) Logger::log("Error in OrderModify. Error code = " + IntegerToString(GetLastError())); return false;
+               // if (!orderModify) Logger::log("Error in OrderModify. Error code = " + IntegerToString(GetLastError())); return false;
                return true;
             } else return false;
          } else {
             breakEvenPrice = NormalizeDouble((oop - (oop - otp) * breakeven), Digits);
             if (Ask <= breakEvenPrice || low <= breakEvenPrice) {
                orderModify = OrderModify(oticket, oop, oop, otp, 0, clrOrange);
-               if (!orderModify) Logger::log("Error in OrderModify. Error code = " +  IntegerToString(GetLastError())); return false;
+               // if (!orderModify) Logger::log("Error in OrderModify. Error code = " +  IntegerToString(GetLastError())); return false;
                return true;
             } else return false;
          }      
