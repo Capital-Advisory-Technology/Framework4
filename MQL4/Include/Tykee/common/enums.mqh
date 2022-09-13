@@ -15,6 +15,13 @@ enum OrderAction
    OA_IGNORE   
 };
 
+enum AllowedOrder 
+{
+   OPEN_LONG,
+   OPEN_SHORT,
+   OPEN_BOTH 
+};
+
 enum ExternalNames 
 {
    RISK_PER_TRADE,
@@ -37,5 +44,3 @@ enum CloseType
    MANUAL_CLOSE = 0,
    AUTOMATIC_CLOSE = 1
 };
-
-
