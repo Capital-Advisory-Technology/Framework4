@@ -99,6 +99,7 @@ class CustomSession {
           && isCustomSessionMinute
           && isCustomSessionMonth;
          
+
          switch (Period()) {
             case PERIOD_M1:
                return minuteExpression && !isPositionLimitExceeded;
@@ -183,15 +184,21 @@ class CustomSession {
       bool isInSession(Range* &rangeList[], int compareTo, int positionType) {
          for (int i = 0; i < ArraySize(rangeList); i++) {
             Range* range = rangeList[i];
-
+            bool isSupportedOrderType = true;
+            
             switch (range.getAllowedOrder()) {
                case OPEN_LONG:
-                  if (positionType != OP_BUY) continue;
+                  if (positionType != OP_BUY) isSupportedOrderType = false;
+                  break;
                case OPEN_SHORT:
-                  if (positionType != OP_SELL) continue;                  
+                  if (positionType != OP_SELL) isSupportedOrderType = false;
+                  break;
+               case OPEN_BOTH:
+                  NULL;
             }
+            if (!isSupportedOrderType) continue;
 
-            if (compareTo >= range.getBeginning() && compareTo < range.getEnd()) {
+            if (compareTo >= range.getBeginning() && compareTo <= range.getEnd()) {
                return true;
             }
          }

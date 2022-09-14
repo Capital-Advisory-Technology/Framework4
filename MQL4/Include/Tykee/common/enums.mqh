@@ -17,9 +17,9 @@ enum OrderAction
 
 enum AllowedOrder 
 {
-   OPEN_LONG,
-   OPEN_SHORT,
-   OPEN_BOTH 
+   OPEN_LONG = 0,
+   OPEN_SHORT = 1,
+   OPEN_BOTH = 2 
 };
 
 enum ExternalNames 
