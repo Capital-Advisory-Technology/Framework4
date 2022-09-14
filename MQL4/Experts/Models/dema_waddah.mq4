@@ -27,7 +27,7 @@ extern bool useExit = true;
 extern double riskPerTrade = 1.0;
 extern double SLRatio = 1.5;
 extern double TPRatio = 3.0;
-extern int ATRPeriod = 14;
+extern int ATR_Period = 14;
 extern bool fixedSLTP = false;
 extern int slippage = 3;
 extern double breakEven = 0.5; 
@@ -66,6 +66,7 @@ int OnInit() {
    inputJson[EnumToString(FIXED_SLTP)] = fixedSLTP;
    inputJson[EnumToString(SLIPPAGE)] = slippage;
    inputJson[EnumToString(BREAK_EVEN)] = breakEven;
+   inputJson["ATR_Period"] = ATR_Period;
    inputJson["DEMA_Period"] = DEMA_Period;
    inputJson["DEMA_filter"] = DEMA_filter;
    inputJson["DEMA_FilterPeriod"] = DEMA_FilterPeriod;
@@ -77,7 +78,7 @@ int OnInit() {
    inputJson["WDH_trendPower"] = WDH_trendPower;
    
    backtestInfo = new BacktestInfo(__FILE__, inputJson.Serialize(), exportData);
-   positionManager = new PositionManager(backtestInfo, customSession, SLRatio, TPRatio, ATRPeriod, riskPerTrade, slippage, breakEven, fixedSLTP);
+   positionManager = new PositionManager(backtestInfo, customSession, SLRatio, TPRatio, ATR_Period, riskPerTrade, slippage, breakEven, fixedSLTP);
    
    return(INIT_SUCCEEDED);
 }
