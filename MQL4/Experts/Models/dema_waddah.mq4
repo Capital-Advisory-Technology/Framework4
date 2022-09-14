@@ -20,7 +20,7 @@
 
 // Backtest controls
 bool exportData = true; // If true, backtest data will be exported to DB
-bool printLogs = false; // If true, all logs added via custom logger will be visible in journal
+bool printLogs = true; // If true, all logs added via custom logger will be visible in journal
 extern bool useExit = true;
 
 // Backtest's externals for optimization
@@ -53,11 +53,22 @@ int OnInit() {
    Logger::isDebug = printLogs;
 
    customSession = new CustomSession();
-   customSession.addMonthRange(1, 12);
-   customSession.addDayOfWeekRange(1, 7); 
-   customSession.addHourRange(2, 22);
-   customSession.addMinuteRange(0, 59);
-   customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
+   customSession.addMinuteRange(0, 59, OPEN_BOTH); // Min 0, Max 59
+   
+   customSession.addHourRange(2, 5, OPEN_LONG); // Min 0, Max 23
+   customSession.addHourRange(4, 4, OPEN_SHORT);
+   customSession.addHourRange(7, 8, OPEN_SHORT);
+   customSession.addHourRange(9, 12, OPEN_LONG);
+   customSession.addHourRange(10, 13, OPEN_SHORT);
+   customSession.addHourRange(15, 17, OPEN_SHORT);
+   customSession.addHourRange(18, 22, OPEN_BOTH);
+   
+   customSession.addDayOfWeekRange(1, 1, OPEN_BOTH); // Min 1, Max 7
+   customSession.addDayOfWeekRange(2, 2, OPEN_LONG); // Min 1, Max 7
+   customSession.addDayOfWeekRange(3, 5, OPEN_BOTH); // Min 1, Max 7
+   
+   customSession.addMonthRange(1, 12, OPEN_BOTH); // Min 1, Max 12
+   customSession.setPositionLimit(100, PERIOD_D1); // Support only H1, D1 and MN1
    
    CJAVal inputJson;     
    inputJson[EnumToString(RISK_PER_TRADE)] = riskPerTrade;
@@ -96,7 +107,7 @@ void OnTick(){
    
    switch(positionManager.getStatus()) {
     case AVAILABLE_TO_OPEN: {
-      OrderAction action = DEMA_Simple(DEMA_Period, DEMA_filter, DEMA_FilterPeriod, DEMA_enum_price, DEMA_enum_filter);
+      OrderAction action = DEMA_Simple(DEMA_Period, DEMA_enum_price, DEMA_filter, DEMA_FilterPeriod, DEMA_enum_filter);
       OrderAction confirm = Waddah_Confirmation(WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower);
       if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT){
          positionManager.openOrder(OP_SELL);
