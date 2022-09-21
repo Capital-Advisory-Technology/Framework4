@@ -61,10 +61,6 @@ class PositionManager {
       positions at once.
    */
    void openOrder(int positionType) {
-      if (!customSession.allowToOpen(positionType)) {
-        // Print("Allow to open is false " + positionType);
-      }
-      
       if (!customSession.allowToOpen(positionType)) return;
       // Calculate values for order
       int stopLoss = CalculateSL(SLRatio, ATRPeriod, fixedSLTP);
