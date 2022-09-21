@@ -93,19 +93,12 @@ class CustomSession {
          bool isCustomSessionDayOfWeek = isInSession(dayRanges, DayOfWeek(), positionType);
          bool isCustomSessionMonth = isInSession(monthRanges, Month(), positionType);
          
-     
-
          bool hourExpression = isCustomSessionDayOfWeek && isCustomSessionHour && isCustomSessionMonth;
          bool minuteExpression = isCustomSessionDayOfWeek
           && isCustomSessionHour
           && isCustomSessionMinute
           && isCustomSessionMonth;
-          
-         Print("----------------------" + (isCustomSessionMonth && !isPositionLimitExceeded) + "-------------------------------------");
-//          
-//          Print("Minute " + minuteExpression + " Hour " + hourExpression + " Day "
-//           + (isCustomSessionDayOfWeek && isCustomSessionMonth && !isPositionLimitExceeded) + " Month " + (isCustomSessionMonth && !isPositionLimitExceeded));
-//         
+           
          switch (Period()) {
             case PERIOD_M1:
                return minuteExpression && !isPositionLimitExceeded;
@@ -190,39 +183,27 @@ class CustomSession {
       }
       
       bool isInSession(Range* &rangeList[], int compareTo, int positionType) {
-         Print("Check Is in session");
          for (int i = 0; i < ArraySize(rangeList); i++) {
-            
-            Print("Range index: " + i);
             Range* range = rangeList[i];
             bool isSupportedOrderType = true;
             
             switch (range.getAllowedOrder()) {
                case OPEN_LONG:
-                  Print("Open long case: " + positionType + " " + OP_BUY);
                   if (positionType != OP_BUY) isSupportedOrderType = false;
                   break;
                case OPEN_SHORT:
-                  Print("Open short case: " + positionType + " " + OP_SELL);
                   if (positionType != OP_SELL) isSupportedOrderType = false;
                   break;
                case OPEN_BOTH:
-                  Print("Oen both case");
                   NULL;
             }
             
             if (!isSupportedOrderType) continue;
             
-            Print("Allow to continue");
-
             if (compareTo >= range.getBeginning() && compareTo <= range.getEnd()) {
-               Print("Found match");
-               Print(" ");
                return true;
             }
          }
-          Print("Did not find match");
-          Print(" ");
          return false;
       }
       

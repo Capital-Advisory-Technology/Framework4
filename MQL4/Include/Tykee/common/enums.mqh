@@ -22,17 +22,6 @@ enum AllowedOrder
    OPEN_BOTH = 2 
 };
 
-enum ExternalNames 
-{
-   RISK_PER_TRADE,
-   SL_RATIO,
-   TP_RATIO,
-   FIXED_SLTP,
-   SLIPPAGE,
-   BREAK_EVEN,
-   USE_EXIT
-};
-
 enum PositionStatus 
 {
    AVAILABLE_TO_OPEN,

@@ -20,14 +20,14 @@
 
 // Backtest controls
 bool exportData = true; // If true, backtest data will be exported to DB
-bool printLogs = true; // If true, all logs added via custom logger will be visible in journal
-extern bool useExit = true;
+bool printLogs = false; // If true, all logs added via custom logger will be visible in journal
+extern bool useExit = false;
 
 // Backtest's externals for optimization
 extern double riskPerTrade = 1.0;
 extern double SLRatio = 1.5;
 extern double TPRatio = 3.0;
-extern int ATRPeriod = 14;
+extern int ATR_Period = 14;
 extern bool fixedSLTP = false;
 extern int slippage = 3;
 extern double breakEven = 0.5; 
@@ -54,29 +54,19 @@ int OnInit() {
 
    customSession = new CustomSession();
    customSession.addMinuteRange(0, 59, OPEN_BOTH); // Min 0, Max 59
-   
-   customSession.addHourRange(2, 5, OPEN_LONG); // Min 0, Max 23
-   customSession.addHourRange(4, 4, OPEN_SHORT);
-   customSession.addHourRange(7, 8, OPEN_SHORT);
-   customSession.addHourRange(9, 12, OPEN_LONG);
-   customSession.addHourRange(10, 13, OPEN_SHORT);
-   customSession.addHourRange(15, 17, OPEN_SHORT);
-   customSession.addHourRange(18, 22, OPEN_BOTH);
-   
-   customSession.addDayOfWeekRange(1, 1, OPEN_BOTH); // Min 1, Max 7
-   customSession.addDayOfWeekRange(2, 2, OPEN_LONG); // Min 1, Max 7
-   customSession.addDayOfWeekRange(3, 5, OPEN_BOTH); // Min 1, Max 7
-   
+   customSession.addHourRange(2, 22, OPEN_BOTH); // Min 0, Max 23
+   customSession.addDayOfWeekRange(1, 7, OPEN_BOTH); // Min 1, Max 7
    customSession.addMonthRange(1, 12, OPEN_BOTH); // Min 1, Max 12
-   customSession.setPositionLimit(100, PERIOD_D1); // Support only H1, D1 and MN1
+   customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
    
    CJAVal inputJson;     
-   inputJson[EnumToString(RISK_PER_TRADE)] = riskPerTrade;
-   inputJson[EnumToString(SL_RATIO)] = SLRatio;
-   inputJson[EnumToString(TP_RATIO)] = TPRatio;
-   inputJson[EnumToString(FIXED_SLTP)] = fixedSLTP;
-   inputJson[EnumToString(SLIPPAGE)] = slippage;
-   inputJson[EnumToString(BREAK_EVEN)] = breakEven;
+   inputJson["RISK_PER_TRADE"] = riskPerTrade;
+   inputJson["SL_RATIO"] = SLRatio;
+   inputJson["TP_RATIO"] = TPRatio;
+   inputJson["FIXED_SLTP"] = fixedSLTP;
+   inputJson["SLIPPAGE"] = slippage;
+   inputJson["BREAK_EVEN"] = breakEven;
+   inputJson["ATR_Period"] = ATR_Period;
    inputJson["DEMA_Period"] = DEMA_Period;
    inputJson["DEMA_filter"] = DEMA_filter;
    inputJson["DEMA_FilterPeriod"] = DEMA_FilterPeriod;
@@ -88,7 +78,7 @@ int OnInit() {
    inputJson["WDH_trendPower"] = WDH_trendPower;
    
    backtestInfo = new BacktestInfo(__FILE__, inputJson.Serialize(), exportData);
-   positionManager = new PositionManager(backtestInfo, customSession, SLRatio, TPRatio, ATRPeriod, riskPerTrade, slippage, breakEven, fixedSLTP);
+   positionManager = new PositionManager(backtestInfo, customSession, SLRatio, TPRatio, ATR_Period, riskPerTrade, slippage, breakEven, fixedSLTP);
    
    return(INIT_SUCCEEDED);
 }
