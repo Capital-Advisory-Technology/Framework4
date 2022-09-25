@@ -15,15 +15,11 @@ enum OrderAction
    OA_IGNORE   
 };
 
-enum ExternalNames 
+enum AllowedOrder 
 {
-   RISK_PER_TRADE,
-   SL_RATIO,
-   TP_RATIO,
-   FIXED_SLTP,
-   SLIPPAGE,
-   BREAK_EVEN,
-   USE_EXIT
+   OPEN_LONG = 0,
+   OPEN_SHORT = 1,
+   OPEN_BOTH = 2 
 };
 
 enum PositionStatus 
@@ -37,5 +33,3 @@ enum CloseType
    MANUAL_CLOSE = 0,
    AUTOMATIC_CLOSE = 1
 };
-
-

@@ -1,4 +1,5 @@
 #include <Tykee/common/logger.mqh>
+#include <Tykee/common/enums.mqh>
 #include <libs/JAson.mqh>
 
 int TokyoOpen = 2;
@@ -15,11 +16,13 @@ class Range {
  private:
    int beginning;
    int end;
+   AllowedOrder allowedOrder;
 
  public:
-      Range::Range(int beginning, int end) {
+      Range::Range(int beginning, int end, AllowedOrder allowedOrder) {
          this.beginning = beginning;
          this.end = end;
+         this.allowedOrder = allowedOrder;
       }
       
       int getBeginning() {
@@ -29,6 +32,10 @@ class Range {
       int getEnd() {
          return end;
       }
+      
+      AllowedOrder getAllowedOrder() {
+         return allowedOrder;
+      }
 };
 
 class CustomSession {
@@ -37,27 +44,27 @@ class CustomSession {
       CustomSession::CustomSession() {
          positionsInPeriod = 0;
          limitPeriod = PERIOD_MN1;
-         allowToOpen();
+         allowToOpen(0);
       }
         
-      void addMinuteRange(int beginning, int end) {
+      void addMinuteRange(int beginning, int end, AllowedOrder allowedOrder) {
          ArrayResize(minuteRanges, ArraySize(minuteRanges) + 1); 
-         minuteRanges[ArraySize(minuteRanges) - 1] = new Range(beginning, end);
+         minuteRanges[ArraySize(minuteRanges) - 1] = new Range(beginning, end, allowedOrder);
       }
       
-      void addHourRange(int beginning, int end) {
+      void addHourRange(int beginning, int end, AllowedOrder allowedOrder) {
          ArrayResize(hourRanges, ArraySize(hourRanges) + 1); 
-         hourRanges[ArraySize(hourRanges) - 1] = new Range(beginning, end);
+         hourRanges[ArraySize(hourRanges) - 1] = new Range(beginning, end, allowedOrder);
       }
       
-      void addDayOfWeekRange(int beginning, int end) {
+      void addDayOfWeekRange(int beginning, int end, AllowedOrder allowedOrder) {
          ArrayResize(dayRanges, ArraySize(dayRanges) + 1); 
-         dayRanges[ArraySize(dayRanges) - 1] = new Range(beginning, end);
+         dayRanges[ArraySize(dayRanges) - 1] = new Range(beginning, end, allowedOrder);
       }
       
-      void addMonthRange(int beginning, int end) {
+      void addMonthRange(int beginning, int end, AllowedOrder allowedOrder) {
          ArrayResize(monthRanges, ArraySize(monthRanges) + 1); 
-         monthRanges[ArraySize(monthRanges) - 1] = new Range(beginning, end);
+         monthRanges[ArraySize(monthRanges) - 1] = new Range(beginning, end, allowedOrder);
       }
       
       void refresh() {   
@@ -79,37 +86,43 @@ class CustomSession {
          }
       }
     
-      bool allowToOpen() {
-         bool hourExpression = isCustomSessionDayOfWeek() && isCustomSessionHour() && isCustomSessionMonth();
-         bool minuteExpression = isCustomSessionDayOfWeek()
-          && isCustomSessionHour()
-          && isCustomSessionMinute()
-          && isCustomSessionMonth();
+      bool allowToOpen(int positionType) {
+         bool isPositionLimitExceeded = isPositionLimitExceeded();
+         bool isCustomSessionMinute = isInSession(minuteRanges, Minute(), positionType);
+         bool isCustomSessionHour = isInSession(hourRanges, Hour(), positionType);
+         bool isCustomSessionDayOfWeek = isInSession(dayRanges, DayOfWeek(), positionType);
+         bool isCustomSessionMonth = isInSession(monthRanges, Month(), positionType);
          
+         bool hourExpression = isCustomSessionDayOfWeek && isCustomSessionHour && isCustomSessionMonth;
+         bool minuteExpression = isCustomSessionDayOfWeek
+          && isCustomSessionHour
+          && isCustomSessionMinute
+          && isCustomSessionMonth;
+           
          switch (Period()) {
             case PERIOD_M1:
-               return minuteExpression && !isPositionLimitExceeded();
+               return minuteExpression && !isPositionLimitExceeded;
                
             case PERIOD_M5:
-               return minuteExpression && !isPositionLimitExceeded();
+               return minuteExpression && !isPositionLimitExceeded;
             
             case PERIOD_M30:
-               return minuteExpression && !isPositionLimitExceeded();
+               return minuteExpression && !isPositionLimitExceeded;
                
             case PERIOD_M15:
-               return minuteExpression && !isPositionLimitExceeded();
+               return minuteExpression && !isPositionLimitExceeded;
             
             case PERIOD_H1:
-               return hourExpression && !isPositionLimitExceeded();
+               return hourExpression && !isPositionLimitExceeded;
             
             case PERIOD_H4:
-               return hourExpression && !isPositionLimitExceeded();
+               return hourExpression && !isPositionLimitExceeded;
                
             case PERIOD_D1:
-               return isCustomSessionDayOfWeek() && isCustomSessionMonth() && !isPositionLimitExceeded();
+               return isCustomSessionDayOfWeek && isCustomSessionMonth && !isPositionLimitExceeded;
             
             case PERIOD_MN1:
-               return isCustomSessionMonth() && !isPositionLimitExceeded();
+               return isCustomSessionMonth && !isPositionLimitExceeded;
             
             default:
                return false;
@@ -132,40 +145,17 @@ class CustomSession {
       
       string toJson() {
          CJAVal json;
-           
-         for (int i = 0;i < ArraySize(minuteRanges); i++) {
-            CJAVal range;
-            range["from"] = minuteRanges[i].getBeginning();
-            range["to"] = minuteRanges[i].getEnd();
-            json["minute_ranges"].Add(range);
-        }
-        
-         for (int i = 0;i < ArraySize(hourRanges); i++) {
-            CJAVal range;
-            range["from"] = hourRanges[i].getBeginning();
-            range["to"] = hourRanges[i].getEnd();
-            json["hour_ranges"].Add(range);
-        }
-        
-         for (int i = 0;i < ArraySize(dayRanges); i++) {
-            CJAVal range;
-            range["from"] = dayRanges[i].getBeginning();
-            range["to"] = dayRanges[i].getEnd();
-            json["day_ranges"].Add(range);
-        }
-        
-         for (int i = 0;i < ArraySize(monthRanges); i++) {
-            CJAVal range;
-            range["from"] = monthRanges[i].getBeginning();
-            range["to"] = monthRanges[i].getEnd();
-            json["month_ranges"].Add(range);
-        }
-        
-        CJAVal timeLimit;
-        timeLimit["period"] = limitPeriod;
-        timeLimit["limit"] = positionLimit;
-        json["time_limit"] = timeLimit;
-        return json.Serialize();
+         CJAVal* pointer = &json;
+         formatAndAddRangeObject(pointer, minuteRanges, "minute_ranges");
+         formatAndAddRangeObject(pointer, hourRanges, "hour_ranges");
+         formatAndAddRangeObject(pointer, dayRanges, "day_ranges");
+         formatAndAddRangeObject(pointer, monthRanges, "month_ranges");
+
+         CJAVal timeLimit;
+         timeLimit["period"] = limitPeriod;
+         timeLimit["limit"] = positionLimit;
+         json["time_limit"] = timeLimit;
+         return json.Serialize();
       }
          
    private:
@@ -178,49 +168,39 @@ class CustomSession {
       int limitPeriod;
       int lastTimeValue;
       
-      
-      bool isCustomSessionMinute() {
-         int minute = Minute();
-         for (int i = 0; i < ArraySize(minuteRanges); i++) {
-            Range* range = minuteRanges[i];
-            if (minute >= range.getBeginning() && minute < range.getEnd()) {
-               return true;
-            }
-         }
-         return false;
-      }
-      
       bool isPositionLimitExceeded() {
          return positionsInPeriod == positionLimit;
       }
-      
-       bool isCustomSessionHour() {
-         int hour = Hour();
-         for (int i = 0; i < ArraySize(hourRanges); i++) {
-            Range* range = hourRanges[i];
-            if (hour >= range.getBeginning() && hour <= range.getEnd()) {
-               return true;
-            }
+
+      void formatAndAddRangeObject(CJAVal* jsonToAdd, Range* &rangeList[], string rangePeriod) {
+         for (int i = 0;i < ArraySize(rangeList); i++) {
+            CJAVal range;
+            range["from"] = rangeList[i].getBeginning();
+            range["to"] = rangeList[i].getEnd();
+            range["order_type"] = rangeList[i].getAllowedOrder() + "";
+            jsonToAdd[rangePeriod].Add(range);
          }
-         return false;
       }
       
-       bool isCustomSessionDayOfWeek() {
-         int day = DayOfWeek();
-         for (int i = 0; i < ArraySize(dayRanges); i++) {
-            Range* range = dayRanges[i];
-            if (day >= range.getBeginning() && day <= range.getEnd()) {
-               return true;
+      bool isInSession(Range* &rangeList[], int compareTo, int positionType) {
+         for (int i = 0; i < ArraySize(rangeList); i++) {
+            Range* range = rangeList[i];
+            bool isSupportedOrderType = true;
+            
+            switch (range.getAllowedOrder()) {
+               case OPEN_LONG:
+                  if (positionType != OP_BUY) isSupportedOrderType = false;
+                  break;
+               case OPEN_SHORT:
+                  if (positionType != OP_SELL) isSupportedOrderType = false;
+                  break;
+               case OPEN_BOTH:
+                  NULL;
             }
-         }
-         return false;
-      }
-      
-      bool isCustomSessionMonth() {
-         int month = Month();
-         for (int i = 0; i < ArraySize(monthRanges); i++) {
-            Range* range = monthRanges[i];
-            if (month >= range.getBeginning() && month <= range.getEnd()) {
+            
+            if (!isSupportedOrderType) continue;
+            
+            if (compareTo >= range.getBeginning() && compareTo <= range.getEnd()) {
                return true;
             }
          }

@@ -21,7 +21,7 @@
 // Backtest controls
 bool exportData = true; // If true, backtest data will be exported to DB
 bool printLogs = false; // If true, all logs added via custom logger will be visible in journal
-extern bool useExit = true;
+extern bool useExit = false;
 
 // Backtest's externals for optimization
 extern double riskPerTrade = 1.0;
@@ -53,19 +53,19 @@ int OnInit() {
    Logger::isDebug = printLogs;
 
    customSession = new CustomSession();
-   customSession.addMonthRange(1, 12);
-   customSession.addDayOfWeekRange(1, 7); 
-   customSession.addHourRange(2, 22);
-   customSession.addMinuteRange(0, 59);
+   customSession.addMinuteRange(0, 59, OPEN_BOTH); // Min 0, Max 59
+   customSession.addHourRange(2, 22, OPEN_BOTH); // Min 0, Max 23
+   customSession.addDayOfWeekRange(1, 7, OPEN_BOTH); // Min 1, Max 7
+   customSession.addMonthRange(1, 12, OPEN_BOTH); // Min 1, Max 12
    customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
    
-   CJAVal inputJson;     
-   inputJson[EnumToString(RISK_PER_TRADE)] = riskPerTrade;
-   inputJson[EnumToString(SL_RATIO)] = SLRatio;
-   inputJson[EnumToString(TP_RATIO)] = TPRatio;
-   inputJson[EnumToString(FIXED_SLTP)] = fixedSLTP;
-   inputJson[EnumToString(SLIPPAGE)] = slippage;
-   inputJson[EnumToString(BREAK_EVEN)] = breakEven;
+   CJAVal inputJson;
+   inputJson["RISK_PER_TRADE"] = riskPerTrade;
+   inputJson["SL_RATIO"] = SLRatio;
+   inputJson["TP_RATIO"] = TPRatio;
+   inputJson["FIXED_SLTP"] = fixedSLTP;
+   inputJson["SLIPPAGE"] = slippage;
+   inputJson["BREAK_EVEN"] = breakEven;
    inputJson["ATR_Period"] = ATR_Period;
    inputJson["DEMA_Period"] = DEMA_Period;
    inputJson["DEMA_filter"] = DEMA_filter;
@@ -97,7 +97,7 @@ void OnTick(){
    
    switch(positionManager.getStatus()) {
     case AVAILABLE_TO_OPEN: {
-      OrderAction action = DEMA_Simple(DEMA_Period, DEMA_filter, DEMA_FilterPeriod, DEMA_enum_price, DEMA_enum_filter);
+      OrderAction action = DEMA_Simple(DEMA_Period, DEMA_enum_price, DEMA_filter, DEMA_FilterPeriod, DEMA_enum_filter);
       OrderAction confirm = Waddah_Confirmation(WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower);
       if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT){
          positionManager.openOrder(OP_SELL);
