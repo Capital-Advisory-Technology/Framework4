@@ -59,7 +59,7 @@ int OnInit() {
    customSession.addMonthRange(1, 12, OPEN_BOTH); // Min 1, Max 12
    customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
    
-   CJAVal inputJson;     
+   CJAVal inputJson;
    inputJson["RISK_PER_TRADE"] = riskPerTrade;
    inputJson["SL_RATIO"] = SLRatio;
    inputJson["TP_RATIO"] = TPRatio;
