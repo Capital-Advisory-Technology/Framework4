@@ -50,7 +50,6 @@ PositionManager* positionManager;
 CustomSession* customSession;
 
 int OnInit() {
-   Print("On init");
    Logger::isDebug = printLogs;
 
    customSession = new CustomSession();
@@ -96,7 +95,7 @@ void OnDeinit(const int reason) {
 }
 
 void OnTimer(){
-   Print("HERE");
+   Print("On timer");
    datetime tickTime = iTime(Symbol(), Period(), 0);
    backtestInfo.setDate(tickTime);
    customSession.refresh();
