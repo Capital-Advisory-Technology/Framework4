@@ -80,8 +80,9 @@ int OnInit() {
    backtestInfo = new BacktestInfo(__FILE__, inputJson.Serialize(), exportData);
    positionManager = new PositionManager(backtestInfo, customSession, SLRatio, TPRatio, ATR_Period, riskPerTrade, slippage, breakEven, fixedSLTP);
    
-   int remainingTime = 3600 - (TimeLocal() % 3600);
-   Sleep(remainingTime);
+   int remainingSeconds = (3600 - (TimeLocal() % 3600));
+   Print("Waiting for " + (remainingSeconds / 60) + "minutes and " + (remainingSeconds % 60) + " seconds");
+   Sleep(remainingSeconds * 1000);
    EventSetTimer(PeriodSeconds(Period()));
    return(INIT_SUCCEEDED);
 }
