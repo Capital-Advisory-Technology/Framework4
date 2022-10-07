@@ -120,34 +120,32 @@ class Position {
               );
       }
       
-      string toJson(int backtestId) {
+      CJAVal toJson() {
          CJAVal json;
          
-         json["backtest_id"] = backtestId;
          json["number"] = number;
          json["open_time"] = openTime;
          json["close_time"] = closeTime;
-         json["grossProfit"] = grossProfit;
-         json["netProfit"] = netProfit;
-         json["positionType"] = positionType;
+         json["gross_profit"] = grossProfit;
+         json["net_profit"] = netProfit;
+         json["position_type"] = positionType;
          json["balance"] = balance;
-         json["lotSize"] = lotSize;
-         json["openPrice"] = openPrice;
-         json["closePrice"] = closePrice;
-         json["slPrice"] = slPrice;
-         json["tpPrice"] = tpPrice;
+         json["lot_size"] = lotSize;
+         json["open_price"] = openPrice;
+         json["close_price"] = closePrice;
+         json["sl_price"] = slPrice;
+         json["tp_price"] = tpPrice;
          json["commission"] = commission;
          json["swap"] = swap;
-         json["SMA200"] = SMA200;
-         json["EMA200"] = EMA200;
-         json["SMA65"] = SMA65;
-         json["EMA65"] = EMA65;
-         json["RSI14"] = RSI14;
-         json["ATR14"] = ATR14;
-         json["breakEvenFlag"] = breakEvenFlag;
-         json["closeType"] = closeType;
-         
-         return json.Serialize();
+         json["sma_200"] = SMA200;
+         json["ema_200"] = EMA200;
+         json["sma_65"] = SMA65;
+         json["ema_65"] = EMA65;
+         json["rsi_14"] = RSI14;
+         json["atr_14"] = ATR14;
+         json["break_even_flag"] = breakEvenFlag;
+         json["close_type"] = closeType;
+         return json;
       }
       
       void setBreakEvenFlag(bool positive) {
