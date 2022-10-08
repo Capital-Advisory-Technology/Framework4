@@ -5,6 +5,7 @@
 #include <Tykee/database/DB.mqh>
 #include <Tykee/database/queries.mqh>
 #include <Tykee/common/extensions.mqh>
+#include <Tykee/http/repository.mqh>
 
 static string entryFunctionList[];
 static string exitFunctionList[];
@@ -46,6 +47,7 @@ class BacktestInfo {
       void exportBacktestData() {
          if (!shouldExportData) return;
          int backtestDuration = db.getDateTime() - backtestLaunchTime;
+        
          doCalculations();
          Logger::log("Model name: " + modelName);
          Logger::log("Params: " + inputJson);
@@ -62,6 +64,7 @@ class BacktestInfo {
          Logger::log("Short trades: " + string(shortTrades));
          Logger::log("Consecutive wins: " + string(consecutiveWins));
          Logger::log("Consecutive losses: " + string(consecutiveLosses));
+         
          
          if (profitFactor <= 1.3) return;
          
@@ -80,9 +83,11 @@ class BacktestInfo {
              stringListToJson(entryFunctionList), stringListToJson(exitFunctionList),
              stringListToJson(confirmFunctionList), AccountCurrency()
          );
-
+        
          db.insertData(backtestSql);
          int backtestId = db.findBacktestId(backtestLaunchTime);
+         SendResquest("POST", "/upload/backtest", toJson(backtestDuration));
+         
          for (int i = 0; i < ArraySize(positions); i++) {
             db.insertData(positions[i].getSql(backtestId));
          }
@@ -174,17 +179,17 @@ class BacktestInfo {
          profitFactor = NormalizeDouble(MathAbs(grossProfit / grossLoss), 2);
       }
       
-      string toJson(int backtestId, int backtestDuration) {
+      string toJson(int backtestDuration) {
          CJAVal json;
          CJAVal backtestObject;
-         backtestObject["symbol_id"] = symbolId;
+         backtestObject["symbol"] = Symbol();
          backtestObject["period"] = period;
-         backtestObject["initial_balance"] = initialBalance;
+         backtestObject["balance"] = initialBalance;
          backtestObject["profit"] = profit;
          backtestObject["profit_factor"] = profitFactor;
-         backtestObject["consecutive_drawdown"] = consecutiveDrawdown;
+         backtestObject["drawdown"] = consecutiveDrawdown;
          backtestObject["longs_won"] = longsWon;
-         backtestObject["short_won"] = shortsWon;
+         backtestObject["shorts_won"] = shortsWon;
          backtestObject["date_from"] = dateFrom;
          backtestObject["date_to"] = dateTo;
          backtestObject["total_trades"] = totalTrades;
@@ -194,21 +199,21 @@ class BacktestInfo {
          backtestObject["consecutive_losses"] = consecutiveLosses;
          backtestObject["backtest_launch_time"] = backtestLaunchTime;
          backtestObject["backtest_duration"] = backtestDuration;
-         backtestObject["custom_session"] = customSession.toJson();
-         backtestObject["input_json"] = inputJson;
+         backtestObject["session_limits"] = customSession.toJson();
+         backtestObject["inputs"] = inputJson;
          backtestObject["entry_list"] = stringListToJson(entryFunctionList);
          backtestObject["exit_list"] = stringListToJson(exitFunctionList);
          backtestObject["confirmation_list"] = stringListToJson(confirmFunctionList);
          backtestObject["account_currency"] = AccountCurrency();
          CJAVal positionObject;
          for (int i = 0; i < 5; i++) {
-            positionObject.Add(positions[i].toJson(backtestId));
+            positionObject.Add(positions[i].toJson());
          }
          
          json["backtest_info"] = backtestObject;
          json["strategy_name"] = modelName;
          json["positions"] = positionObject;
-         Print(filterJson(json.Serialize()));
+         Print(json.Serialize());
          return json.Serialize(); 
       }
 
