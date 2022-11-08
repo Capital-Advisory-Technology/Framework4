@@ -30,9 +30,20 @@ class PositionManager {
       int slippage;
       double breakEven;
       bool fixedSLTP;
+      datetime lastBarTime;
       Position* openPosition;
       BacktestInfo* backtestInfo;
       CustomSession* customSession;
+   
+      bool allowedToTrade() {
+         if (lastBarTime < Time[0]) {
+            lastBarTime = Time[0];
+            return true;
+         }
+         else {
+            return false;
+         }
+      }
      
    public:
       PositionManager::PositionManager(BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
@@ -42,10 +53,12 @@ class PositionManager {
         this.TPRatio = cTPRatio;
         this.ATRPeriod = cATRPeriod;
         this.slippage = cSlippage;
+        this.lastBarTime = Time[0];
         this.openPosition = NULL;
         this.breakEven = cBreakEven;
         this.fixedSLTP = cfixedSLTP;
         this.customSession = cCustomSession;
+      //   this.tickController = new TickController();
         backtestInfo.setCustomSessionObject(cCustomSession);
       }
       
@@ -170,10 +183,11 @@ class PositionManager {
       break even. 
    */
    PositionStatus getStatus() {
-      if (isPositionOpen() && OrdersTotal() == 0) {
-        onAutomaticPositionClose();
-         return AVAILABLE_TO_OPEN;
-      } else if (!isPositionOpen() && OrdersTotal() == 0){
+      bool tickAllowed = allowedToTrade();
+      if (OrdersTotal() == 0 && tickAllowed) {
+         if (isPositionOpen()) {
+            onAutomaticPositionClose();
+         }
          return AVAILABLE_TO_OPEN;
       } else if(isPositionOpen()) {
          if (CheckForBreakEven(breakEven) && !openPosition.getBreakEvenFlag()) {
