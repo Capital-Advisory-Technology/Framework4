@@ -35,7 +35,7 @@ class PositionManager {
       BacktestInfo* backtestInfo;
       CustomSession* customSession;
    
-      bool allowedToTrade() {
+      bool NewBar() {
          if (lastBarTime < Time[0]) {
             lastBarTime = Time[0];
             return true;
@@ -77,7 +77,7 @@ class PositionManager {
       if (!customSession.allowToOpen(positionType)) return;
       // Calculate values for order
       int stopLoss = CalculateSL(SLRatio, ATRPeriod, fixedSLTP);
-      int takeProfit = CalculateTP(TPRatio, fixedSLTP);
+      int takeProfit = CalculateTP(TPRatio, stopLoss, fixedSLTP);
       double lotSize = CalculateLotSize(riskPerTrade, stopLoss);
       double slPrice = GetSLprice(stopLoss, positionType);
       double tpPrice = GetTPprice(takeProfit, positionType);
@@ -183,8 +183,8 @@ class PositionManager {
       break even. 
    */
    PositionStatus getStatus() {
-      bool tickAllowed = allowedToTrade();
-      if (OrdersTotal() == 0 && tickAllowed) {
+      bool newBar = NewBar();
+      if (newBar && OrdersTotal() == 0) {
          if (isPositionOpen()) {
             onAutomaticPositionClose();
          }

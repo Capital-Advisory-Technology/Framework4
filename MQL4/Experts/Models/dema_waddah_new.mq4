@@ -20,7 +20,7 @@
 #include <Tykee/database/DB.mqh>
 
 // Backtest controls
-bool exportData = false; // If true, backtest data will be exported to DB
+bool exportData = true; // If true, backtest data will be exported to DB
 bool printLogs = false; // If true, all logs added via custom logger will be visible in journal
 
 // Backtest's externals for optimization

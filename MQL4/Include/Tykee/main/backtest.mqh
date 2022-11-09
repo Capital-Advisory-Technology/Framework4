@@ -66,7 +66,7 @@ class BacktestInfo {
          Logger::log("Consecutive losses: " + string(consecutiveLosses));
          
          
-         if (profitFactor <= 1.3) return;
+         // if (profitFactor <= 1.3) return;
          
          int strategyId = db.getStrategyId(modelName);
          string backtestSql = setBacktestDataQuery(
