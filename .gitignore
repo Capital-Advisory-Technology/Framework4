@@ -24,5 +24,6 @@ MQL4/Scripts/
 MQL4/.vscode/
 tester/*
 !tester/dema_waddah-test_case.set
+!tester/dewa_0_best_backtest.set
 backtest-reports/
 origin.txt
