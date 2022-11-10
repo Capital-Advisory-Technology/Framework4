@@ -27,3 +27,4 @@ tester/*
 !tester/dewa_0_best_backtest.set
 backtest-reports/
 origin.txt
+*.sqbpro
