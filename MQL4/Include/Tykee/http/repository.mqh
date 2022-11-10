@@ -1,5 +1,6 @@
 
-string baseUrl = "http://80.232.247.208";
+// string baseUrl = "http://80.232.247.208";
+string baseUrl = "http://localhost";
 int timeout = 3000;
 string secret = "ZhaoDingDang!1";
 

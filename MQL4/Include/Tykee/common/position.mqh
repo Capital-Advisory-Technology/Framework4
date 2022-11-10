@@ -24,9 +24,11 @@ class Position {
       double commission;
       double swap;
       double SMA200;
-      double EMA200;
       double SMA65;
+      double SMA21;
+      double EMA200;
       double EMA65;
+      double EMA21;
       double RSI14;
       double ATR14;
       int breakEvenFlag;
@@ -42,9 +44,11 @@ class Position {
          double cSlPrice, 
          double cTpPrice,
          double cSMA200,
-         double cEMA200,
          double cSMA65,
+         double cSMA21,
+         double cEMA200,
          double cEMA65,
+         double cEMA21,
          double cRSI14,
          double cATR14
       ) {
@@ -56,9 +60,11 @@ class Position {
          this.slPrice = cSlPrice;
          this.tpPrice = cTpPrice;
          this.SMA200 = NormalizeDouble(cSMA200, Digits);
-         this.EMA200 = NormalizeDouble(cEMA200, Digits);
          this.SMA65 = NormalizeDouble(cSMA65, Digits);
+         this.SMA21 = NormalizeDouble(cSMA21, Digits);
+         this.EMA200 = NormalizeDouble(cEMA200, Digits);
          this.EMA65 = NormalizeDouble(cEMA65, Digits);
+         this.EMA21 = NormalizeDouble(cEMA21, Digits);
          this.RSI14 = NormalizeDouble(cRSI14, Digits);
          this.ATR14 = NormalizeDouble(cATR14, Digits);
          this.breakEvenFlag = 0;
@@ -67,13 +73,13 @@ class Position {
       ~Position() {} 
       
       void setPositionClosed(datetime endTime, double cClosePrice, double cGrossProfit, double cNetProfit, double cCommission, double cSwap, int ccloseType){
-         this.balance = AccountBalance();
+         this.balance = NormalizeDouble(AccountBalance(), 2);
          this.closeTime = endTime;
-         this.closePrice = cClosePrice;
-         this.grossProfit = cGrossProfit;
-         this.netProfit = cNetProfit;
-         this.commission = cCommission;
-         this.swap = cSwap;
+         this.closePrice = NormalizeDouble(cClosePrice, Digits);
+         this.grossProfit = NormalizeDouble(cGrossProfit, 2);
+         this.netProfit = NormalizeDouble(cNetProfit, 2);
+         this.commission = NormalizeDouble(cCommission, 2);
+         this.swap = NormalizeDouble(cSwap, 2);
          this.closeType = ccloseType;
          
          Logger::log("----------------------------------------");
@@ -123,28 +129,30 @@ class Position {
       CJAVal toJson() {
          CJAVal json;
          
-         json["number"] = number;
+         json["order_number"] = number;
          json["open_time"] = openTime;
          json["close_time"] = closeTime;
-         json["gross_profit"] = grossProfit;
-         json["net_profit"] = netProfit;
-         json["position_type"] = positionType;
-         json["balance"] = balance;
          json["lot_size"] = lotSize;
          json["open_price"] = openPrice;
          json["close_price"] = closePrice;
          json["sl_price"] = slPrice;
          json["tp_price"] = tpPrice;
+         json["gross_profit"] = grossProfit;
+         json["net_profit"] = netProfit;
          json["commission"] = commission;
          json["swap"] = swap;
+         json["balance"] = balance;
          json["sma_200"] = SMA200;
-         json["ema_200"] = EMA200;
          json["sma_65"] = SMA65;
+         json["sma_21"] = SMA21;
+         json["ema_200"] = EMA200;
          json["ema_65"] = EMA65;
+         json["ema_21"] = EMA21;
          json["rsi_14"] = RSI14;
          json["atr_14"] = ATR14;
-         json["break_even_flag"] = breakEvenFlag;
-         json["close_type"] = closeType;
+         json["position_type_value"] = positionType;
+         json["breakeven_flag_value"] = breakEvenFlag;
+         json["close_type_value"] = closeType;
          return json;
       }
       
