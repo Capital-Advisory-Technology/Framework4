@@ -12,7 +12,6 @@
 #include <Tykee/common/position.mqh>
 #include <Tykee/common/session.mqh>
 
-
 #include <Tykee/signals/exit.mqh>
 #include <Tykee/signals/entry.mqh>
 #include <Tykee/signals/confirmations.mqh>
