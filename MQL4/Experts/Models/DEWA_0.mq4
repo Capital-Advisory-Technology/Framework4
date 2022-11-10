@@ -12,6 +12,7 @@
 #include <Tykee/common/position.mqh>
 #include <Tykee/common/session.mqh>
 
+
 #include <Tykee/signals/exit.mqh>
 #include <Tykee/signals/entry.mqh>
 #include <Tykee/signals/confirmations.mqh>
@@ -21,7 +22,6 @@
 // Backtest controls
 bool exportData = true; // If true, backtest data will be exported to DB
 bool printLogs = false; // If true, all logs added via custom logger will be visible in journal
-extern bool useExit = false;
 
 // Backtest's externals for optimization
 extern double riskPerTrade = 1.0;
@@ -58,7 +58,7 @@ int OnInit() {
    customSession.addDayOfWeekRange(1, 7, OPEN_BOTH); // Min 1, Max 7
    customSession.addMonthRange(1, 12, OPEN_BOTH); // Min 1, Max 12
    customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
-   
+
    CJAVal inputJson;
    inputJson["RISK_PER_TRADE"] = riskPerTrade;
    inputJson["SL_RATIO"] = SLRatio;
@@ -76,7 +76,7 @@ int OnInit() {
    inputJson["WDH_deadZone"] = WDH_deadZone;
    inputJson["WDH_explosionPower"] = WDH_explosionPower;
    inputJson["WDH_trendPower"] = WDH_trendPower;
-   
+
    backtestInfo = new BacktestInfo(__FILE__, inputJson.Serialize(), exportData);
    positionManager = new PositionManager(backtestInfo, customSession, SLRatio, TPRatio, ATR_Period, riskPerTrade, slippage, breakEven, fixedSLTP);
    
@@ -94,22 +94,18 @@ void OnTick(){
    datetime tickTime = iTime(Symbol(), Period(), 0);
    backtestInfo.setDate(tickTime);
    customSession.refresh();
-   
+
    switch(positionManager.getStatus()) {
-    case AVAILABLE_TO_OPEN: {
+      case AVAILABLE_TO_OPEN: {
       OrderAction action = DEMA_Simple(DEMA_Period, DEMA_enum_price, DEMA_filter, DEMA_FilterPeriod, DEMA_enum_filter);
       OrderAction confirm = Waddah_Confirmation(WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower);
+      
       if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT){
          positionManager.openOrder(OP_SELL);
       } else if(action == OA_OPEN_LONG && confirm == OA_OPEN_LONG) {
          positionManager.openOrder(OP_BUY);
       }
       break;
-    }
-    case IS_OPENED:
-      if(useExit && ExitRVI(14) == OA_CLOSE){
-         positionManager.closePosition();
       }
-      break;
    }
 }

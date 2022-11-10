@@ -66,7 +66,7 @@ class BacktestInfo {
          Logger::log("Consecutive losses: " + string(consecutiveLosses));
          
          
-         if (profitFactor <= 1.3) return;
+         // if (profitFactor <= 1.3) return;
          
          int strategyId = db.getStrategyId(modelName);
          string backtestSql = setBacktestDataQuery(
@@ -86,7 +86,7 @@ class BacktestInfo {
         
          db.insertData(backtestSql);
          int backtestId = db.findBacktestId(backtestLaunchTime);
-         SendResquest("POST", "/upload/backtest", toJson(backtestDuration));
+         SendResquest("POST", "/api/backtest/", toJson(backtestDuration));
          
          for (int i = 0; i < ArraySize(positions); i++) {
             db.insertData(positions[i].getSql(backtestId));
@@ -182,23 +182,23 @@ class BacktestInfo {
       string toJson(int backtestDuration) {
          CJAVal json;
          CJAVal backtestObject;
-         backtestObject["symbol"] = Symbol();
-         backtestObject["period"] = period;
-         backtestObject["balance"] = initialBalance;
-         backtestObject["profit"] = profit;
-         backtestObject["profit_factor"] = profitFactor;
-         backtestObject["drawdown"] = consecutiveDrawdown;
-         backtestObject["longs_won"] = longsWon;
-         backtestObject["shorts_won"] = shortsWon;
+         backtestObject["symbol_name"] = Symbol();
+         backtestObject["period_minutes"] = period;
+         backtestObject["start_balance"] = initialBalance;
+         // backtestObject["profit"] = profit;
+         // backtestObject["profit_factor"] = profitFactor;
+         // backtestObject["drawdown"] = consecutiveDrawdown;
+         // backtestObject["longs_won"] = longsWon;
+         // backtestObject["shorts_won"] = shortsWon;
          backtestObject["date_from"] = dateFrom;
          backtestObject["date_to"] = dateTo;
-         backtestObject["total_trades"] = totalTrades;
-         backtestObject["long_trades"] = longTrades;
-         backtestObject["short_trades"] = shortTrades;
-         backtestObject["consecutive_wins"] = consecutiveWins;
-         backtestObject["consecutive_losses"] = consecutiveLosses;
-         backtestObject["backtest_launch_time"] = backtestLaunchTime;
-         backtestObject["backtest_duration"] = backtestDuration;
+         // backtestObject["total_trades"] = totalTrades;
+         // backtestObject["long_trades"] = longTrades;
+         // backtestObject["short_trades"] = shortTrades;
+         // backtestObject["consecutive_wins"] = consecutiveWins;
+         // backtestObject["consecutive_losses"] = consecutiveLosses;
+         // backtestObject["backtest_launch_time"] = backtestLaunchTime;
+         // backtestObject["backtest_duration"] = backtestDuration;
          backtestObject["session_limits"] = customSession.toJson();
          backtestObject["inputs"] = inputJson;
          backtestObject["entry_list"] = stringListToJson(entryFunctionList);
@@ -206,7 +206,7 @@ class BacktestInfo {
          backtestObject["confirmation_list"] = stringListToJson(confirmFunctionList);
          backtestObject["account_currency"] = AccountCurrency();
          CJAVal positionObject;
-         for (int i = 0; i < 5; i++) {
+         for (int i = 0; i < ArrayRange(positions, 0); i++) {
             positionObject.Add(positions[i].toJson());
          }
          

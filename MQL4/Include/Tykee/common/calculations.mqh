@@ -7,40 +7,42 @@
 #property link      ""
 #property strict
 
+#define ATRIndicator "Indicators\\Adaptive_ATR.ex4"
+#resource "\\" + ATRIndicator
 
 //+------------------------------------------------------------------+
 //| Calculates LotSize based on balance, risk and StopLoss           |
 //+------------------------------------------------------------------+
 double CalculateLotSize(double risk, int stopLoss)
   {
-   double lotStep = MarketInfo(Symbol(),MODE_LOTSTEP);
-   double minLot = MarketInfo(Symbol(),MODE_MINLOT);
-   double maxLot = MarketInfo(Symbol(),MODE_MAXLOT);
-   double tickVal = MarketInfo(Symbol(),MODE_TICKVALUE);
+   double lotStep = MarketInfo(Symbol(), MODE_LOTSTEP);
+   double minLot = MarketInfo(Symbol(), MODE_MINLOT);
+   double maxLot = MarketInfo(Symbol(), MODE_MAXLOT);
+   double tickVal = MarketInfo(Symbol(), MODE_TICKVALUE);
    double lotSize = AccountBalance() * risk / 100 / (stopLoss * tickVal);
    return MathMin(maxLot, MathMax(minLot,NormalizeDouble(lotSize / lotStep, 0) * lotStep));
   }
 
 //+------------------------------------------------------------------+
-//| Calculates StopLoss or TakeProfit                                |
+//| Calculates StopLoss based on ATR or fixed value                  |
 //+------------------------------------------------------------------+
 int CalculateSL(double stopLossRatio, int ATRPeriod, bool fixed) {
   int stopLoss;
   if(fixed) stopLoss = (int)MathRound(stopLossRatio);
   else {
-    double atr = iCustom(NULL, Period(), "Adaptive_ATR", ATRPeriod, 0, 1); 
+    double atr = NormalizeDouble(iATR(Symbol(), Period(), ATRPeriod, 1), Digits);
     stopLoss = (int)(atr / Point * stopLossRatio);
+    if (stopLoss < 100) stopLoss = 100;
   }
 
   return stopLoss;
 }
 
-int CalculateTP(double takeProfitRatio, bool fixed) {
+int CalculateTP(double takeProfitRatio, int stopLoss ,bool fixed) {
   int takeProfit;
   if(fixed) takeProfit = (int)MathRound(takeProfitRatio);
   else {
-    double atr=iCustom(NULL, Period(), "Adaptive_ATR", 0, 1);
-    takeProfit = (int)(atr / Point * takeProfitRatio);
+    takeProfit = (int)(stopLoss * takeProfitRatio);
   }
 
   return takeProfit;
