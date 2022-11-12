@@ -172,7 +172,7 @@ class Position {
          return positionType;    
       }
       
-       int getBreakEvenFlag() {
+      int getBreakEvenFlag() {
          return breakEvenFlag;    
       }
       

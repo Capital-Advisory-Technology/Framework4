@@ -62,6 +62,7 @@ class Database
       
       ~Database() {
        SQLite3::shutdown();
+       delete db;
       } 
      
      int getSymbolId(string symbol) {
