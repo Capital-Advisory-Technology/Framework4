@@ -11,7 +11,7 @@ StopLoss - basic `ATR`.
 ### DEWA_1 
 Optimization from 2011.01.01. - 2021.01.01
 **Balance:** 10'000.00     | **Account ccy:** EUR 
-**Maximal drawdown:** 40%  |
+**Maximal drawdown:** 40%  | **Spread:** 10pt 
 
 ```json
 {
