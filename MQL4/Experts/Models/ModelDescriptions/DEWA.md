@@ -12,7 +12,7 @@ StopLoss - basic `ATR`.
 Optimization from 2011.01.01. - 2021.01.01
 **Balance:** 10'000.00     | **Account ccy:** EUR 
 **Maximal drawdown:** 40%  | **Spread:** 10pt 
-
+**Symbol:** GBP/JPY        | **Period:** 1H
 ```json
 {
     "ATR_Period": 14 - 28 (2),
