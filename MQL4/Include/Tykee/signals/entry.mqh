@@ -114,7 +114,7 @@ OrderAction ABI_Simple(bool ABI_useRSI, double ABI_len, double ABI_smooth, int A
   }
 
 //| DEMA Crossover Entry (QC) 
-//| DEMA_period - {20 - 120}     |  DEMA_enum_price - [ANY enPrice ENUM]  |  DEMA_Filter = {0 - 8}
+//| DEMA_period - {20 - 120}     |  DEMA_enum_price - [0-32]  |  DEMA_Filter = [0 - 20]
 //| DEMA_FilterPeriod - {0 - 8}  |  DEMA_enum_filter - [0 - 2]
 OrderAction DEMA_Simple(double DEMA_period, int DEMA_enum_price, double DEMA_Filter, int DEMA_FilterPeriod, int DEMA_enum_filter) 
   {
@@ -235,42 +235,42 @@ OrderAction zl_macd_Simple(int fast_ema, int slow_ema, int signal_ema)
    return signal;
   }
   
-// Custom ENUMS 
+// Custom ENUMS 0-32
 enum enPrices
   {
-   pr_close,       // Close
-   pr_open,        // Open
-   pr_high,        // High
-   pr_low,         // Low
-   pr_median,      // Median
-   pr_typical,     // Typical
-   pr_weighted,    // Weighted
-   pr_average,     // Average (high+low+open+close)/4
-   pr_medianb,     // Average median body (open+close)/2
-   pr_tbiased,     // Trend biased price
-   pr_tbiased2,    // Trend biased (extreme) price
-   pr_haclose,     // Heiken ashi close
-   pr_haopen,      // Heiken ashi open
-   pr_hahigh,      // Heiken ashi high
-   pr_halow,       // Heiken ashi low
-   pr_hamedian,    // Heiken ashi median
-   pr_hatypical,   // Heiken ashi typical
-   pr_haweighted,  // Heiken ashi weighted
-   pr_haaverage,   // Heiken ashi average
-   pr_hamedianb,   // Heiken ashi median body
-   pr_hatbiased,   // Heiken ashi trend biased price
-   pr_hatbiased2,  // Heiken ashi trend biased (extreme) price
-   pr_habclose,    // Heiken ashi (better formula) close
-   pr_habopen,     // Heiken ashi (better formula) open
-   pr_habhigh,     // Heiken ashi (better formula) high
-   pr_hablow,      // Heiken ashi (better formula) low
-   pr_habmedian,   // Heiken ashi (better formula) median
-   pr_habtypical,  // Heiken ashi (better formula) typical
-   pr_habweighted, // Heiken ashi (better formula) weighted
-   pr_habaverage,  // Heiken ashi (better formula) average
-   pr_habmedianb,  // Heiken ashi (better formula) median body
-   pr_habtbiased,  // Heiken ashi (better formula) trend biased price
-   pr_habtbiased2 // Heiken ashi (better formula) trend biased (extreme) price
+   pr_close,       // Close 0
+   pr_open,        // Open 1
+   pr_high,        // High 2
+   pr_low,         // Low 3
+   pr_median,      // Median 4
+   pr_typical,     // Typical 5
+   pr_weighted,    // Weighted 6
+   pr_average,     // Average (high+low+open+close)/4 7
+   pr_medianb,     // Average median body (open+close)/2 8
+   pr_tbiased,     // Trend biased price 9
+   pr_tbiased2,    // Trend biased (extreme) price 10
+   pr_haclose,     // Heiken ashi close 11
+   pr_haopen,      // Heiken ashi open 12
+   pr_hahigh,      // Heiken ashi high 13
+   pr_halow,       // Heiken ashi low 14 
+   pr_hamedian,    // Heiken ashi median 15
+   pr_hatypical,   // Heiken ashi typical 16
+   pr_haweighted,  // Heiken ashi weighted 17
+   pr_haaverage,   // Heiken ashi average 18
+   pr_hamedianb,   // Heiken ashi median body 19
+   pr_hatbiased,   // Heiken ashi trend biased price 20
+   pr_hatbiased2,  // Heiken ashi trend biased (extreme) price 21
+   pr_habclose,    // Heiken ashi (better formula) close 22
+   pr_habopen,     // Heiken ashi (better formula) open 23
+   pr_habhigh,     // Heiken ashi (better formula) high 24
+   pr_hablow,      // Heiken ashi (better formula) low 25
+   pr_habmedian,   // Heiken ashi (better formula) median 26
+   pr_habtypical,  // Heiken ashi (better formula) typical 27
+   pr_habweighted, // Heiken ashi (better formula) weighted 28
+   pr_habaverage,  // Heiken ashi (better formula) average 29
+   pr_habmedianb,  // Heiken ashi (better formula) median body 30
+   pr_habtbiased,  // Heiken ashi (better formula) trend biased price 31
+   pr_habtbiased2 // Heiken ashi (better formula) trend biased (extreme) price 32
   };
 
 enum enMaTypes
