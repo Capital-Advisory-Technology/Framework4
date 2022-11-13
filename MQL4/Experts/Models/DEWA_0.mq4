@@ -84,7 +84,7 @@ int OnInit() {
 
 void OnDeinit(const int reason) { 
    positionManager.onDeInit();     
-   backtestInfo.exportBacktestData();
+   backtestInfo.exportData();
    delete backtestInfo;
    delete positionManager;
 }

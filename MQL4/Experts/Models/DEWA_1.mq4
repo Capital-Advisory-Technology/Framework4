@@ -84,9 +84,11 @@ int OnInit() {
 
 void OnDeinit(const int reason) { 
    positionManager.onDeInit();     
-   backtestInfo.exportBacktestData();
+   backtestInfo.exportData();
+   delete customSession;
    delete backtestInfo;
    delete positionManager;
+   Logger::log("Backtest finished");
 }
 
 void OnTick(){

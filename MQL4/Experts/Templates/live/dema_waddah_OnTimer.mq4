@@ -90,7 +90,7 @@ int OnInit() {
 void OnDeinit(const int reason) { 
    EventKillTimer();
    positionManager.onDeInit();     
-   backtestInfo.exportBacktestData();
+   backtestInfo.exportData();
    delete backtestInfo;
    delete positionManager;
 }

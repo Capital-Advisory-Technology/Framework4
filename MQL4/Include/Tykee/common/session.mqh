@@ -2,14 +2,6 @@
 #include <Tykee/common/enums.mqh>
 #include <libs/JAson.mqh>
 
-int TokyoOpen = 2;
-int TokyoClose = 10;
-
-int LondonOpen = 10;
-int LondonClose = 18;
-
-int NewYorkOpen = 15;
-int NewYorkClose = 23;
 
 class Range {
  
@@ -46,7 +38,22 @@ class CustomSession {
          limitPeriod = PERIOD_MN1;
          allowToOpen(0);
       }
-        
+      
+      ~CustomSession() {
+         for(int i = 0; i < ArraySize(minuteRanges); i++) {
+            delete minuteRanges[i];
+         }
+         for(int i = 0; i < ArraySize(hourRanges); i++) {
+            delete hourRanges[i];
+         }
+         for(int i = 0; i < ArraySize(dayRanges); i++) {
+            delete dayRanges[i];
+         }
+         for(int i = 0; i < ArraySize(monthRanges); i++) {
+            delete monthRanges[i];
+         }
+      }
+
       void addMinuteRange(int beginning, int end, AllowedOrder allowedOrder) {
          ArrayResize(minuteRanges, ArraySize(minuteRanges) + 1); 
          minuteRanges[ArraySize(minuteRanges) - 1] = new Range(beginning, end, allowedOrder);
@@ -214,18 +221,3 @@ class CustomSession {
         }
       }  
 };
-
-bool isTokyoOpen()
-  {
-   return (Hour() >= TokyoOpen && Hour() < TokyoClose);
-  }
-
-bool isLondonOpen()
-  {
-   return (Hour() >= LondonOpen && Hour() < LondonClose);
-  }
-
-bool isNewYorkOpen()
-  {
-   return (Hour() >= NewYorkOpen && Hour() < NewYorkClose);
-  }

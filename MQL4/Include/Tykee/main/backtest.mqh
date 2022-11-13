@@ -5,7 +5,7 @@
 #include <Tykee/database/DB.mqh>
 #include <Tykee/database/queries.mqh>
 #include <Tykee/common/extensions.mqh>
-#include <Tykee/http/repository.mqh>
+#include <Tykee/http/request.mqh>
 
 static string entryFunctionList[];
 static string exitFunctionList[];
@@ -33,8 +33,9 @@ class BacktestInfo {
       ~BacktestInfo() {
          for (int i = 0; i < ArraySize(positions); i++) {
             delete positions[i];
-            delete db;
          }
+         delete db;
+         // delete customSession;
       }
       
       void setDate(datetime date){
@@ -44,7 +45,7 @@ class BacktestInfo {
          dateTo = int(date);
       };
       
-      void exportBacktestData() {
+      void exportData() {
          if (!shouldExportData) return;
          int backtestDuration = db.getDateTime() - backtestLaunchTime;
         
@@ -65,7 +66,7 @@ class BacktestInfo {
          Logger::log("Consecutive wins: " + string(consecutiveWins));
          Logger::log("Consecutive losses: " + string(consecutiveLosses));
          
-         
+         SendRequest("POST", "/api/backtest/", toJson(backtestDuration));
          // if (profitFactor <= 1.3) return;
          
          int strategyId = db.getStrategyId(modelName);
@@ -83,11 +84,9 @@ class BacktestInfo {
              stringListToJson(entryFunctionList), stringListToJson(exitFunctionList),
              stringListToJson(confirmFunctionList), AccountCurrency()
          );
-        
+
          db.insertData(backtestSql);
          int backtestId = db.findBacktestId(backtestLaunchTime);
-         SendResquest("POST", "/api/backtest/", toJson(backtestDuration));
-         
          for (int i = 0; i < ArraySize(positions); i++) {
             db.insertData(positions[i].getSql(backtestId));
          }
@@ -133,15 +132,26 @@ class BacktestInfo {
       void doCalculations() {
           int positionAmount = ArraySize(positions);
           totalTrades = positionAmount;
-          profit = NormalizeDouble(((AccountBalance() - initialBalance) / initialBalance) * 100, 2);
-          setConsecutiveStats(positionAmount);
-          setTradeOveralls(positionAmount);
+          if (positionAmount == 0) {
+               profit = 0;
+               profitFactor = 0;
+               consecutiveDrawdown = 0;
+               longsWon = 0;
+               shortsWon = 0;
+               consecutiveWins = 0;
+               consecutiveLosses = 0;
+               return;
+          } else {
+            profit = NormalizeDouble(((AccountBalance() - initialBalance) / initialBalance) * 100, 2);
+            setConsecutiveStats(positionAmount);
+            setTradeOveralls(positionAmount);
+          }
       }
       
       void setConsecutiveStats(int positionAmount) {
          int tempConsecutiveLoses = 0;
          int tempConsecutiveWins = 0;
-         double tempConsecutiveDrawdown = 0;
+         // double tempConsecutiveDrawdown = 0;
          double grossProfit = 0;
          double grossLoss = 0;
          
@@ -157,26 +167,27 @@ class BacktestInfo {
                
                grossProfit += position.getNetProfit();
                tempConsecutiveLoses = 0;
-               tempConsecutiveDrawdown = 0;
+               // tempConsecutiveDrawdown = 0;
             } else {
                tempConsecutiveLoses++;
-               tempConsecutiveDrawdown += position.getNetProfit();
+               // tempConsecutiveDrawdown += position.getNetProfit();
                
-               if (tempConsecutiveDrawdown < consecutiveDrawdown){
-                consecutiveDrawdown = tempConsecutiveDrawdown;
-               }
+               // if (tempConsecutiveDrawdown < consecutiveDrawdown){
+               //  consecutiveDrawdown = tempConsecutiveDrawdown;
+               // }
                
                if (tempConsecutiveLoses > consecutiveLosses) {
                 consecutiveLosses = tempConsecutiveLoses;
                } 
                
-               consecutiveDrawdown = NormalizeDouble((consecutiveDrawdown / initialBalance) * 100, 2);
+               consecutiveDrawdown = 0.0;
                grossLoss += position.getNetProfit();     
                tempConsecutiveWins = 0;
             }
          }
-         
-         profitFactor = NormalizeDouble(MathAbs(grossProfit / grossLoss), 2);
+         if (grossProfit > 0 && grossLoss < 0) {
+            profitFactor = NormalizeDouble(grossProfit / MathAbs(grossLoss), 2);
+         } else profitFactor = 0;
       }
       
       string toJson(int backtestDuration) {
@@ -185,13 +196,14 @@ class BacktestInfo {
          backtestObject["symbol_name"] = Symbol();
          backtestObject["period_minutes"] = period;
          backtestObject["start_balance"] = initialBalance;
+         backtestObject["account_currency"] = AccountCurrency();
          // backtestObject["profit"] = profit;
          // backtestObject["profit_factor"] = profitFactor;
          // backtestObject["drawdown"] = consecutiveDrawdown;
          // backtestObject["longs_won"] = longsWon;
          // backtestObject["shorts_won"] = shortsWon;
-         backtestObject["date_from"] = dateFrom;
-         backtestObject["date_to"] = dateTo;
+         backtestObject["start_ts_utc"] = dateFrom;
+         backtestObject["end_ts_utc"] = dateTo;
          // backtestObject["total_trades"] = totalTrades;
          // backtestObject["long_trades"] = longTrades;
          // backtestObject["short_trades"] = shortTrades;
@@ -199,12 +211,11 @@ class BacktestInfo {
          // backtestObject["consecutive_losses"] = consecutiveLosses;
          // backtestObject["backtest_launch_time"] = backtestLaunchTime;
          // backtestObject["backtest_duration"] = backtestDuration;
-         backtestObject["session_limits"] = customSession.toJson();
          backtestObject["inputs"] = inputJson;
          backtestObject["entry_list"] = stringListToJson(entryFunctionList);
          backtestObject["exit_list"] = stringListToJson(exitFunctionList);
          backtestObject["confirmation_list"] = stringListToJson(confirmFunctionList);
-         backtestObject["account_currency"] = AccountCurrency();
+         backtestObject["session_limits"] = customSession.toJson();
          CJAVal positionObject;
          for (int i = 0; i < ArrayRange(positions, 0); i++) {
             positionObject.Add(positions[i].toJson());
@@ -213,7 +224,7 @@ class BacktestInfo {
          json["backtest_info"] = backtestObject;
          json["strategy_name"] = modelName;
          json["positions"] = positionObject;
-         Print(json.Serialize());
+
          return json.Serialize(); 
       }
 

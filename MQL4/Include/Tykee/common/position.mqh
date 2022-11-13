@@ -130,8 +130,8 @@ class Position {
          CJAVal json;
          
          json["order_number"] = number;
-         json["open_time"] = openTime;
-         json["close_time"] = closeTime;
+         json["start_ts_utc"] = openTime;
+         json["end_ts_utc"] = closeTime;
          json["lot_size"] = lotSize;
          json["open_price"] = openPrice;
          json["close_price"] = closePrice;
@@ -172,7 +172,7 @@ class Position {
          return positionType;    
       }
       
-       int getBreakEvenFlag() {
+      int getBreakEvenFlag() {
          return breakEvenFlag;    
       }
       

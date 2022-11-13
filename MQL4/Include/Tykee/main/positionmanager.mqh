@@ -58,7 +58,6 @@ class PositionManager {
         this.breakEven = cBreakEven;
         this.fixedSLTP = cfixedSLTP;
         this.customSession = cCustomSession;
-      //   this.tickController = new TickController();
         backtestInfo.setCustomSessionObject(cCustomSession);
       }
       

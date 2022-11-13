@@ -4,7 +4,7 @@ string baseUrl = "http://localhost";
 int timeout = 3000;
 string secret = "ZhaoDingDang!1";
 
-void SendResquest(string httpType, string methodName, string bodyData = "") {
+void SendRequest(string httpType, string methodName, string bodyData = "") {
       
       string cookies =  NULL;
       string headers = "Content-Type: application/json\r\n";
