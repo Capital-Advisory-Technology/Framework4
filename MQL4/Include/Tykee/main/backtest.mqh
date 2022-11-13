@@ -202,8 +202,8 @@ class BacktestInfo {
          // backtestObject["drawdown"] = consecutiveDrawdown;
          // backtestObject["longs_won"] = longsWon;
          // backtestObject["shorts_won"] = shortsWon;
-         backtestObject["date_from"] = dateFrom;
-         backtestObject["date_to"] = dateTo;
+         backtestObject["start_ts_utc"] = dateFrom;
+         backtestObject["end_ts_utc"] = dateTo;
          // backtestObject["total_trades"] = totalTrades;
          // backtestObject["long_trades"] = longTrades;
          // backtestObject["short_trades"] = shortTrades;
