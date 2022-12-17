@@ -21,7 +21,7 @@ WebRequests body
     "enter_list": ["Entry_1"],
     "exit_list": ["Exit_1"],
     "conf_list": ["Confirmation_1"],
-    "session_limits": "{"minutes_range": [{"from": 0, "to": 55}, {}]}"
+    "session_limits": {"minutes_range": [{"from": 0, "to": 55}]}
   },
   "positions": [
     {
