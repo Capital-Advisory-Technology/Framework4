@@ -15,6 +15,7 @@ WebRequests body
     "symbol_name": "GBPJPY",
     "period_minutes": 60,
     "start_balance": 10000,
+    "account_currency": "EUR",
     "start_ts_utc": 123456789,
     "end_ts_utc": 198765432,
     "inputs": {"RISK_PER_TRADE": 1.0},
