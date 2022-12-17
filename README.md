@@ -17,11 +17,11 @@ WebRequests body
     "start_balance": 10000,
     "start_ts_utc": 123456789,
     "end_ts_utc": 198765432,
-    "inputs": "{"RISK_PER_TRADE": 1.0, ...}",
-    "enter_list": "["Entry_1", ...]",
-    "exit_list": "["Exit_1", ...]",
-    "conf_list": "["Confirmation_1", ...]"
-    "session_limits": "{"minutes_range": [{"from": 0, "to": 55}, {}], ...}"
+    "inputs": {"RISK_PER_TRADE": 1.0},
+    "enter_list": ["Entry_1"],
+    "exit_list": ["Exit_1"],
+    "conf_list": ["Confirmation_1"],
+    "session_limits": "{"minutes_range": [{"from": 0, "to": 55}, {}]}"
   },
   "positions": [
     {
@@ -49,8 +49,7 @@ WebRequests body
       "position_type_value": 123.456,
       "breakeven_flag_value": 123.456,
       "close_type_value": 123.456
-    },
-    ...
+    }
   ]
 }
 ```
