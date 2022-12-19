@@ -214,7 +214,7 @@ class BacktestInfo {
          backtestObject["inputs"] = inputJson;
          backtestObject["entry_list"] = stringListToJson(entryFunctionList);
          backtestObject["exit_list"] = stringListToJson(exitFunctionList);
-         backtestObject["confirmation_list"] = stringListToJson(confirmFunctionList);
+         backtestObject["conf_list"] = stringListToJson(confirmFunctionList);
          backtestObject["session_limits"] = customSession.toJson();
          CJAVal positionObject;
          for (int i = 0; i < ArrayRange(positions, 0); i++) {

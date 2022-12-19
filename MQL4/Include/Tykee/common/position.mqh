@@ -132,6 +132,7 @@ class Position {
          json["order_number"] = number;
          json["start_ts_utc"] = openTime;
          json["end_ts_utc"] = closeTime;
+         json["balance"] = balance;
          json["lot_size"] = lotSize;
          json["open_price"] = openPrice;
          json["close_price"] = closePrice;
