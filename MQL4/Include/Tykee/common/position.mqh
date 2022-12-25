@@ -130,8 +130,8 @@ class Position {
          CJAVal json;
          
          json["order_number"] = number;
-         json["start_ts_utc"] = openTime;
-         json["end_ts_utc"] = closeTime;
+         json["date_from"] = openTime;
+         json["date_to"] = closeTime;
          json["balance"] = balance;
          json["lot_size"] = lotSize;
          json["open_price"] = openPrice;

@@ -197,20 +197,8 @@ class BacktestInfo {
          backtestObject["period_minutes"] = period;
          backtestObject["start_balance"] = initialBalance;
          backtestObject["account_currency"] = AccountCurrency();
-         // backtestObject["profit"] = profit;
-         // backtestObject["profit_factor"] = profitFactor;
-         // backtestObject["drawdown"] = consecutiveDrawdown;
-         // backtestObject["longs_won"] = longsWon;
-         // backtestObject["shorts_won"] = shortsWon;
-         backtestObject["start_ts_utc"] = dateFrom;
-         backtestObject["end_ts_utc"] = dateTo;
-         // backtestObject["total_trades"] = totalTrades;
-         // backtestObject["long_trades"] = longTrades;
-         // backtestObject["short_trades"] = shortTrades;
-         // backtestObject["consecutive_wins"] = consecutiveWins;
-         // backtestObject["consecutive_losses"] = consecutiveLosses;
-         // backtestObject["backtest_launch_time"] = backtestLaunchTime;
-         // backtestObject["backtest_duration"] = backtestDuration;
+         backtestObject["date_from"] = dateFrom;
+         backtestObject["date_to"] = dateTo;
          backtestObject["inputs"] = inputJson;
          backtestObject["entry_list"] = stringListToJson(entryFunctionList);
          backtestObject["exit_list"] = stringListToJson(exitFunctionList);
@@ -221,8 +209,8 @@ class BacktestInfo {
             positionObject.Add(positions[i].toJson());
          }
          
-         json["backtest_info"] = backtestObject;
-         json["strategy_name"] = modelName;
+         json["strategy"] = modelName;
+         json["backtest"] = backtestObject;
          json["positions"] = positionObject;
 
          return json.Serialize(); 
