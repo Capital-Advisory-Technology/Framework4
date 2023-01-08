@@ -94,7 +94,6 @@ void OnDeinit(const int reason) {
 
 void OnTick(){
    datetime tickTime = iTime(Symbol(), Period(), 0);
-   Print(tickTime);
    backtestInfo.setDate(tickTime);
    customSession.refresh();
 

@@ -35,7 +35,6 @@ class BacktestInfo {
             delete positions[i];
          }
          delete db;
-         // delete customSession;
       }
       
       void setDate(datetime date){
@@ -55,7 +54,7 @@ class BacktestInfo {
          Logger::log("Profit: " + string(profit));
          Logger::log("Profit factor: " + string(profitFactor));
          Logger::log("Consecutive Drawdown: " + string(consecutiveDrawdown));
-         Logger::log("Long wons: " + string(longsWon));
+         Logger::log("Long won: " + string(longsWon));
          Logger::log("Short won: " + string(shortsWon));
          Logger::log("Initial balance: " + string(initialBalance));
          Logger::log("Date from: " + string(dateFrom));

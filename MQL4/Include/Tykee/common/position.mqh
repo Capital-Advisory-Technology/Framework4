@@ -72,7 +72,7 @@ class Position {
       
       ~Position() {} 
       
-      void setPositionClosed(datetime endTime, double cClosePrice, double cGrossProfit, double cNetProfit, double cCommission, double cSwap, int ccloseType){
+      void setPositionClosed(datetime endTime, double cClosePrice, double cGrossProfit, double cNetProfit, double cCommission, double cSwap, int cCloseType){
          this.balance = NormalizeDouble(AccountBalance(), 2);
          this.closeTime = endTime;
          this.closePrice = NormalizeDouble(cClosePrice, Digits);
@@ -80,7 +80,7 @@ class Position {
          this.netProfit = NormalizeDouble(cNetProfit, 2);
          this.commission = NormalizeDouble(cCommission, 2);
          this.swap = NormalizeDouble(cSwap, 2);
-         this.closeType = ccloseType;
+         this.closeType = cCloseType;
          
          Logger::log("----------------------------------------");
          Logger::log("number: " + string(number));
@@ -129,7 +129,7 @@ class Position {
       CJAVal toJson() {
          CJAVal json;
          
-         json["order_number"] = number;
+         json["order_nr"] = number;
          json["date_from"] = openTime;
          json["date_to"] = closeTime;
          json["balance"] = balance;
@@ -142,7 +142,6 @@ class Position {
          json["net_profit"] = netProfit;
          json["commission"] = commission;
          json["swap"] = swap;
-         json["balance"] = balance;
          json["sma_200"] = SMA200;
          json["sma_65"] = SMA65;
          json["sma_21"] = SMA21;
@@ -151,9 +150,9 @@ class Position {
          json["ema_21"] = EMA21;
          json["rsi_14"] = RSI14;
          json["atr_14"] = ATR14;
-         json["position_type_value"] = positionType;
-         json["breakeven_flag_value"] = breakEvenFlag;
-         json["close_type_value"] = closeType;
+         json["close_type"] = closeType;
+         json["position_type"] = positionType;
+         json["breakeven_flag"] = breakEvenFlag;
          return json;
       }
       
