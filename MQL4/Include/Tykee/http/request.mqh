@@ -8,7 +8,7 @@ void SendRequest(string httpType, string methodName, string bodyData = "") {
       
       string cookies =  NULL;
       string headers = "Content-Type: application/json\r\n";
-      headers += "Secret: " + secret + "\r\n";
+      // headers += "Secret: " + secret + "\r\n";
       
       char post[], result[];
     

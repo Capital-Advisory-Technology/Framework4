@@ -63,6 +63,7 @@ class PositionManager {
       
       ~ PositionManager() {
          delete openPosition;
+         delete customSession;
       }
     
    /*

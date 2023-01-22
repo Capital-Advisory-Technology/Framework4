@@ -129,9 +129,9 @@ class Position {
       CJAVal toJson() {
          CJAVal json;
          
-         json["order_number"] = number;
-         json["start_ts_utc"] = openTime;
-         json["end_ts_utc"] = closeTime;
+         json["order_nr"] = number;
+         json["date_from"] = openTime;
+         json["date_to"] = closeTime;
          json["lot_size"] = lotSize;
          json["open_price"] = openPrice;
          json["close_price"] = closePrice;
@@ -150,9 +150,9 @@ class Position {
          json["ema_21"] = EMA21;
          json["rsi_14"] = RSI14;
          json["atr_14"] = ATR14;
-         json["position_type_value"] = positionType;
-         json["breakeven_flag_value"] = breakEvenFlag;
-         json["close_type_value"] = closeType;
+         json["position_type"] = positionType;
+         json["breakeven_flag"] = breakEvenFlag;
+         json["close_type"] = closeType;
          return json;
       }
       

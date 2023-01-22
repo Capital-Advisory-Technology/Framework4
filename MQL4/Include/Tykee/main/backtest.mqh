@@ -49,7 +49,7 @@ class BacktestInfo {
          if (!shouldExportData) return;
          int backtestDuration = db.getDateTime() - backtestLaunchTime;
         
-         doCalculations();
+         // doCalculations();
          Logger::log("Model name: " + modelName);
          Logger::log("Params: " + inputJson);
          Logger::log("Profit: " + string(profit));
@@ -69,27 +69,27 @@ class BacktestInfo {
          SendRequest("POST", "/api/backtest/", toJson(backtestDuration));
          // if (profitFactor <= 1.3) return;
          
-         int strategyId = db.getStrategyId(modelName);
-         string backtestSql = setBacktestDataQuery(
-             symbolId, strategyId,
-             period, initialBalance,
-             profit, profitFactor,
-             consecutiveDrawdown,longsWon, 
-             shortsWon,dateFrom,
-             dateTo,totalTrades,
-             longTrades, shortTrades,
-             consecutiveWins, consecutiveLosses,
-             backtestLaunchTime, backtestDuration,
-             customSession.toJson(), inputJson,
-             stringListToJson(entryFunctionList), stringListToJson(exitFunctionList),
-             stringListToJson(confirmFunctionList), AccountCurrency()
-         );
+         // int strategyId = db.getStrategyId(modelName);
+         // string backtestSql = setBacktestDataQuery(
+         //     symbolId, strategyId,
+         //     period, initialBalance,
+         //     profit, profitFactor,
+         //     consecutiveDrawdown,longsWon, 
+         //     shortsWon,dateFrom,
+         //     dateTo,totalTrades,
+         //     longTrades, shortTrades,
+         //     consecutiveWins, consecutiveLosses,
+         //     backtestLaunchTime, backtestDuration,
+         //     customSession.toJson(), inputJson,
+         //     stringListToJson(entryFunctionList), stringListToJson(exitFunctionList),
+         //     stringListToJson(confirmFunctionList), AccountCurrency()
+         // );
 
-         db.insertData(backtestSql);
-         int backtestId = db.findBacktestId(backtestLaunchTime);
-         for (int i = 0; i < ArraySize(positions); i++) {
-            db.insertData(positions[i].getSql(backtestId));
-         }
+         // db.insertData(backtestSql);
+         // int backtestId = db.findBacktestId(backtestLaunchTime);
+         // for (int i = 0; i < ArraySize(positions); i++) {
+         //    db.insertData(positions[i].getSql(backtestId));
+         // }
       }
       
       void savePosition(Position* position) {
@@ -193,8 +193,8 @@ class BacktestInfo {
       string toJson(int backtestDuration) {
          CJAVal json;
          CJAVal backtestObject;
-         backtestObject["symbol_name"] = Symbol();
-         backtestObject["period_minutes"] = period;
+         backtestObject["symbol"] = Symbol();
+         backtestObject["period"] = period;
          backtestObject["start_balance"] = initialBalance;
          backtestObject["account_currency"] = AccountCurrency();
          // backtestObject["profit"] = profit;
@@ -202,8 +202,8 @@ class BacktestInfo {
          // backtestObject["drawdown"] = consecutiveDrawdown;
          // backtestObject["longs_won"] = longsWon;
          // backtestObject["shorts_won"] = shortsWon;
-         backtestObject["start_ts_utc"] = dateFrom;
-         backtestObject["end_ts_utc"] = dateTo;
+         backtestObject["date_from"] = dateFrom;
+         backtestObject["date_to"] = dateTo;
          // backtestObject["total_trades"] = totalTrades;
          // backtestObject["long_trades"] = longTrades;
          // backtestObject["short_trades"] = shortTrades;
@@ -214,15 +214,15 @@ class BacktestInfo {
          backtestObject["inputs"] = inputJson;
          backtestObject["entry_list"] = stringListToJson(entryFunctionList);
          backtestObject["exit_list"] = stringListToJson(exitFunctionList);
-         backtestObject["confirmation_list"] = stringListToJson(confirmFunctionList);
+         backtestObject["conf_list"] = stringListToJson(confirmFunctionList);
          backtestObject["session_limits"] = customSession.toJson();
          CJAVal positionObject;
          for (int i = 0; i < ArrayRange(positions, 0); i++) {
             positionObject.Add(positions[i].toJson());
          }
          
-         json["backtest_info"] = backtestObject;
-         json["strategy_name"] = modelName;
+         json["strategy"] = modelName;
+         json["backtest"] = backtestObject;
          json["positions"] = positionObject;
 
          return json.Serialize(); 
