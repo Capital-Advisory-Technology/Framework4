@@ -109,22 +109,22 @@ class Position {
       };
       
       
-      string getSql(int backtestId) {
-         return setPositionQuery(
-                 backtestId, number,
-                 openTime, closeTime,
-                 grossProfit, netProfit,
-                 positionType,balance,
-                 lotSize,openPrice,
-                 closePrice,slPrice,
-                 tpPrice,commission,
-                 swap,SMA200,
-                 EMA200,SMA65,
-                 EMA65,RSI14, 
-                 ATR14,breakEvenFlag,
-                 closeType
-              );
-      }
+      // string getSql(int backtestId) {
+      //    return setPositionQuery(
+      //            backtestId, number,
+      //            openTime, closeTime,
+      //            grossProfit, netProfit,
+      //            positionType,balance,
+      //            lotSize,openPrice,
+      //            closePrice,slPrice,
+      //            tpPrice,commission,
+      //            swap,SMA200,
+      //            EMA200,SMA65,
+      //            EMA65,RSI14, 
+      //            ATR14,breakEvenFlag,
+      //            closeType
+      //         );
+      // }
       
       CJAVal toJson() {
          CJAVal json;

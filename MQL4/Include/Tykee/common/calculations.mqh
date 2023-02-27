@@ -20,7 +20,13 @@ double CalculateLotSize(double risk, int stopLoss)
    double maxLot = MarketInfo(Symbol(), MODE_MAXLOT);
    double tickVal = MarketInfo(Symbol(), MODE_TICKVALUE);
    double lotSize = AccountBalance() * risk / 100 / (stopLoss * tickVal);
-   return MathMin(maxLot, MathMax(minLot,NormalizeDouble(lotSize / lotStep, 0) * lotStep));
+   return MathMin(
+    maxLot,
+    MathMax(
+      minLot,
+      NormalizeDouble(lotSize / lotStep, 0) * lotStep
+      )
+    );
   }
 
 //+------------------------------------------------------------------+

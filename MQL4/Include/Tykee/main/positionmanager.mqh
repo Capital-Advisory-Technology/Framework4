@@ -35,16 +35,6 @@ class PositionManager {
       BacktestInfo* backtestInfo;
       CustomSession* customSession;
    
-      bool NewBar() {
-         if (lastBarTime < Time[0]) {
-            lastBarTime = Time[0];
-            return true;
-         }
-         else {
-            return false;
-         }
-      }
-     
    public:
       PositionManager::PositionManager(BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
         this.backtestInfo = cBacktestInfo;
@@ -61,7 +51,7 @@ class PositionManager {
         backtestInfo.setCustomSessionObject(cCustomSession);
       }
       
-      ~ PositionManager() {
+      ~PositionManager() {
          delete openPosition;
          delete customSession;
       }
@@ -187,8 +177,7 @@ class PositionManager {
       break even. 
    */
    PositionStatus getStatus() {
-      bool newBar = NewBar();
-      if (newBar && OrdersTotal() == 0) {
+      if (OrdersTotal() == 0) {
          if (isPositionOpen()) {
             onAutomaticPositionClose();
          }

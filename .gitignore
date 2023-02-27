@@ -27,3 +27,4 @@ tester/*
 backtest-reports/
 origin.txt
 *.sqbpro
+archive/

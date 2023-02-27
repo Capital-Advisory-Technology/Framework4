@@ -1,0 +1,17 @@
+strategyName=DEWA-1.0
+riskPerTrade=1.0
+SLRatio=1.15
+TPRatio=10.5
+ATR_Period=26
+fixedSLTP=false
+slippage=3
+breakEven=0.6
+DEMA_Period=140.0
+DEMA_filter=0.0
+DEMA_FilterPeriod=0
+DEMA_enum_price=0
+DEMA_enum_filter=0
+WDH_sensetive=220
+WDH_deadZone=30
+WDH_explosionPower=15
+WDH_trendPower=15

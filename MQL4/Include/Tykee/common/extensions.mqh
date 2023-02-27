@@ -7,14 +7,3 @@
     }
     return json.Serialize();
 }
-
-string filterJson(string inputString) {
-    string replaced = inputString;
-    StringReplace(replaced,"\"\"","\"");
-    StringReplace(replaced,"\"{","{");
-    StringReplace(replaced,"}\"","}");
-    StringReplace(replaced,"\"[","[");
-    StringReplace(replaced,"]\"","]");
-    return replaced;
-}
-
