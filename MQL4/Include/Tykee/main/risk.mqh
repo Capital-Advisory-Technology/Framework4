@@ -19,8 +19,8 @@ bool CheckForBreakEven(double breakeven) {
       if (oop == osl || (oop + (10 * Point) > osl && oop - (10 * Point) < osl)) {
          return false;
       } else {
-         double high = iHigh(OrderSymbol(), PERIOD_CURRENT,1);   
-         double low = iLow(OrderSymbol(), PERIOD_CURRENT,1);
+         double high = High[1];
+         double low = Low[1];
          double breakEvenPrice;
          bool orderModify;
          

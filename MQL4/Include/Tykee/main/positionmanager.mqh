@@ -82,18 +82,6 @@ class PositionManager {
          Logger::log("Order send success");
          if (OrderSelect(0, SELECT_BY_POS)) {
             // Calculate values for analysis
-            double SMA200, SMA65, SMA21, EMA200, EMA65, EMA21, RSI14, ATR14;
-            if (backtestInfo.getShouldExportData()) {
-                SMA200 = iMA(Symbol(),Period(), 200, 0, MODE_SMA, PRICE_CLOSE, 1);
-                SMA65 = iMA(Symbol(), Period(), 65, 0, MODE_SMA, PRICE_CLOSE, 1);
-                SMA21 = iMA(Symbol(), Period(), 21, 0, MODE_SMA, PRICE_CLOSE, 1);
-                EMA200 = iMA(Symbol(), Period(), 200, 0, MODE_EMA, PRICE_CLOSE, 1);
-                EMA65 = iMA(Symbol(), Period(), 65, 0, MODE_EMA, PRICE_CLOSE, 1);
-                EMA21 = iMA(Symbol(), Period(), 21, 0, MODE_EMA, PRICE_CLOSE, 1);
-                RSI14 = iRSI(Symbol(), Period(), 14, PRICE_CLOSE, 1);
-                ATR14 = iATR(Symbol(), Period(), this.ATRPeriod, 1);
-            }
-            
             openPosition = new Position(
                number,
                OrderOpenTime(), 
@@ -101,15 +89,7 @@ class PositionManager {
                lotSize, 
                OrderOpenPrice(), 
                slPrice, 
-               tpPrice, 
-               SMA200,  
-               SMA65,
-               SMA21,
-               EMA200, 
-               EMA65,
-               EMA21,
-               RSI14, 
-               ATR14
+               tpPrice
            );
 
            openPositionType = positionType;
@@ -153,8 +133,8 @@ class PositionManager {
    void onAutomaticPositionClose() {
       Logger::log("Stop loss/Take profit executed");
       if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
-         Logger::log("Position closed");
          savePosition(AUTOMATIC_CLOSE);
+         Logger::log("Position closed");
       } else {
         Logger::log("Automatic close position error: " + string(GetLastError()));
       }
@@ -164,6 +144,9 @@ class PositionManager {
       return openPosition != NULL;
    }
    
+   /*
+      Saves an open position at backtest end.
+   */
    void onDeInit() {
       if (isPositionOpen()) {
          if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {

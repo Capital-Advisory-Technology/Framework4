@@ -2,7 +2,6 @@
 
 #include <Tykee/common/position.mqh>
 #include <Tykee/common/session.mqh>
-#include <Tykee/database/DB.mqh>
 #include <Tykee/database/queries.mqh>
 #include <Tykee/common/extensions.mqh>
 #include <Tykee/http/request.mqh>
@@ -19,19 +18,17 @@ static string confirmFunctionList[];
 class BacktestInfo {
 
  public:
-      BacktestInfo::BacktestInfo(string cModelName, string cModelParams, bool cShouldExportData) {
+      BacktestInfo::BacktestInfo(string cModelName, string cModelParams, bool cExportData) {
          this.initialBalance = AccountBalance();
          this.modelName = cModelName;
          this.inputJson = cModelParams;
-         this.shouldExportData = cShouldExportData;
-         this.period = Period();
+         this.exportData = cExportData;
       };
       
       ~BacktestInfo() {
          for (int i = 0; i < ArraySize(positions); i++) {
             delete positions[i];
          }
-         delete db;
       }
       
       void setDate(datetime date){
@@ -41,8 +38,8 @@ class BacktestInfo {
          dateTo = int(date);
       };
       
-      void exportData() {
-         if (!shouldExportData) return;
+      void exportBacktest() {
+         if (!exportData) return;
          SendRequest("POST", "/api/backtest/", toJson());
       }
       
@@ -51,8 +48,8 @@ class BacktestInfo {
          positions[ArraySize(positions) - 1] = position; 
       }
       
-      bool getShouldExportData() {
-         return shouldExportData;
+      bool getExportData() {
+         return exportData;
       }
       
       void setCustomSessionObject(CustomSession* cCustomSession) {
@@ -60,34 +57,21 @@ class BacktestInfo {
       }
 
    private:
-      bool shouldExportData;
+      bool exportData;
       string modelName;
       string inputJson; 
-      double profit; 
-      double profitFactor; 
-      double consecutiveDrawdown;
-      double longsWon;
-      double shortsWon; 
       double initialBalance;
       int dateFrom; 
       int dateTo;
       int backtestLaunchTime;
-      int totalTrades; 
-      int longTrades; 
-      int shortTrades; 
-      int consecutiveWins; 
-      int consecutiveLosses;
-      int symbolId;
-      int period;
       Position* positions[];
-      Database* db;
       CustomSession* customSession;
       
       string toJson() {
-         CJAVal json;
          CJAVal backtestObject;
+         backtestObject["strategy"] = modelName;
          backtestObject["symbol"] = Symbol();
-         backtestObject["period"] = period;
+         backtestObject["period"] = Period();
          backtestObject["start_balance"] = initialBalance;
          backtestObject["account_currency"] = AccountCurrency();
          backtestObject["date_from"] = dateFrom;
@@ -103,7 +87,7 @@ class BacktestInfo {
             positionObject.Add(positions[i].toJson());
          }
          
-         json["strategy"] = modelName;
+         CJAVal json;
          json["backtest"] = backtestObject;
          json["positions"] = positionObject;
 
@@ -113,7 +97,6 @@ class BacktestInfo {
 };
 
  void addToEntryFunctionList(string name) {
-   bool shouldAdd = true;   
    for (int i = 0; i < ArraySize(entryFunctionList); i++) {
       if (entryFunctionList[i] == name) return;
    }
@@ -123,7 +106,6 @@ class BacktestInfo {
 }
 
  void addToExitFunctionList(string name) {
-   bool shouldAdd = true;   
    for (int i = 0; i < ArraySize(exitFunctionList); i++) {
       if (exitFunctionList[i] == name) return;
    }
@@ -132,7 +114,6 @@ class BacktestInfo {
 }
 
  void addToConfirmationFunctionList(string name) {
-   bool shouldAdd = true;   
    for (int i = 0; i < ArraySize(confirmFunctionList); i++) {
       if (confirmFunctionList[i] == name) return;
    }
