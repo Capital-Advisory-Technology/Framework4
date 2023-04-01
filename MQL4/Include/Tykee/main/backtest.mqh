@@ -63,7 +63,6 @@ class BacktestInfo {
       double initialBalance;
       int dateFrom; 
       int dateTo;
-      int backtestLaunchTime;
       Position* positions[];
       CustomSession* customSession;
       
