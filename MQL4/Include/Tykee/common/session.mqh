@@ -11,10 +11,10 @@ class Range {
    AllowedOrder allowedOrder;
 
  public:
-      Range::Range(int beginning, int end, AllowedOrder allowedOrder) {
-         this.beginning = beginning;
-         this.end = end;
-         this.allowedOrder = allowedOrder;
+      Range::Range(int cBeginning, int cEnd, AllowedOrder cAllowedOrder) {
+         this.beginning = cBeginning;
+         this.end = cEnd;
+         this.allowedOrder = cAllowedOrder;
       }
       
       int getBeginning() {

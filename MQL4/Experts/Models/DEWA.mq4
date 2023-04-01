@@ -5,6 +5,7 @@
 
 #include <Tykee/main/backtest.mqh>
 #include <Tykee/main/positionmanager.mqh>
+#include <Tykee/main/riskmanager.mqh>
 
 #include <Tykee/common/utils.mqh>
 #include <Tykee/common/enums.mqh>
@@ -48,6 +49,7 @@ extern int WDH_trend_power = 15;
 BacktestInfo* backtestInfo;
 PositionManager* positionManager;
 CustomSession* customSession;
+RiskManager* riskManager;
 
 int OnInit() {
    Logger::isDebug = print_logs;
@@ -78,8 +80,9 @@ int OnInit() {
    inputJson["WDH_explosion_power"] = WDH_explosion_power;
    inputJson["WDH_trend_power"] = WDH_trend_power;
 
+   riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, 0.8, 1.0, ATR_period);
    backtestInfo = new BacktestInfo(strategy_name, inputJson.Serialize(), export_data);
-   positionManager = new PositionManager(backtestInfo, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp);
+   positionManager = new PositionManager(riskManager, backtestInfo, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp);
    
    return(INIT_SUCCEEDED);
 }

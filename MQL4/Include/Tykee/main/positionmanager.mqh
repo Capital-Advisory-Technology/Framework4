@@ -1,4 +1,5 @@
 #include <Tykee/main/risk.mqh>
+#include <Tykee/main/riskmanager.mqh>
 #include <Tykee/main/backtest.mqh>
 
 #include <Tykee/common/calculations.mqh>
@@ -32,11 +33,13 @@ class PositionManager {
       bool fixedSLTP;
       datetime lastBarTime;
       Position* openPosition;
+      RiskManager* riskManager;
       BacktestInfo* backtestInfo;
       CustomSession* customSession;
    
    public:
-      PositionManager::PositionManager(BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
+      PositionManager::PositionManager(RiskManager* cRiskManager, BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
+        this.riskManager = cRiskManager;
         this.backtestInfo = cBacktestInfo;
         this.riskPerTrade = cRiskPerTrade;
         this.SLRatio = cSLRatio;
@@ -66,11 +69,10 @@ class PositionManager {
    void openOrder(int positionType) {
       if (!customSession.allowToOpen(positionType)) return;
       // Calculate values for order
-      int stopLoss = CalculateSL(SLRatio, ATRPeriod, fixedSLTP);
-      int takeProfit = CalculateTP(TPRatio, stopLoss, fixedSLTP);
-      double lotSize = CalculateLotSize(riskPerTrade, stopLoss);
-      double slPrice = GetSLprice(stopLoss, positionType);
-      double tpPrice = GetTPprice(takeProfit, positionType);
+      riskManager.newTrade(positionType);
+      double lotSize = riskManager.getLotSize();
+      double slPrice = riskManager.getSLprice();
+      double tpPrice = riskManager.getTPprice();
 
       double openPrice;
       if (positionType == OP_BUY) openPrice = Ask; else openPrice = Bid;
