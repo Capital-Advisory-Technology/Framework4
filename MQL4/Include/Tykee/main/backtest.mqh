@@ -1,8 +1,5 @@
-#include <SQLite3/Statement.mqh>
-
 #include <Tykee/common/position.mqh>
 #include <Tykee/common/session.mqh>
-#include <Tykee/database/queries.mqh>
 #include <Tykee/common/extensions.mqh>
 #include <Tykee/http/request.mqh>
 
