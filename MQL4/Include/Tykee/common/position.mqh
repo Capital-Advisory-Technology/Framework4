@@ -93,8 +93,8 @@ class Position {
          return breakEvenFlag;    
       }
       
-      void updateStopLoss() {
-         slPrice = openPrice;
+      void updateStopLoss(double price) {
+         slPrice = price;
       };
 
       CJAVal toJson() {

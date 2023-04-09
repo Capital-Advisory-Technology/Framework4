@@ -30,7 +30,9 @@ extern int slippage = 3;
 extern int ATR_period = 14;
 extern double SL_ratio = 1.5;
 extern double TP_ratio = 3.0;
-extern double breakeven = 0.5; 
+extern double breakeven = 0.5;
+extern double profit_zone = 0.5;
+extern double profit_zone_reward = 0.1;
 extern double risk_per_trade = 1.0;
 
 // Strategies externals
@@ -67,6 +69,8 @@ int OnInit() {
    inputJson["FIXED_SLTP"] = fixed_sltp;
    inputJson["SLIPPAGE"] = slippage;
    inputJson["BREAKEVEN"] = breakeven;
+   inputJson["PROFIT_ZONE"] = profit_zone;
+   inputJson["PROFIT_ZONE_REWARD"] = profit_zone_reward;
    inputJson["BREAKEVEN_WR"] = NormalizeDouble((SL_ratio / (SL_ratio + TP_ratio) * 100), 2);
    inputJson["RISK"] = risk_per_trade;
    inputJson["ATR_period"] = ATR_period;
@@ -80,7 +84,7 @@ int OnInit() {
    inputJson["WDH_explosion_power"] = WDH_explosion_power;
    inputJson["WDH_trend_power"] = WDH_trend_power;
 
-   riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, 0.8, 1.0, ATR_period);
+   riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, 0.9, 0.2, ATR_period);
    backtestInfo = new BacktestInfo(strategy_name, inputJson.Serialize(), export_data);
    positionManager = new PositionManager(riskManager, backtestInfo, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp);
    

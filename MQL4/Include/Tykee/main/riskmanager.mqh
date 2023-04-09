@@ -1,3 +1,4 @@
+//###<Experts/Models/DEWA.mq4>
 //+------------------------------------------------------------------+
 //|                                                         risk.mqh |
 //|                                            Copyright 2022, Tykee |
@@ -23,7 +24,10 @@ class RiskManager {
         int ATRPeriod;
         
         // Calculated variables
+        int positionType;
         double openPrice;
+        int stopLossPoints;
+        int takeProfitPoints;
         double lotSize;
         double stopLossPrice;
         double takeProfitPrice;
@@ -34,35 +38,40 @@ class RiskManager {
         double profitZonePrice;
         double profitZoneSLPrice;
 
-        int getSLpoints() {
-            int stopLoss;
+        void setPositionType(int cPositionType)
+        {
+            positionType = cPositionType;
+        }
+
+        void setSLpoints() {
             double atr = NormalizeDouble(iATR(Symbol(), Period(), ATRPeriod, 1), Digits);
-            stopLoss = (int)(atr / Point * SLRatio);
-            return stopLoss;
+            int points = (int)(atr / Point * SLRatio);
+            stopLossPoints = points;
         }
 
-        int getTPpoints() {
-            int takeProfit;
-            takeProfit = (int)(getSLpoints() * TPRatio);
-            return takeProfit;
+        void setTPpoints() {
+            int points = (int)(stopLossPoints * TPRatio);
+            takeProfitPoints = points;
         }
 
-        void setOpenPrice(int positionType) {
+        void setOpenPrice() {
             double price;
             if (positionType == OP_BUY) price = Ask; else price = Bid;
             openPrice = price;
         }
         
-        void setSLprice(int positionType) {
+        void setSLprice() {
+            setSLpoints();
             double price = 0;
-            double stopLoss = getSLpoints() * Point;
+            double stopLoss = stopLossPoints * Point;
             if (positionType == OP_BUY) price = NormalizeDouble(openPrice - stopLoss, Digits); else price = NormalizeDouble(openPrice + stopLoss, Digits);
             stopLossPrice = price;
         }
 
-        void setTPprice(int positionType) {
+        void setTPprice() {
+            setTPpoints();
             double price = 0;
-            double takeProfit = getTPpoints() * Point;
+            double takeProfit = takeProfitPoints * Point;
             if (positionType == OP_BUY) price = NormalizeDouble(openPrice + takeProfit, Digits); else price = NormalizeDouble(openPrice - takeProfit, Digits);
             takeProfitPrice = price;
         }
@@ -72,34 +81,48 @@ class RiskManager {
             double minLot = MarketInfo(Symbol(), MODE_MINLOT);
             double maxLot = MarketInfo(Symbol(), MODE_MAXLOT);
             double tickVal = MarketInfo(Symbol(), MODE_TICKVALUE);
-            double lots = AccountBalance() * riskPerTrade / 100 / (getSLpoints() * tickVal);
+            double lots = AccountBalance() * riskPerTrade / 100 / (stopLossPoints * tickVal);
+
             lotSize = MathMin(
                 maxLot,
                 MathMax(
                     minLot,
-                    NormalizeDouble(lotSize / lotStep, 0) * lotStep
+                    NormalizeDouble(lots / lotStep, 0) * lotStep
                 )
             );
         }
         
-        void setBreakevenPrice(int positionType) {
+        void setBreakevenPrice() {
             double price = 0;
-            double breakevenDelta = getTPpoints() * Point * breakeven;
-            if (positionType == OP_BUY) price = NormalizeDouble(breakevenDelta + openPrice, Digits); else price = NormalizeDouble(breakevenDelta - openPrice, Digits);
+            double breakevenDelta = takeProfitPoints * Point * breakeven;
+            if (positionType == OP_BUY) price = NormalizeDouble(breakevenDelta + openPrice, Digits); else price = NormalizeDouble(openPrice - breakevenDelta, Digits);
             breakevenPrice = price;
         }
 
-
-        // ADD PROFITZONES METHODS
-        void setProfitZonePrice(int positionType) {
+        void setProfitZonePrice() {
             double price = 0;
-            double profitZoneDelta = getTPpoints() * Point * profitZone;
+            double profitZoneDelta = takeProfitPoints * Point * profitZone;
             if (positionType == OP_BUY) {
-                price = NormalizeDouble(profitZoneDelta + openPrice, Digits);
+                price = NormalizeDouble(openPrice + profitZoneDelta, Digits);
             } else {
-                price = NormalizeDouble(profitZoneDelta - openPrice, Digits);
+                price = NormalizeDouble(openPrice - profitZoneDelta, Digits);
             }
-            return price;
+            profitZonePrice = price;
+            Print("ProfitZonePrice: ", profitZonePrice);
+        }
+
+        void setProfitZoneSLPrice() {
+            double price = 0;
+            double profitDelta;
+            if (positionType == OP_BUY) {
+                profitDelta = takeProfitPrice - openPrice;
+                price = NormalizeDouble(openPrice + profitDelta * profitRatio, Digits);
+            } else {
+                profitDelta = openPrice - takeProfitPrice;
+                price = NormalizeDouble(openPrice - profitDelta * profitRatio, Digits);
+            }
+            profitZoneSLPrice = price;
+            Print("ProfitZoneSLPrice: ", profitZoneSLPrice);
         }
 
     public:
@@ -111,14 +134,38 @@ class RiskManager {
             this.profitZone = cProfitZone;
             this.profitRatio = cProfitRatio;
             this.ATRPeriod = cATRPeriod;
+
+            this.isBreakeven = false;
+            this.isProfitZone = false;
         }
 
-        void newTrade(int positionType) {
-            setOpenPrice(positionType);
-            setSLprice(positionType);
-            setTPprice(positionType);
+        ~RiskManager() {
+        }
+
+        void newTrade(int cPositionType) {
+            setPositionType(cPositionType);
+            setOpenPrice();
+            setSLprice();
+            setTPprice();
             setLotSize();
-            setBreakevenPrice(positionType);
+            setBreakevenPrice();
+            setProfitZonePrice();
+            setProfitZoneSLPrice();
+        }
+
+        void onPositionClosed() {
+            openPrice = 0;
+            stopLossPoints = 0;
+            takeProfitPoints = 0;
+            lotSize = 0;
+            stopLossPrice = 0;
+            takeProfitPrice = 0;
+
+            isBreakeven = false;
+            isProfitZone = false;
+            breakevenPrice = 0;
+            profitZonePrice = 0;
+            profitZoneSLPrice = 0;
         }
 
         double getLotSize() {
@@ -132,7 +179,7 @@ class RiskManager {
         double getTPprice() {
             return takeProfitPrice;
         }
-
+        
         void setBreakeven() {
             isBreakeven = true;
         }
@@ -145,6 +192,19 @@ class RiskManager {
             return breakevenPrice;
         }
 
-        // ADD PROFITZONES METHODS
- 
+        void setProfitZone() {
+            isProfitZone = true;
+        }
+
+        bool getProfitZone() {
+            return isProfitZone;
+        }
+
+        double getProfitZonePrice() {
+            return profitZonePrice;
+        }
+
+        double getProfitZoneSLPrice() {
+            return profitZoneSLPrice;
+        }
 };

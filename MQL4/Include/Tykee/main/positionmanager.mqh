@@ -57,6 +57,7 @@ class PositionManager {
       ~PositionManager() {
          delete openPosition;
          delete customSession;
+         delete riskManager;
       }
     
    /*
@@ -73,7 +74,6 @@ class PositionManager {
       double lotSize = riskManager.getLotSize();
       double slPrice = riskManager.getSLprice();
       double tpPrice = riskManager.getTPprice();
-
       double openPrice;
       if (positionType == OP_BUY) openPrice = Ask; else openPrice = Bid;
       
@@ -142,6 +142,72 @@ class PositionManager {
       }
    }
    
+   void checkBreakeven() {
+      if (OrderSelect(0, SELECT_BY_POS) == true) {
+         int oticket = OrderTicket();
+         double oop = NormalizeDouble(OrderOpenPrice(), Digits); 
+         double osl = NormalizeDouble(OrderStopLoss(), Digits);
+         double otp = NormalizeDouble(OrderTakeProfit(), Digits);
+         double breakevenPrice = riskManager.getBreakevenPrice();
+         bool orderModify;
+
+         if (OrderType() == OP_BUY) {
+            if (Bid >= breakevenPrice || High[1] >= breakevenPrice) {
+               orderModify = OrderModify(oticket, oop, oop, otp, 0, clrOrange);
+            }
+         } else {
+            if (Ask <= breakevenPrice || Low[1] <= breakevenPrice) {
+               orderModify = OrderModify(oticket, oop, oop, otp, 0, clrOrange);
+            }
+         }
+
+         if (orderModify) {
+            openPosition.updateStopLoss(oop);
+            openPosition.setBreakEvenFlag(true);
+            riskManager.setBreakeven();
+            Logger::log("Break even executed");
+         } else {
+            Logger::log("Break even error: " + string(GetLastError()));
+         }
+         // }
+      } else {
+         Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
+      }
+   }
+
+   void checkProfitZone() {
+      if (OrderSelect(0, SELECT_BY_POS) == true) {
+         int oticket = OrderTicket();
+         double oop = NormalizeDouble(OrderOpenPrice(), Digits); 
+         double otp = NormalizeDouble(OrderTakeProfit(), Digits);
+         double profitZonePrice = riskManager.getProfitZonePrice();
+         double newSL = riskManager.getProfitZoneSLPrice();
+         bool orderModify;
+
+         if (OrderType() == OP_BUY) {
+            if (Bid >= profitZonePrice || High[1] >= profitZonePrice) {
+               orderModify = OrderModify(oticket, oop, newSL, otp, 0, clrWhite);
+            }
+         } else {
+            if (Ask <= profitZonePrice || Low[1] <= profitZonePrice) {
+               orderModify = OrderModify(oticket, oop, newSL, otp, 0, clrWhite);
+            }
+         }
+
+         if (orderModify) {
+            openPosition.updateStopLoss(newSL);
+            // openPosition.setBreakEvenFlag(true);
+            riskManager.setProfitZone();
+            Logger::log("Break even executed");
+         } else {
+            Logger::log("Break even error: " + string(GetLastError()));
+         }
+         // }
+      } else {
+         Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
+      }
+   }
+
    bool isPositionOpen() {
       return openPosition != NULL;
    }
@@ -168,9 +234,15 @@ class PositionManager {
          }
          return AVAILABLE_TO_OPEN;
       } else if(isPositionOpen()) {
-         if (CheckForBreakEven(breakEven) && !openPosition.getBreakEvenFlag()) {
-            openPosition.updateStopLoss();
-            openPosition.setBreakEvenFlag(true);
+         // if (CheckForBreakEven(breakEven) && !openPosition.getBreakEvenFlag()) {
+         //    openPosition.updateStopLoss();
+         //    openPosition.setBreakEvenFlag(true);
+         // }
+         // return IS_OPENED;
+         if (!riskManager.getBreakeven() && !openPosition.getBreakEvenFlag()) {
+            checkBreakeven();
+         } else if(riskManager.getBreakeven() && !riskManager.getProfitZone()) {
+            checkProfitZone();
          }
          return IS_OPENED;
       } else {
@@ -189,5 +261,6 @@ class PositionManager {
       openPosition.setPositionClosed(OrderCloseTime(), NormalizeDouble(OrderClosePrice(), Digits), oGrossProfit, oNetProfit, oCommission, oSwap, closeType);
       backtestInfo.savePosition(openPosition);
       openPosition = NULL;
+      riskManager.onPositionClosed();
    }
 };
