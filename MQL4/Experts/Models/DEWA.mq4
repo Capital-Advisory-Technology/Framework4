@@ -5,6 +5,7 @@
 
 #include <Tykee/main/backtest.mqh>
 #include <Tykee/main/positionmanager.mqh>
+#include <Tykee/main/riskmanager.mqh>
 
 #include <Tykee/common/utils.mqh>
 #include <Tykee/common/enums.mqh>
@@ -16,23 +17,23 @@
 #include <Tykee/signals/entry.mqh>
 #include <Tykee/signals/confirmations.mqh>
 
-#include <Tykee/database/DB.mqh>
-
 // Backtest controls
-bool export_data = true; // If true, backtest data will be exported to DB
 bool print_logs = false; // If true, all logs added via custom logger will be visible in journal
+extern bool export_data = true;
 
 // Strategy name - version
 extern string strategy_name = "DEWA-1.0";
 
 // Backtest's externals for optimization
-extern double risk_per_trade = 1.0;
-extern double sl_ratio = 1.5;
-extern double tp_ratio = 3.0;
-extern int atr_period = 14;
 extern bool fixed_sltp = false;
 extern int slippage = 3;
-extern double break_even = 0.5; 
+extern int ATR_period = 14;
+extern double SL_ratio = 1.5;
+extern double TP_ratio = 3.0;
+extern double breakeven = 0.5;
+extern double profit_zone = 0.5;
+extern double profit_zone_reward = 0.1;
+extern double risk_per_trade = 1.0;
 
 // Strategies externals
 // DEMA
@@ -50,6 +51,7 @@ extern int WDH_trend_power = 15;
 BacktestInfo* backtestInfo;
 PositionManager* positionManager;
 CustomSession* customSession;
+RiskManager* riskManager;
 
 int OnInit() {
    Logger::isDebug = print_logs;
@@ -62,13 +64,16 @@ int OnInit() {
    customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
 
    CJAVal inputJson;
-   inputJson["RISK_PER_TRADE"] = risk_per_trade;
-   inputJson["SL_RATIO"] = sl_ratio;
-   inputJson["TP_RATIO"] = tp_ratio;
+   inputJson["SL_RATIO"] = SL_ratio;
+   inputJson["TP_RATIO"] = TP_ratio;
    inputJson["FIXED_SLTP"] = fixed_sltp;
    inputJson["SLIPPAGE"] = slippage;
-   inputJson["BREAK_EVEN"] = break_even;
-   inputJson["atr_period"] = atr_period;
+   inputJson["BREAKEVEN"] = breakeven;
+   inputJson["PROFIT_ZONE"] = profit_zone;
+   inputJson["PROFIT_ZONE_REWARD"] = profit_zone_reward;
+   inputJson["BREAKEVEN_WR"] = NormalizeDouble((SL_ratio / (SL_ratio + TP_ratio) * 100), 2);
+   inputJson["RISK"] = risk_per_trade;
+   inputJson["ATR_period"] = ATR_period;
    inputJson["DEMA_period"] = DEMA_period;
    inputJson["DEMA_filter"] = DEMA_filter;
    inputJson["DEMA_filter_period"] = DEMA_filter_period;
@@ -79,15 +84,16 @@ int OnInit() {
    inputJson["WDH_explosion_power"] = WDH_explosion_power;
    inputJson["WDH_trend_power"] = WDH_trend_power;
 
+   riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, 0.9, 0.2, ATR_period);
    backtestInfo = new BacktestInfo(strategy_name, inputJson.Serialize(), export_data);
-   positionManager = new PositionManager(backtestInfo, customSession, sl_ratio, tp_ratio, atr_period, risk_per_trade, slippage, break_even, fixed_sltp);
+   positionManager = new PositionManager(riskManager, backtestInfo, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp);
    
    return(INIT_SUCCEEDED);
 }
 
 void OnDeinit(const int reason) { 
    positionManager.onDeInit();     
-   backtestInfo.exportData();
+   backtestInfo.exportBacktest();
    delete backtestInfo;
    delete positionManager;
 }
@@ -97,8 +103,7 @@ void OnTick(){
    bool isNewBar = timeCur != timePre;
 
    if(isNewBar) {
-      datetime tickTime = iTime(Symbol(), Period(), 0);
-      backtestInfo.setDate(tickTime);
+      backtestInfo.setDate(Time[0]);
       customSession.refresh();
 
       switch(positionManager.getStatus()) {

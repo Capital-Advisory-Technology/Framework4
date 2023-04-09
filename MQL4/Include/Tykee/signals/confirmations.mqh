@@ -17,6 +17,12 @@
 #include <Tykee/signals/entry.mqh>
 #include <Tykee/main/backtest.mqh>
 
+#define WDH_PATH "Indicators\\Waddah.ex4"
+
+#ifdef WDH_PATH
+  #resource "\\" + WDH_PATH
+#endif
+
 //| AMA Baseline check (QC)
 //| AMA_period - {24 - 120}  |  AMA_nfast - {2 - 10}  |  AMA_nslow - {30 - 50}
 //| AMA_g - [1.0 - 2.0]      |  AMA_dK - [1.0 - 2.0] 
@@ -110,10 +116,16 @@ OrderAction Waddah_Confirmation(int WDH_sensetive, int WDH_deadZone, int WDH_exp
   {
    addToConfirmationFunctionList("Waddah_Confirmation");
    OrderAction signal = OA_IGNORE;
-
-   double WaddahBuy = iCustom(NULL, 0, "Waddah", WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 0, 1);
-   double WaddahSell = iCustom(NULL, 0, "Waddah", WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 1, 1);
-   double WaddahBaseline = iCustom(NULL, 0, "Waddah", WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 2, 1);
+   string Waddah_path;
+   #ifdef WDH_PATH
+    Waddah_path = "::" + WDH_PATH;
+   #else
+    Waddah_path = "Waddah";
+   #endif
+   
+   double WaddahBuy = iCustom(NULL, 0, Waddah_path, WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 0, 1);
+   double WaddahSell = iCustom(NULL, 0, Waddah_path, WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 1, 1);
+   double WaddahBaseline = iCustom(NULL, 0, Waddah_path, WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 2, 1);
 
    if(WaddahBuy > WaddahBaseline) signal = OA_OPEN_LONG;
    if(WaddahSell > WaddahBaseline) signal = OA_OPEN_SHORT;

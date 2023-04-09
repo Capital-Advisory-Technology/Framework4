@@ -37,6 +37,7 @@ int CalculateSL(double stopLossRatio, int ATRPeriod, bool fixed) {
   if(fixed) stopLoss = (int)MathRound(stopLossRatio);
   else {
     double atr = NormalizeDouble(iATR(Symbol(), Period(), ATRPeriod, 1), Digits);
+    // double atr = iCustom(NULL, 0, "Adaptive_ATR", ATRPeriod, 0, 1);
     stopLoss = (int)(atr / Point * stopLossRatio);
     if (stopLoss < 100) stopLoss = 100;
   }

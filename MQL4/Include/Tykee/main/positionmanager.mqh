@@ -1,4 +1,5 @@
 #include <Tykee/main/risk.mqh>
+#include <Tykee/main/riskmanager.mqh>
 #include <Tykee/main/backtest.mqh>
 
 #include <Tykee/common/calculations.mqh>
@@ -32,11 +33,13 @@ class PositionManager {
       bool fixedSLTP;
       datetime lastBarTime;
       Position* openPosition;
+      RiskManager* riskManager;
       BacktestInfo* backtestInfo;
       CustomSession* customSession;
    
    public:
-      PositionManager::PositionManager(BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
+      PositionManager::PositionManager(RiskManager* cRiskManager, BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
+        this.riskManager = cRiskManager;
         this.backtestInfo = cBacktestInfo;
         this.riskPerTrade = cRiskPerTrade;
         this.SLRatio = cSLRatio;
@@ -54,6 +57,7 @@ class PositionManager {
       ~PositionManager() {
          delete openPosition;
          delete customSession;
+         delete riskManager;
       }
     
    /*
@@ -66,12 +70,10 @@ class PositionManager {
    void openOrder(int positionType) {
       if (!customSession.allowToOpen(positionType)) return;
       // Calculate values for order
-      int stopLoss = CalculateSL(SLRatio, ATRPeriod, fixedSLTP);
-      int takeProfit = CalculateTP(TPRatio, stopLoss, fixedSLTP);
-      double lotSize = CalculateLotSize(riskPerTrade, stopLoss);
-      double slPrice = GetSLprice(stopLoss, positionType);
-      double tpPrice = GetTPprice(takeProfit, positionType);
-
+      riskManager.newTrade(positionType);
+      double lotSize = riskManager.getLotSize();
+      double slPrice = riskManager.getSLprice();
+      double tpPrice = riskManager.getTPprice();
       double openPrice;
       if (positionType == OP_BUY) openPrice = Ask; else openPrice = Bid;
       
@@ -82,18 +84,6 @@ class PositionManager {
          Logger::log("Order send success");
          if (OrderSelect(0, SELECT_BY_POS)) {
             // Calculate values for analysis
-            double SMA200, SMA65, SMA21, EMA200, EMA65, EMA21, RSI14, ATR14;
-            if (backtestInfo.getShouldExportData()) {
-                SMA200 = iMA(Symbol(),Period(), 200, 0, MODE_SMA, PRICE_CLOSE, 1);
-                SMA65 = iMA(Symbol(), Period(), 65, 0, MODE_SMA, PRICE_CLOSE, 1);
-                SMA21 = iMA(Symbol(), Period(), 21, 0, MODE_SMA, PRICE_CLOSE, 1);
-                EMA200 = iMA(Symbol(), Period(), 200, 0, MODE_EMA, PRICE_CLOSE, 1);
-                EMA65 = iMA(Symbol(), Period(), 65, 0, MODE_EMA, PRICE_CLOSE, 1);
-                EMA21 = iMA(Symbol(), Period(), 21, 0, MODE_EMA, PRICE_CLOSE, 1);
-                RSI14 = iRSI(Symbol(), Period(), 14, PRICE_CLOSE, 1);
-                ATR14 = iATR(Symbol(), Period(), this.ATRPeriod, 1);
-            }
-            
             openPosition = new Position(
                number,
                OrderOpenTime(), 
@@ -101,15 +91,7 @@ class PositionManager {
                lotSize, 
                OrderOpenPrice(), 
                slPrice, 
-               tpPrice, 
-               SMA200,  
-               SMA65,
-               SMA21,
-               EMA200, 
-               EMA65,
-               EMA21,
-               RSI14, 
-               ATR14
+               tpPrice
            );
 
            openPositionType = positionType;
@@ -153,17 +135,86 @@ class PositionManager {
    void onAutomaticPositionClose() {
       Logger::log("Stop loss/Take profit executed");
       if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
-         Logger::log("Position closed");
          savePosition(AUTOMATIC_CLOSE);
+         Logger::log("Position closed");
       } else {
         Logger::log("Automatic close position error: " + string(GetLastError()));
       }
    }
    
+   void checkBreakeven() {
+      if (OrderSelect(0, SELECT_BY_POS) == true) {
+         int oticket = OrderTicket();
+         double oop = NormalizeDouble(OrderOpenPrice(), Digits); 
+         double osl = NormalizeDouble(OrderStopLoss(), Digits);
+         double otp = NormalizeDouble(OrderTakeProfit(), Digits);
+         double breakevenPrice = riskManager.getBreakevenPrice();
+         bool orderModify;
+
+         if (OrderType() == OP_BUY) {
+            if (Bid >= breakevenPrice || High[1] >= breakevenPrice) {
+               orderModify = OrderModify(oticket, oop, oop, otp, 0, clrOrange);
+            }
+         } else {
+            if (Ask <= breakevenPrice || Low[1] <= breakevenPrice) {
+               orderModify = OrderModify(oticket, oop, oop, otp, 0, clrOrange);
+            }
+         }
+
+         if (orderModify) {
+            openPosition.updateStopLoss(oop);
+            openPosition.setBreakEvenFlag(true);
+            riskManager.setBreakeven();
+            Logger::log("Break even executed");
+         } else {
+            Logger::log("Break even error: " + string(GetLastError()));
+         }
+         // }
+      } else {
+         Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
+      }
+   }
+
+   void checkProfitZone() {
+      if (OrderSelect(0, SELECT_BY_POS) == true) {
+         int oticket = OrderTicket();
+         double oop = NormalizeDouble(OrderOpenPrice(), Digits); 
+         double otp = NormalizeDouble(OrderTakeProfit(), Digits);
+         double profitZonePrice = riskManager.getProfitZonePrice();
+         double newSL = riskManager.getProfitZoneSLPrice();
+         bool orderModify;
+
+         if (OrderType() == OP_BUY) {
+            if (Bid >= profitZonePrice || High[1] >= profitZonePrice) {
+               orderModify = OrderModify(oticket, oop, newSL, otp, 0, clrWhite);
+            }
+         } else {
+            if (Ask <= profitZonePrice || Low[1] <= profitZonePrice) {
+               orderModify = OrderModify(oticket, oop, newSL, otp, 0, clrWhite);
+            }
+         }
+
+         if (orderModify) {
+            openPosition.updateStopLoss(newSL);
+            // openPosition.setBreakEvenFlag(true);
+            riskManager.setProfitZone();
+            Logger::log("Break even executed");
+         } else {
+            Logger::log("Break even error: " + string(GetLastError()));
+         }
+         // }
+      } else {
+         Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
+      }
+   }
+
    bool isPositionOpen() {
       return openPosition != NULL;
    }
    
+   /*
+      Saves an open position at backtest end.
+   */
    void onDeInit() {
       if (isPositionOpen()) {
          if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
@@ -183,9 +234,15 @@ class PositionManager {
          }
          return AVAILABLE_TO_OPEN;
       } else if(isPositionOpen()) {
-         if (CheckForBreakEven(breakEven) && !openPosition.getBreakEvenFlag()) {
-            openPosition.updateStopLoss();
-            openPosition.setBreakEvenFlag(true);
+         // if (CheckForBreakEven(breakEven) && !openPosition.getBreakEvenFlag()) {
+         //    openPosition.updateStopLoss();
+         //    openPosition.setBreakEvenFlag(true);
+         // }
+         // return IS_OPENED;
+         if (!riskManager.getBreakeven() && !openPosition.getBreakEvenFlag()) {
+            checkBreakeven();
+         } else if(riskManager.getBreakeven() && !riskManager.getProfitZone()) {
+            checkProfitZone();
          }
          return IS_OPENED;
       } else {
@@ -204,5 +261,6 @@ class PositionManager {
       openPosition.setPositionClosed(OrderCloseTime(), NormalizeDouble(OrderClosePrice(), Digits), oGrossProfit, oNetProfit, oCommission, oSwap, closeType);
       backtestInfo.savePosition(openPosition);
       openPosition = NULL;
+      riskManager.onPositionClosed();
    }
 };
