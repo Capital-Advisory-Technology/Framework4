@@ -1,5 +1,5 @@
 # MTCodeBase
-Repo for MetaTrader (MQL) code
+Repo for MetaTrader4 (MQL4) code
 
 
 ## WebRequest
