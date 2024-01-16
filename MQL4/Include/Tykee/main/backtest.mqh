@@ -105,12 +105,10 @@ class BacktestInfo {
          );
          db.insertData(backtestSql);
          long backtestId = db.lastInsertId();
-         Print(">> Backtest saved with id: ", backtestId);
 
          for (int i = 0; i < ArraySize(positions); i++) {
             db.insertData(positions[i].getSql(backtestId));
          }
-         Print(">> Backtest positions saved");
       }
 
 };

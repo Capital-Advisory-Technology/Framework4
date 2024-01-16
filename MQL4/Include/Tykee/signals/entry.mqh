@@ -13,11 +13,11 @@
 #include <Tykee/common/utils.mqh>
 #include <Tykee/main/backtest.mqh>
 
-#define DEMA_PATH "Indicators\\DEMA.ex4"
+// #define DEMA_PATH "Indicators\\DEMA.ex4"
 
-#ifdef DEMA_PATH
-  #resource "\\" + DEMA_PATH
-#endif
+// #ifdef DEMA_PATH
+//   #resource "\\" + DEMA_PATH
+// #endif
 
 
 //| TE Crossover Entry (QC)          
@@ -121,9 +121,10 @@ OrderAction ABI_Simple(bool ABI_useRSI, double ABI_len, double ABI_smooth, int A
   }
 
 //| DEMA Crossover Entry (QC) 
-//| DEMA_period - {20 - 120}     |  DEMA_enum_price - [0-32]  |  DEMA_Filter = [0 - 20]
-//| DEMA_FilterPeriod - {0 - 8}  |  DEMA_enum_filter - [0 - 2]
-OrderAction DEMA_Simple(double DEMA_period, int DEMA_enum_price, double DEMA_Filter, int DEMA_FilterPeriod, int DEMA_enum_filter) 
+//| DEMA_period - {20 - 120}
+//| DEMA_filter = [0 - 20]  | DEMA_filter_period - {0 - 8}
+//| DEMA_enum_filter - [0 - 2]  |  DEMA_enum_price - [0-32]
+OrderAction DEMA_Simple(double DEMA_period, int DEMA_enum_price, double DEMA_filter, int DEMA_filter_period, int DEMA_enum_filter) 
   {
    addToEntryFunctionList("DEMA_Simple");
    OrderAction signal = OA_IGNORE;
@@ -135,8 +136,8 @@ OrderAction DEMA_Simple(double DEMA_period, int DEMA_enum_price, double DEMA_Fil
    #else
     DEMA_path = "DEMA";
    #endif
-   double DEMA_Buy = iCustom(NULL, 0, DEMA_path, PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_Filter, DEMA_FilterPeriod, DEMA_FilterOn, 3, 1);
-   double DEMA_Sell = iCustom(NULL, 0, DEMA_path, PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_Filter, DEMA_FilterPeriod, DEMA_FilterOn, 4, 1);
+   double DEMA_Buy = iCustom(NULL, 0, DEMA_path, PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_filter, DEMA_filter_period, DEMA_FilterOn, 3, 1);
+   double DEMA_Sell = iCustom(NULL, 0, DEMA_path, PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_filter, DEMA_filter_period, DEMA_FilterOn, 4, 1);
    
    if(LongSignalEmptyValue(DEMA_Buy,  DEMA_Sell)) signal = OA_OPEN_LONG;
    if(ShortSignalEmptyValue(DEMA_Buy,  DEMA_Sell)) signal = OA_OPEN_SHORT;
