@@ -57,25 +57,6 @@ class Position {
          this.commission = NormalizeDouble(cCommission, 2);
          this.swap = NormalizeDouble(cSwap, 2);
          this.closeType = cCloseType;
-         
-         // Logger::log("----------------------------------------");
-         // Logger::log("number: " + string(number));
-         // Logger::log("openTime: " + string(openTime));
-         // Logger::log("closeTime: " + string(closeTime));
-         // Logger::log("grossProfit: " + string(grossProfit));
-         // Logger::log("netProfit: " + string(netProfit));
-         // Logger::log("positionType: " + string(positionType));
-         // Logger::log("balance: " + string(balance));
-         // Logger::log("lotSize: " + string(lotSize));
-         // Logger::log("openPrice: " + string(openPrice));
-         // Logger::log("closePrice: " + string(closePrice));
-         // Logger::log("slPrice: " + string(slPrice));
-         // Logger::log("tpPrice: " + string(tpPrice));
-         // Logger::log("Commission: " + string(commission));
-         // Logger::log("Swap: " + string(swap));
-         // Logger::log("breakEvenFlag: " + string(breakEvenFlag));
-         // Logger::log("closeType: " + string(closeType));
-         // Logger::log("----------------------------------------");
       };
             
       void setBreakEvenFlag(bool positive) {

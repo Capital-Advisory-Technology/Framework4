@@ -24,8 +24,7 @@ private:
     string dbPath;
     SQLite3 *db;
 
-    int findStrategyId(string modelName)
-    {
+    int findStrategyId(string modelName) {
         int strategyId = -1;
         string query = findStrategyQuery(modelName);
         Statement s(db, query);
@@ -33,25 +32,20 @@ private:
             Logger::log(">> SQLite: Faild to execute getSymbolIdQuery...." + db.getErrorMsg());
 
         int r = s.step();
-        do
-        {
-            if (r == SQLITE_ROW)
-            {
+        do {
+            if (r == SQLITE_ROW) {
                 s.getColumn(0, strategyId);
             }
-            else
-            {
-                break;
-            }
+            else break;
 
             r = s.step();
         } while (r != SQLITE_DONE);
+
         return strategyId;
     }
 
 public:
-    Database::Database(void)
-    {
+    Database::Database(void) {
         dbName = "mt4_backtests.db";
         filesPath = TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL4\\Files";
         dbPath = filesPath + "\\" + dbName;
@@ -59,8 +53,7 @@ public:
         db = new SQLite3(dbPath, SQLITE_OPEN_READWRITE);
     };
 
-    Database::Database(string name)
-    {
+    Database::Database(string name) {
         dbName = name;
         filesPath = TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL4\\Files";
         dbPath = filesPath + "\\" + dbName;
@@ -68,123 +61,67 @@ public:
         db = new SQLite3(dbPath, SQLITE_OPEN_READWRITE);
     };
 
-    ~Database()
-    {
+    ~Database() {
         SQLite3::shutdown();
         delete db;
     }
 
-    int getSymbolId(string symbol)
-    {
+    int getSymbolId(string symbol) {
         int symbolId = -1;
         string query = getSymbolIdQuery(symbol);
         Statement s(db, query);
-        if (!s.isValid())
+        if (!s.isValid()) {
             Print(">> SQLite: Faild to execute getSymbolIdQuery....", db.getErrorMsg());
+            return -1;
+        }
 
         int r = s.step();
-        do
-        {
-            if (r == SQLITE_ROW)
-            {
+        do {
+            if (r == SQLITE_ROW) {
                 s.getColumn(0, symbolId);
             }
-            else
-            {
-                break;
-            }
+            else break;
 
             r = s.step();
         } while (r != SQLITE_DONE);
+
         return symbolId;
     }
 
-    int getDateTime()
-    {
-        int datetimeInt = 0;
-        Statement s(db, getCurrentTimeQuery());
-        if (!s.isValid())
-            Print(">> SQLite: Faild to execute", db.getErrorMsg());
-
-        int r = s.step();
-        do
-        {
-            if (r == SQLITE_ROW)
-            {
-                s.getColumn(0, datetimeInt);
-            }
-            else
-            {
-                break;
-            }
-
-            r = s.step();
-        } while (r != SQLITE_DONE);
-        return datetimeInt;
-    }
-
-    int getStrategyId(string modelName)
-    {
+    int getStrategyId(string modelName) {
         int strategyId = findStrategyId(modelName);
-        if (strategyId != -1)
-        {
+        if (strategyId != -1) {
             return strategyId;
         }
-        else
-        {
+        else {
             insertData(insertStrategyQuery(modelName));
             return findStrategyId(modelName);
         }
     }
 
     /*
+       Returns last insert row id.
+    */
+    long lastInsertId() {
+        return db.getLastInsertRowId();
+    }
+
+    /*
        Use this to execute any sql which does not require data to
        be collected f.e. INSERT, MODIFY etc. Dont execute SELECT queries with this.
     */
-    void insertData(string sql)
-    {
+    void insertData(string sql) {
         Statement s(db, sql);
-        if (!s.isValid())
-        {
+        if (!s.isValid()) {
             Print(">> SQLite: Failed to execute", db.getErrorMsg());
             return;
         }
 
         int r = s.step();
-        if (r == SQLITE_OK)
-        {
-            Logger::log(">>> Step finished.");
-        }
-        else if (r == SQLITE_DONE)
-        {
+        if (r == SQLITE_OK) Logger::log(">>> Step finished.");
+        else if (r == SQLITE_DONE) {
             // Ignore
         }
-        else
-            Logger::log(">>> Error executing statement: " + db.getErrorMsg());
-    }
-
-    int findBacktestId(int backtestLaunchTime)
-    {
-        int backtestId = -1;
-        string query = findBacktestQuery(backtestLaunchTime);
-        Statement s(db, query);
-
-        int r = s.step();
-        do
-        {
-            if (r == SQLITE_ROW)
-            {
-                s.getColumn(0, backtestId);
-            }
-            else
-                break;
-
-            r = s.step();
-        } while (r != SQLITE_DONE);
-        return backtestId;
-    }
-
-    long lastInsertId () {
-        return db.getLastInsertRowId();
+        else Print(">> SQLite: Failed to execute", db.getErrorMsg());
     }
 };
