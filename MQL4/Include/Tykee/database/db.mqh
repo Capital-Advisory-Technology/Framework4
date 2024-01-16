@@ -52,7 +52,7 @@ private:
 public:
     Database::Database(void)
     {
-        dbName = "TykeeDB.db";
+        dbName = "mt4_backtests.db";
         filesPath = TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL4\\Files";
         dbPath = filesPath + "\\" + dbName;
         SQLite3::initialize();
@@ -146,7 +146,7 @@ public:
         Statement s(db, sql);
         if (!s.isValid())
         {
-            Logger::log(db.getErrorMsg());
+            Print(">> SQLite: Failed to execute", db.getErrorMsg());
             return;
         }
 
@@ -182,5 +182,9 @@ public:
             r = s.step();
         } while (r != SQLITE_DONE);
         return backtestId;
+    }
+
+    long lastInsertId () {
+        return db.getLastInsertRowId();
     }
 };
