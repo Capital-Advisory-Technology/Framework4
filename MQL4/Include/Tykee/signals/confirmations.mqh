@@ -17,11 +17,11 @@
 #include <Tykee/signals/entry.mqh>
 #include <Tykee/main/backtest.mqh>
 
-#define WDH_PATH "Indicators\\Waddah.ex4"
+// #define WDH_PATH "Indicators\\Waddah.ex4"
 
-#ifdef WDH_PATH
-  #resource "\\" + WDH_PATH
-#endif
+// #ifdef WDH_PATH
+//   #resource "\\" + WDH_PATH
+// #endif
 
 //| AMA Baseline check (QC)
 //| AMA_period - {24 - 120}  |  AMA_nfast - {2 - 10}  |  AMA_nslow - {30 - 50}

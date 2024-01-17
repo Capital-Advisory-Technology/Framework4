@@ -2,6 +2,7 @@
 #include <Tykee/common/session.mqh>
 #include <Tykee/common/extensions.mqh>
 #include <Tykee/http/request.mqh>
+#include <Tykee/database/db.mqh>
 
 static string entryFunctionList[];
 static string exitFunctionList[];
@@ -20,12 +21,15 @@ class BacktestInfo {
          this.modelName = cModelName;
          this.inputJson = cModelParams;
          this.exportData = cExportData;
+         this.db = new Database();
       };
       
       ~BacktestInfo() {
          for (int i = 0; i < ArraySize(positions); i++) {
             delete positions[i];
          }
+
+         delete db;
       }
       
       void setDate(datetime date){
@@ -37,7 +41,9 @@ class BacktestInfo {
       
       void exportBacktest() {
          if (!exportData) return;
-         SendRequest("POST", "/api/backtest/", toJson());
+         toSqlite();
+         // SendRequest("POST", "/api/backtest/", toJson());
+         
       }
       
       void savePosition(Position* position) {
@@ -62,6 +68,7 @@ class BacktestInfo {
       int dateTo;
       Position* positions[];
       CustomSession* customSession;
+      Database *db;
       
       string toJson() {
          CJAVal backtestObject;
@@ -88,6 +95,20 @@ class BacktestInfo {
          json["positions"] = positionObject;
 
          return json.Serialize(); 
+      }
+
+      void toSqlite() {
+         int symbolId = db.getSymbolId(Symbol());
+         int strategyId = db.getStrategyId(modelName);
+         string backtestSql = setBacktestDataQuery(
+            symbolId, strategyId, Period(), initialBalance, dateFrom, dateTo, customSession.toJson(), inputJson, stringListToJson(entryFunctionList), stringListToJson(exitFunctionList), stringListToJson(confirmFunctionList), AccountCurrency()
+         );
+         db.insertData(backtestSql);
+         long backtestId = db.lastInsertId();
+
+         for (int i = 0; i < ArraySize(positions); i++) {
+            db.insertData(positions[i].getSql(backtestId));
+         }
       }
 
 };

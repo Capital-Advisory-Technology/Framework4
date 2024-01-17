@@ -8,8 +8,8 @@
 #property link      ""
 #property strict
 
-#define ATRIndicator "Indicators\\Adaptive_ATR.ex4"
-#resource "\\" + ATRIndicator
+// #define ATRIndicator "Indicators\\Adaptive_ATR.ex4"
+// #resource "\\" + ATRIndicator
 
 
 class RiskManager {
@@ -108,7 +108,6 @@ class RiskManager {
                 price = NormalizeDouble(openPrice - profitZoneDelta, Digits);
             }
             profitZonePrice = price;
-            Print("ProfitZonePrice: ", profitZonePrice);
         }
 
         void setProfitZoneSLPrice() {
@@ -122,7 +121,6 @@ class RiskManager {
                 price = NormalizeDouble(openPrice - profitDelta * profitRatio, Digits);
             }
             profitZoneSLPrice = price;
-            Print("ProfitZoneSLPrice: ", profitZoneSLPrice);
         }
 
     public:

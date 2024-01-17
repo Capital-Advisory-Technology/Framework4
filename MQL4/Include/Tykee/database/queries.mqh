@@ -1,0 +1,60 @@
+//+------------------------------------------------------------------+
+//|                                                      queries.mqh |
+//|                                                            Tykee |
+//|                                              http://www.tykee.io |
+//+------------------------------------------------------------------+
+#property copyright "Tykee"
+#property link "http://www.tykee.io"
+#property strict
+
+string getSymbolIdQuery(string symbol) {
+   return StringFormat("select id, name from symbols where name = '%s';", symbol);
+}
+
+string insertStrategyQuery(string name) {
+   return StringFormat("INSERT INTO strategies (name) VALUES ('%s')", name);
+}
+
+string findStrategyQuery(string name) {
+   return StringFormat("SELECT id FROM strategies WHERE name = '%s'", name);
+}
+
+string setBacktestDataQuery(
+    int symbolId, int strategyId,
+    int period, double balance,
+    int dateFrom, int dateTo,
+    string customSessionJson,
+    string inputs,
+    string entryFunctionList,
+    string exitFunctionList,
+    string confirmationFunctionList,
+    string accountCurrency) {
+   string base = "";
+   StringAdd(base, "INSERT INTO backtests ");
+   StringAdd(base, "(symbol_id, strategy_id, period, balance, date_from, date_to, session_limits, inputs, entry_list, exit_list, confirmation_list, account_currency) ");
+   StringAdd(base,
+             StringFormat("VALUES (%d, %d, %d, %f, %d, %d, '%s', '%s', '%s', '%s', '%s', '%s')",
+                          symbolId, strategyId, period, balance, dateFrom, dateTo, customSessionJson, inputs, entryFunctionList, exitFunctionList, confirmationFunctionList, accountCurrency));
+   return base;
+}
+
+string setPositionQuery(
+    long backtestId, int number,
+    long openTime, long closeTime,
+    double gross_profit, double net_profit,
+    int positionType, double balance,
+    double lotSize, double openPrice,
+    double closePrice, double slPrice,
+    double tpPrice, double commission,
+    double swap, int breakEvenFlag,
+    int closeType) {
+   string base = "";
+   StringAdd(base, "INSERT INTO positions ");
+   StringAdd(base, "(backtest_id, order_number, open_time, close_time, gross_profit, net_profit, position_type, balance, lot_size, open_price, close_price, sl_price, tp_price, commission, swap, breakeven_flag, close_type) ");
+   StringAdd(
+       base,
+       StringFormat(
+           "VALUES (%d, %d, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %d, %d)",
+           backtestId, number, openTime, closeTime, gross_profit, net_profit, positionType, balance, lotSize, openPrice, closePrice, slPrice, tpPrice, commission, swap, breakEvenFlag, closeType));
+   return base;
+}

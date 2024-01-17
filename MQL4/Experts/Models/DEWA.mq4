@@ -92,8 +92,11 @@ int OnInit() {
 }
 
 void OnDeinit(const int reason) { 
-   positionManager.onDeInit();     
-   backtestInfo.exportBacktest();
+   positionManager.onDeInit();
+   
+   double profitFactor = NormalizeDouble(TesterStatistics(STAT_PROFIT_FACTOR), 2);
+   if (profitFactor >= 1.3) backtestInfo.exportBacktest();
+
    delete backtestInfo;
    delete positionManager;
 }
