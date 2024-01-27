@@ -20,11 +20,11 @@ extern bool export_data = true;
 extern string strategy_name = "MacroMicro-1.0";
 
 // Backtest's externals for optimization
-extern bool fixed_sltp = false;
+extern bool fixed_sltp = true;
 extern int slippage = 3;
 extern int ATR_period = 14;
-extern double SL_ratio = 1.5;
-extern double TP_ratio = 3.0;
+extern double SL_ratio = 1.3;
+extern double TP_ratio = 5.2;
 extern double breakeven = 0.5;
 extern double profit_zone = 0.5;
 extern double profit_zone_reward = 0.1;
@@ -32,13 +32,13 @@ extern double risk_per_trade = 1.0;
 
 // Strategies externals
 // Macro Micro Cross
-extern int TE_MaPeriod = 20;
+extern int TE_MaPeriod = 36;
 extern int TE_MaFilterPass = 1;
 extern int TE_MaShift = 0;
 extern double TE_Deviation = 0.2;
 extern int TE_EnumPrice = 16;
-extern ENUM_TIMEFRAMES mTE_tf = PERIOD_H4;
-extern int mTE_MaPeriod = 20;
+extern ENUM_TIMEFRAMES mTE_tf = PERIOD_D1;
+extern int mTE_MaPeriod = 18;
 extern int mTE_MaFilterPass = 1;
 extern int mTE_MaShift = 0;
 extern double mTE_Deviation = 0.2; 
@@ -57,7 +57,7 @@ int OnInit() {
    customSession.addHourRange(2, 22, OPEN_BOTH); // Min 0, Max 23
    customSession.addDayOfWeekRange(1, 7, OPEN_BOTH); // Min 1, Max 7
    customSession.addMonthRange(1, 12, OPEN_BOTH); // Min 1, Max 12
-   customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
+   customSession.setPositionLimit(3, PERIOD_D1); // Support only H1, D1 and MN1
 
    CJAVal inputJson;
    inputJson["SL_RATIO"] = SL_ratio;
