@@ -17,7 +17,7 @@ bool print_logs = false; // If true, all logs added via custom logger will be vi
 extern bool export_data = true;
 
 // Strategy name - version
-extern string strategy_name = "DEWA-1.0";
+extern string strategy_name = "MacroMicroWad-1.0";
 
 // Backtest's externals for optimization
 extern bool fixed_sltp = false;
@@ -31,12 +31,19 @@ extern double profit_zone_reward = 0.1;
 extern double risk_per_trade = 1.0;
 
 // Strategies externals
-// DEMA
-extern double DEMA_period = 26;
-extern double DEMA_filter = 0;
-extern int DEMA_filter_period = 0;
-extern int DEMA_enum_price = 0;
-extern int DEMA_enum_filter = 0;
+// Macro Micro Cross
+extern int TE_MaPeriod = 20;
+extern int TE_MaFilterPass = 1;
+extern int TE_MaShift = 0;
+extern double TE_Deviation = 0.2;
+extern int TE_EnumPrice = 16;
+extern ENUM_TIMEFRAMES mTE_tf = PERIOD_H4;
+extern int mTE_MaPeriod = 20;
+extern int mTE_MaFilterPass = 1;
+extern int mTE_MaShift = 0;
+extern double mTE_Deviation = 0.2; 
+extern int mTE_EnumPrice = 16;
+
 // Waddah
 extern int WDH_sensetive = 150;
 extern int WDH_dead_zone = 30;
@@ -69,11 +76,18 @@ int OnInit() {
    inputJson["BREAKEVEN_WR"] = NormalizeDouble((SL_ratio / (SL_ratio + TP_ratio) * 100), 2);
    inputJson["RISK"] = risk_per_trade;
    inputJson["ATR_period"] = ATR_period;
-   inputJson["DEMA_period"] = DEMA_period;
-   inputJson["DEMA_filter"] = DEMA_filter;
-   inputJson["DEMA_filter_period"] = DEMA_filter_period;
-   inputJson["DEMA_enum_price"] = DEMA_enum_price;
-   inputJson["DEMA_enum_filter"] = DEMA_enum_filter;
+   inputJson["TE_MaPeriod"] = TE_MaPeriod;
+   inputJson["TE_MaFilterPass"] = TE_MaFilterPass;
+   inputJson["TE_MaShift"] = TE_MaShift;
+   inputJson["TE_Deviation"] = TE_Deviation;
+   inputJson["TE_EnumPrice"] = TE_EnumPrice;
+   inputJson["mTE_tf"] = int(mTE_tf);
+   inputJson["mTE_MaPeriod"] = mTE_MaPeriod;
+   inputJson["mTE_MaFilterPass"] = mTE_MaFilterPass;
+   inputJson["mTE_MaShift"] = mTE_MaShift;
+   inputJson["mTE_Deviation"] = mTE_Deviation; 
+   inputJson["mTE_EnumPrice"] = mTE_EnumPrice;
+
    inputJson["WDH_sensetive"] = WDH_sensetive;
    inputJson["WDH_dead_zone"] = WDH_dead_zone;
    inputJson["WDH_explosion_power"] = WDH_explosion_power;
@@ -106,15 +120,16 @@ void OnTick(){
 
       switch(positionManager.getStatus()) {
          case AVAILABLE_TO_OPEN: {
-         OrderAction action = DEMA_Simple(DEMA_period, DEMA_enum_price, DEMA_filter, DEMA_filter_period, DEMA_enum_filter);
-         OrderAction confirm = Waddah_Confirmation(WDH_sensetive, WDH_dead_zone, WDH_explosion_power, WDH_trend_power);
-         
-         if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT){
-            positionManager.openOrder(OP_SELL);
-         } else if(action == OA_OPEN_LONG && confirm == OA_OPEN_LONG) {
-            positionManager.openOrder(OP_BUY);
-         }
-         break;
+            OrderAction action = TE_Macro_Micro_Cross(TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_EnumPrice, mTE_tf, mTE_MaPeriod, mTE_MaFilterPass, mTE_MaShift, mTE_Deviation, mTE_EnumPrice);
+            OrderAction confirm = Waddah_Confirmation(WDH_sensetive, WDH_dead_zone, WDH_explosion_power, WDH_trend_power); 
+            
+            if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT) {
+               positionManager.openOrder(OP_SELL);
+            } else if(action == OA_OPEN_LONG && confirm == OA_OPEN_LONG) {
+               positionManager.openOrder(OP_BUY);
+            }
+
+            break;
          }
       }
    }
