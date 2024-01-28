@@ -17,31 +17,32 @@ bool print_logs = false; // If true, all logs added via custom logger will be vi
 extern bool export_data = true;
 
 // Strategy name - version
-extern string strategy_name = "DEWA-1.0";
+extern string strategy_name = "MacroMicro-1.0";
 
 // Backtest's externals for optimization
-extern bool fixed_sltp = false;
+extern bool fixed_sltp = true;
 extern int slippage = 3;
 extern int ATR_period = 14;
-extern double SL_ratio = 1.5;
-extern double TP_ratio = 3.0;
+extern double SL_ratio = 1.3;
+extern double TP_ratio = 5.2;
 extern double breakeven = 0.5;
 extern double profit_zone = 0.5;
 extern double profit_zone_reward = 0.1;
 extern double risk_per_trade = 1.0;
 
 // Strategies externals
-// DEMA
-extern double DEMA_period = 26;
-extern double DEMA_filter = 0;
-extern int DEMA_filter_period = 0;
-extern int DEMA_enum_price = 0;
-extern int DEMA_enum_filter = 0;
-// Waddah
-extern int WDH_sensetive = 150;
-extern int WDH_dead_zone = 30;
-extern int WDH_explosion_power = 15;
-extern int WDH_trend_power = 15;
+// Macro Micro Cross
+extern int TE_MaPeriod = 36;
+extern int TE_MaFilterPass = 1;
+extern int TE_MaShift = 0;
+extern double TE_Deviation = 0.2;
+extern int TE_EnumPrice = 16;
+extern ENUM_TIMEFRAMES mTE_tf = PERIOD_D1;
+extern int mTE_MaPeriod = 18;
+extern int mTE_MaFilterPass = 1;
+extern int mTE_MaShift = 0;
+extern double mTE_Deviation = 0.2; 
+extern int mTE_EnumPrice = 16;
 
 BacktestInfo* backtestInfo;
 PositionManager* positionManager;
@@ -56,7 +57,7 @@ int OnInit() {
    customSession.addHourRange(2, 22, OPEN_BOTH); // Min 0, Max 23
    customSession.addDayOfWeekRange(1, 7, OPEN_BOTH); // Min 1, Max 7
    customSession.addMonthRange(1, 12, OPEN_BOTH); // Min 1, Max 12
-   customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
+   customSession.setPositionLimit(3, PERIOD_D1); // Support only H1, D1 and MN1
 
    CJAVal inputJson;
    inputJson["SL_RATIO"] = SL_ratio;
@@ -69,15 +70,17 @@ int OnInit() {
    inputJson["BREAKEVEN_WR"] = NormalizeDouble((SL_ratio / (SL_ratio + TP_ratio) * 100), 2);
    inputJson["RISK"] = risk_per_trade;
    inputJson["ATR_period"] = ATR_period;
-   inputJson["DEMA_period"] = DEMA_period;
-   inputJson["DEMA_filter"] = DEMA_filter;
-   inputJson["DEMA_filter_period"] = DEMA_filter_period;
-   inputJson["DEMA_enum_price"] = DEMA_enum_price;
-   inputJson["DEMA_enum_filter"] = DEMA_enum_filter;
-   inputJson["WDH_sensetive"] = WDH_sensetive;
-   inputJson["WDH_dead_zone"] = WDH_dead_zone;
-   inputJson["WDH_explosion_power"] = WDH_explosion_power;
-   inputJson["WDH_trend_power"] = WDH_trend_power;
+   inputJson["TE_MaPeriod"] = TE_MaPeriod;
+   inputJson["TE_MaFilterPass"] = TE_MaFilterPass;
+   inputJson["TE_MaShift"] = TE_MaShift;
+   inputJson["TE_Deviation"] = TE_Deviation;
+   inputJson["TE_EnumPrice"] = TE_EnumPrice;
+   inputJson["mTE_tf"] = int(mTE_tf);
+   inputJson["mTE_MaPeriod"] = mTE_MaPeriod;
+   inputJson["mTE_MaFilterPass"] = mTE_MaFilterPass;
+   inputJson["mTE_MaShift"] = mTE_MaShift;
+   inputJson["mTE_Deviation"] = mTE_Deviation; 
+   inputJson["mTE_EnumPrice"] = mTE_EnumPrice;
 
    riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, 0.9, 0.2, ATR_period);
    backtestInfo = new BacktestInfo(strategy_name, inputJson.Serialize(), export_data);
@@ -96,7 +99,7 @@ void OnDeinit(const int reason) {
    delete positionManager;
 }
 
-void OnTick(){
+void OnTick() {
    static datetime timeCur; datetime timePre = timeCur; timeCur=Time[0];
    bool isNewBar = timeCur != timePre;
 
@@ -106,15 +109,15 @@ void OnTick(){
 
       switch(positionManager.getStatus()) {
          case AVAILABLE_TO_OPEN: {
-         OrderAction action = DEMA_Simple(DEMA_period, DEMA_enum_price, DEMA_filter, DEMA_filter_period, DEMA_enum_filter);
-         OrderAction confirm = Waddah_Confirmation(WDH_sensetive, WDH_dead_zone, WDH_explosion_power, WDH_trend_power);
-         
-         if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT){
-            positionManager.openOrder(OP_SELL);
-         } else if(action == OA_OPEN_LONG && confirm == OA_OPEN_LONG) {
-            positionManager.openOrder(OP_BUY);
-         }
-         break;
+            OrderAction action = TE_Macro_Micro_Cross(TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_EnumPrice, mTE_tf, mTE_MaPeriod, mTE_MaFilterPass, mTE_MaShift, mTE_Deviation, mTE_EnumPrice);
+            
+            if(action == OA_OPEN_SHORT) {
+               positionManager.openOrder(OP_SELL);
+            } else if(action == OA_OPEN_LONG) {
+               positionManager.openOrder(OP_BUY);
+            }
+
+            break;
          }
       }
    }
