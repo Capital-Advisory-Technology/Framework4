@@ -32,3 +32,30 @@ tester/logs
 backtest-reports/
 origin.txt
 *.sqbpro
+
+/.idea/
+
+/MQL4/Indicators/Accelerator.mq4
+/MQL4/Indicators/Accumulation.mq4
+/MQL4/Indicators/Alligator.mq4
+/MQL4/Indicators/Awesome.mq4
+/MQL4/Indicators/Bands.mq4
+/MQL4/Indicators/Bears.mq4
+/MQL4/Indicators/Bulls.mq4
+/MQL4/Indicators/CCI.mq4
+/MQL4/Indicators/Custom Moving Averages.mq4
+/MQL4/Indicators/Ichimoku.mq4
+/MQL4/Indicators/Heiken Ashi.mq4
+/MQL4/Indicators/iExposure.mq4
+/MQL4/Indicators/MACD.mq4
+/MQL4/Indicators/Momentum.mq4
+/MQL4/Indicators/OsMA.mq4
+/MQL4/Indicators/Parabolic.mq4
+/MQL4/Indicators/Stochastic.mq4
+/MQL4/Indicators/ZigZag.mq4
+/MQL4/Include/MovingAverages.mqh
+/MQL4/Include/Object.mqh
+/MQL4/Include/stderror.mqh
+/MQL4/Include/stdlib.mqh
+/MQL4/Include/StdLibErr.mqh
+/MQL4/Include/WinUser32.mqh
