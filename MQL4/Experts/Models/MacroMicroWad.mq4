@@ -110,7 +110,7 @@ void OnDeinit(const int reason) {
    delete positionManager;
 }
 
-void OnTick(){
+void OnTick() {
    static datetime timeCur; datetime timePre = timeCur; timeCur=Time[0];
    bool isNewBar = timeCur != timePre;
 
