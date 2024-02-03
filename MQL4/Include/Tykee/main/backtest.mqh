@@ -42,7 +42,7 @@ class BacktestInfo {
       void exportBacktest() {
          if (!exportData) return;
          toSqlite();
-         // SendRequest("POST", "/api/backtest/", toJson());
+         SendRequest("POST", "/api/backtest/", toJson());
          
       }
       
