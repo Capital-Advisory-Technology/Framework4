@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                          AMA.mq4 |
-//|                      Copyright © 2004, MetaQuotes Software Corp. |
+//|                      Copyright ï¿½ 2004, MetaQuotes Software Corp. |
 //|                                        http://www.metaquotes.net |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2004, by konKop,wellx"
+#property copyright "Copyright ï¿½ 2004, by konKop,wellx"
 #property link      "http://www.metaquotes.net"
 
 #property indicator_chart_window
@@ -101,8 +101,8 @@ int start()
       kAMAbuffer[pos]=AMA;
 
       ddK=(AMA-AMA0);
-      if ((MathAbs(ddK)) > (dK*Point) && (ddK > 0)) kAMAupsig[pos] =AMA; else kAMAupsig[pos]=0;
-      if ((MathAbs(ddK)) > (dK*Point) && (ddK < 0)) kAMAdownsig[pos]=AMA; else kAMAdownsig[pos]=0; 
+      if ((MathAbs(ddK)) > (dK*_Point) && (ddK > 0)) kAMAupsig[pos] =AMA; else kAMAupsig[pos]=0;
+      if ((MathAbs(ddK)) > (dK*_Point) && (ddK < 0)) kAMAdownsig[pos]=AMA; else kAMAdownsig[pos]=0; 
 
      
       AMA0=AMA;

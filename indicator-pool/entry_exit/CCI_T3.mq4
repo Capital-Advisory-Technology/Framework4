@@ -236,7 +236,7 @@ void CatchBullishDivergence(int shift)
     
    if(CCI[currentLow] > CCI[lastLow] && Low[cur] < Low[pre])
    {
-      bullishDivergence[currentLow] = CCI[currentLow] - 35;  //Point*pipMultiplier;
+      bullishDivergence[currentLow] = CCI[currentLow] - 35;  //_Point*pipMultiplier;
       if(drawPriceTrendLines == true)
                  DrawPriceTrendLine("l",Time[currentLow],Time[lastLow],Low[currentLow],Low[lastLow],clrLime,STYLE_SOLID);
       if(drawIndicatorTrendLines == true)
@@ -254,7 +254,7 @@ void CatchBullishDivergence(int shift)
         
    if(CCI[currentLow] < CCI[lastLow] && Low[cur] > Low[pre])
    {
-      bullishDivergence[currentLow] = CCI[currentLow] - 35;  //Point*pipMultiplier;
+      bullishDivergence[currentLow] = CCI[currentLow] - 35;  //_Point*pipMultiplier;
       if(drawPriceTrendLines == true)
                  DrawPriceTrendLine("l",Time[currentLow],Time[lastLow],Low[currentLow],Low[lastLow], clrLime, STYLE_DOT);
       if(drawIndicatorTrendLines == true)                            
@@ -293,7 +293,7 @@ void CatchBearishDivergence(int shift)
       
    if(CCI[currentPeak] < CCI[lastPeak] && High[cur] > High[pre])
    {
-       bearishDivergence[currentPeak] = CCI[currentPeak] + 35;  //Point*pipMultiplier;
+       bearishDivergence[currentPeak] = CCI[currentPeak] + 35;  //_Point*pipMultiplier;
        if(drawPriceTrendLines == true)
                DrawPriceTrendLine("h",Time[currentPeak],Time[lastPeak],High[currentPeak],High[lastPeak],clrRed,STYLE_SOLID);
        if(drawIndicatorTrendLines == true)
@@ -311,7 +311,7 @@ void CatchBearishDivergence(int shift)
 
    if(CCI[currentPeak] > CCI[lastPeak] && High[cur] < High[pre])
    {
-      bearishDivergence[currentPeak] = CCI[currentPeak] + 35;  //Point*pipMultiplier;
+      bearishDivergence[currentPeak] = CCI[currentPeak] + 35;  //_Point*pipMultiplier;
       if (drawPriceTrendLines == true)
                DrawPriceTrendLine("h",Time[currentPeak],Time[lastPeak],High[currentPeak],High[lastPeak], clrRed, STYLE_DOT);
       if (drawIndicatorTrendLines == true)

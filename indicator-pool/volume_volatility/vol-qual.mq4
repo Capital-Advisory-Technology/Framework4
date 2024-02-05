@@ -174,7 +174,7 @@ int start()
       sumVqi[i]   = sumVqi[i+1]+Vqi[i];
       sumVqida[i] = EMPTY_VALUE;
       sumVqidb[i] = EMPTY_VALUE;
-         if (FilterInPips > 0) if (MathAbs(sumVqi[i]-sumVqi[i+1]) < FilterInPips*pipMultiplier*Point) sumVqi[i] = sumVqi[i+1];
+         if (FilterInPips > 0) if (MathAbs(sumVqi[i]-sumVqi[i+1]) < FilterInPips*pipMultiplier*_Point) sumVqi[i] = sumVqi[i+1];
       
       //
       //

@@ -1,6 +1,6 @@
 //+------------------------------------------------------------------+
 //|                                                  VOLUME TYPE.mq4 |
-//|                                    Copyright © 2008, FOREXflash. |
+//|                                    Copyright ï¿½ 2008, FOREXflash. |
 //|                                        http://www.metaquotes.net |
 //+------------------------------------------------------------------+
 #property copyright ""
@@ -85,7 +85,7 @@ int AVGSpread()   {
     if(nCountedBars>0) nCountedBars--;
     nLimit=Bars-nCountedBars;
     for(i=0; i<nLimit; i++)
-    SPREADHL[i] = ((iHigh(NULL, 0, i) - iLow(NULL, 0, i))/Point)/PipFactor;   // SPREAD
+    SPREADHL[i] = ((iHigh(NULL, 0, i) - iLow(NULL, 0, i))/_Point)/PipFactor;   // SPREAD
     
     for (i=0; i<nLimit; i++)   {
         AvgSpread[i] = iMAOnArray(SPREADHL,0,MA_Length,0,MODE_EMA,i);         // AVERAGE SPREAD

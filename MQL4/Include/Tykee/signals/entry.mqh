@@ -27,7 +27,7 @@ OrderAction TE_Simple(int TE_MaPeriod, int TE_MaFilterPass, int TE_MaShift, doub
   {
    addToEntryFunctionList("TE_SIMPLE");
    OrderAction signal = OA_IGNORE;
-   enPrices TE_Price = TE_enum_price;
+   enPrices TE_Price = (enPrices)TE_enum_price;
 
    double TE_Buy = iCustom(NULL, 0, "trend-envelope", PERIOD_CURRENT, TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_Price, 0, 1);
    double TE_Sell = iCustom(NULL, 0, "trend-envelope", PERIOD_CURRENT, TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_Price, 1, 1);
@@ -48,8 +48,8 @@ OrderAction TE_Macro_Micro_Cross(int TE_MaPeriod, int TE_MaFilterPass, int TE_Ma
   {
    addToEntryFunctionList("TE_Macro_Micro_Cross");
    OrderAction signal = OA_IGNORE;
-   enPrices TE_Price = TE_enum_price;
-   enPrices mTE_Price = mTE_enum_price;
+   enPrices TE_Price = (enPrices)TE_enum_price;
+   enPrices mTE_Price = (enPrices)mTE_enum_price;
 
    double TE_Buy = iCustom(NULL, 0, "trend-envelope", PERIOD_CURRENT, TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_Price, 0, 1);
    double TE_Sell = iCustom(NULL, 0, "trend-envelope", PERIOD_CURRENT, TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_Price, 1, 1);
@@ -107,8 +107,8 @@ OrderAction ABI_Simple(bool ABI_useRSI, double ABI_len, double ABI_smooth, int A
   {
    addToEntryFunctionList("ABI_Simple");
    OrderAction signal = OA_IGNORE;
-   enMaTypes ABI_MaMethod = ABI_enum_ma; // MA type
-   enPrices ABI_Price = ABI_enum_price; // Price
+   enMaTypes ABI_MaMethod = (enMaTypes)ABI_enum_ma; // MA type
+   enPrices ABI_Price = (enPrices)ABI_enum_price; // Price
 
    double ABI_Buy = iCustom(NULL, 0, "ABI", ABI_useRSI, ABI_len, 5, ABI_smooth, ABI_MaMethod, ABI_Price, 0, 1);
    double ABI_Sell = iCustom(NULL, 0, "ABI", ABI_useRSI, ABI_len, 5, ABI_smooth, ABI_MaMethod, ABI_Price, 1, 1);
@@ -128,8 +128,8 @@ OrderAction DEMA_Simple(double DEMA_period, int DEMA_enum_price, double DEMA_fil
   {
    addToEntryFunctionList("DEMA_Simple");
    OrderAction signal = OA_IGNORE;
-   enPrices DEMA_Price = DEMA_enum_price;
-   enFilterWhat DEMA_FilterOn = DEMA_enum_filter;
+   enPrices DEMA_Price = (enPrices)DEMA_enum_price;
+   enFilterWhat DEMA_FilterOn = (enFilterWhat)DEMA_enum_filter;
    string DEMA_path;
    #ifdef DEMA_PATH // if DEMA_PATH is defined, use it
     DEMA_path = "::" + DEMA_PATH;

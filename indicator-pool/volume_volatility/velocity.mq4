@@ -1,10 +1,10 @@
 //+------------------------------------------------------------------+
 //|                                                  Velocity_v2.mq4 |
-//|                                Copyright © 2006, TrendLaboratory |
+//|                                Copyright ï¿½ 2006, TrendLaboratory |
 //|            http://finance.groups.yahoo.com/group/TrendLaboratory |
 //|                                   E-mail: igorad2003@yahoo.co.uk |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2006, TrendLaboratory"
+#property copyright "Copyright ï¿½ 2006, TrendLaboratory"
 #property link      "http://finance.groups.yahoo.com/group/TrendLaboratory"
 //----
 #property indicator_separate_window
@@ -65,7 +65,7 @@ int start()
    if(counted_bars==0) limit-=1+1;
 //----
    for(shift=limit;shift>=0;shift--)
-      Vel[shift]=(Close[shift]-Close[shift+1])/Point;
+      Vel[shift]=(Close[shift]-Close[shift+1])/_Point;
    for(shift=limit;shift>=0;shift--)
       AvgVel[shift]=iMAOnArray(Vel,0,VelocityPeriod,0,MA_Mode,shift);
    for(shift=limit;shift>=0;shift--)

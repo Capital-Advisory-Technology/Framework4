@@ -162,7 +162,7 @@ int OnCalculate(const int rates_total,
          pipTracker=0;
          for (int k=waveChangeBar-1; k>=i; k--) {
             volumeTracker += tick_volume[k];
-            pipTracker += (NormalizeDouble(open[k],5)-NormalizeDouble(close[k],5))/Point;
+            pipTracker += (NormalizeDouble(open[k],5)-NormalizeDouble(close[k],5))/_Point;
             if (waveDirection[i] ==  1) {
                upVolumeBuffer[k] = volumeTracker;
            //   if (volumeTracker==0) {upVolumeBuffer[k]=1;} else {upVolumeBuffer[k]=volumeTracker;}
@@ -181,7 +181,7 @@ int OnCalculate(const int rates_total,
 
          }
       volumeTracker += tick_volume[i];
-      pipTracker+=(NormalizeDouble(open[i],5)-NormalizeDouble(close[i],5)) /Point ;
+      pipTracker+=(NormalizeDouble(open[i],5)-NormalizeDouble(close[i],5)) /_Point ;
 
  
 

@@ -129,6 +129,6 @@ double getRSI(int &_array[],int _ind,int _tf,datetime _time)
    int shift=iBarShift(NULL,_tf,_time,false);
    if(_array[_ind]!=shift || shift==0) _array[_ind]=shift;
    result=iRSI(NULL,_tf,PeriodRSI,AppliedPrice,_array[_ind]);
-   return(result > Point ? result : EMPTY_VALUE);
+   return(result > _Point ? result : EMPTY_VALUE);
   }
 //+------------------------------------------------------------------+

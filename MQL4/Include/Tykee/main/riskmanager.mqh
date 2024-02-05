@@ -12,7 +12,7 @@
 // #resource "\\" + ATRIndicator
 
 
-class RiskManager {
+class RiskManager { 
     private:
         // Init variables - ratios, percentages, etc.
         double riskPerTrade;
@@ -45,7 +45,7 @@ class RiskManager {
 
         void setSLpoints() {
             double atr = NormalizeDouble(iATR(Symbol(), Period(), ATRPeriod, 1), Digits);
-            int points = (int)(atr / Point * SLRatio);
+            int points = (int)(atr / _Point * SLRatio);
             stopLossPoints = points;
         }
 
@@ -63,7 +63,7 @@ class RiskManager {
         void setSLprice() {
             setSLpoints();
             double price = 0;
-            double stopLoss = stopLossPoints * Point;
+            double stopLoss = stopLossPoints * _Point;
             if (positionType == OP_BUY) price = NormalizeDouble(openPrice - stopLoss, Digits); else price = NormalizeDouble(openPrice + stopLoss, Digits);
             stopLossPrice = price;
         }
@@ -71,16 +71,26 @@ class RiskManager {
         void setTPprice() {
             setTPpoints();
             double price = 0;
-            double takeProfit = takeProfitPoints * Point;
+            double takeProfit = takeProfitPoints * _Point;
             if (positionType == OP_BUY) price = NormalizeDouble(openPrice + takeProfit, Digits); else price = NormalizeDouble(openPrice - takeProfit, Digits);
             takeProfitPrice = price;
         }
 
         void setLotSize() {
+            
+            double tickVal;
+            
+            do {
+                tickVal = MarketInfo(Symbol(), MODE_TICKVALUE);
+                Print("tickVal: " , tickVal);
+                Sleep(200);
+            } while (tickVal <= 0.00001);
+                        
             double lotStep = MarketInfo(Symbol(), MODE_LOTSTEP);
             double minLot = MarketInfo(Symbol(), MODE_MINLOT);
             double maxLot = MarketInfo(Symbol(), MODE_MAXLOT);
-            double tickVal = MarketInfo(Symbol(), MODE_TICKVALUE);
+            
+            Print("stopLossPoints: ", stopLossPoints);
             double lots = AccountBalance() * riskPerTrade / 100 / (stopLossPoints * tickVal);
 
             lotSize = MathMin(
@@ -90,18 +100,20 @@ class RiskManager {
                     NormalizeDouble(lots / lotStep, 0) * lotStep
                 )
             );
+
+            Print("lotSize: ", lotSize);
         }
         
         void setBreakevenPrice() {
             double price = 0;
-            double breakevenDelta = takeProfitPoints * Point * breakeven;
+            double breakevenDelta = takeProfitPoints * _Point * breakeven;
             if (positionType == OP_BUY) price = NormalizeDouble(breakevenDelta + openPrice, Digits); else price = NormalizeDouble(openPrice - breakevenDelta, Digits);
             breakevenPrice = price;
         }
 
         void setProfitZonePrice() {
             double price = 0;
-            double profitZoneDelta = takeProfitPoints * Point * profitZone;
+            double profitZoneDelta = takeProfitPoints * _Point * profitZone;
             if (positionType == OP_BUY) {
                 price = NormalizeDouble(openPrice + profitZoneDelta, Digits);
             } else {

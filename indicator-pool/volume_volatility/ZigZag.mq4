@@ -122,7 +122,7 @@ int OnCalculate(const int rates_total,
          //--- new last low
          lastlow=extremum; 
          //--- discard extremum if current low is too high
-         if(low[i]-extremum>InpDeviation*Point)
+         if(low[i]-extremum>InpDeviation*_Point)
             extremum=0.0;
          else
            {
@@ -150,7 +150,7 @@ int OnCalculate(const int rates_total,
          //--- new last high
          lasthigh=extremum;
          //--- discard extremum if current high is too low
-         if(extremum-high[i]>InpDeviation*Point)
+         if(extremum-high[i]>InpDeviation*_Point)
             extremum=0.0;
          else
            {

@@ -38,7 +38,7 @@ int CalculateSL(double stopLossRatio, int ATRPeriod, bool fixed) {
   else {
     double atr = NormalizeDouble(iATR(Symbol(), Period(), ATRPeriod, 1), Digits);
     // double atr = iCustom(NULL, 0, "Adaptive_ATR", ATRPeriod, 0, 1);
-    stopLoss = (int)(atr / Point * stopLossRatio);
+    stopLoss = (int)(atr / _Point * stopLossRatio);
     if (stopLoss < 100) stopLoss = 100;
   }
 
@@ -65,10 +65,10 @@ double GetSLprice(int stopLoss, int orderType)
    switch(orderType)
      {
       case OP_BUY:
-         price = NormalizeDouble(Ask-stopLoss*Point, Digits);
+         price = NormalizeDouble(Ask-stopLoss*_Point, Digits);
          break;
       case OP_SELL:
-         price = NormalizeDouble(Bid+stopLoss*Point, Digits);
+         price = NormalizeDouble(Bid+stopLoss*_Point, Digits);
          break;
      }
    return price;
@@ -85,10 +85,10 @@ double GetTPprice(int takeProfit, int orderType)
    switch(orderType)
      {
       case OP_BUY:
-         price = NormalizeDouble(Ask+takeProfit*Point, Digits);
+         price = NormalizeDouble(Ask+takeProfit*_Point, Digits);
          break;
       case OP_SELL:
-         price = NormalizeDouble(Bid-takeProfit*Point, Digits);
+         price = NormalizeDouble(Bid-takeProfit*_Point, Digits);
          break;
      }
    return price;

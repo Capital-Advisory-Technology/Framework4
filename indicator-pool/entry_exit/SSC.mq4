@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                        super-signals-channel.mq4 |
-//|                Copyright © 2006, Nick Bilak, beluck[AT]gmail.com |
+//|                Copyright ï¿½ 2006, Nick Bilak, beluck[AT]gmail.com |
 //+------------------------------------------------------------------+
 
-#property copyright "Copyright © 2006, Nick Bilak"
+#property copyright "Copyright ï¿½ 2006, Nick Bilak"
 #property link      "http://www.forex-tsd.com/"
 
 // hacked into a channel ind. by t_david sometime in early 2007
@@ -65,13 +65,13 @@ int start() {
 
       
       if (i==hhb)
-         b3[i]=High[hhb]+SignalGap*Point;
+         b3[i]=High[hhb]+SignalGap*_Point;
       
       if (i==llb)
-         b4[i]=Low[llb]-SignalGap*Point;
+         b4[i]=Low[llb]-SignalGap*_Point;
          
-         b1[i]=High[hhb];//+SignalGap*Point;
-         b2[i]=Low[llb];//-SignalGap*Point;
+         b1[i]=High[hhb];//+SignalGap*_Point;
+         b2[i]=Low[llb];//-SignalGap*_Point;
    
    }
    return(0);

@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                          Rex.mq4 |
-//|                               Copyright © 2014, Gehtsoft USA LLC |
+//|                               Copyright ï¿½ 2014, Gehtsoft USA LLC |
 //|                                            http://fxcodebase.com |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2014, Gehtsoft USA LLC"
+#property copyright "Copyright ï¿½ 2014, Gehtsoft USA LLC"
 #property link      "http://fxcodebase.com"
 
 #property indicator_separate_window
@@ -64,7 +64,7 @@ int start()
  pos=limit;
  while(pos>=0)
  {
-  Rex[pos]=iMAOnArray(TVB, 0, Smoothing_Length, 0, Smoothing_Method, pos)/Point;
+  Rex[pos]=iMAOnArray(TVB, 0, Smoothing_Length, 0, Smoothing_Method, pos)/_Point;
 
   pos--;
  }

@@ -1,4 +1,4 @@
-#property copyright "Copyright © 2014 FXProSystems.com"
+#property copyright "Copyright ï¿½ 2014 FXProSystems.com"
 #property link      "http://fxprosystems.com"
 
 #property indicator_chart_window
@@ -48,7 +48,7 @@ int limit;
 	if (ATR0>ATRmax) ATRmax=ATR0;
 	if (ATR0<ATRmin) ATRmin=ATR0;
 	
-	result=MathRound(0.5*Km*(ATRmax+ATRmin)/Point); 
+	result=MathRound(0.5*Km*(ATRmax+ATRmin)/_Point); 
 	}
 	else
 	result=Km*StepSize;
@@ -65,13 +65,13 @@ int limit;
    
    if (HL)
 	  {
-	  smax[k]=Low[k]+2.0*Size*Point;
-	  smin[k]=High[k]-2.0*Size*Point;
+	  smax[k]=Low[k]+2.0*Size*_Point;
+	  smin[k]=High[k]-2.0*Size*_Point;
      } 	
 	else  	 
 	  {
-	  smax[k]=Close[k]+2.0*Size*Point;
-	  smin[k]=Close[k]-2.0*Size*Point;
+	  smax[k]=Close[k]+2.0*Size*_Point;
+	  smin[k]=Close[k]-2.0*Size*_Point;
 	  }
 	  if (counted_bars==0){smax[limit+1]=smax[limit];smin[limit+1]=smin[limit];trend[limit+1]=0;}
 	  
@@ -84,12 +84,12 @@ int limit;
 	  if(trend[k]>0)
 	  {
 	  if(smin[k]<smin[k+1]) smin[k]=smin[k+1];
-	  result=smin[k]+Size*Point;
+	  result=smin[k]+Size*_Point;
 	  } 
 	  else
 	  {
 	  if(smax[k]>smax[k+1]) smax[k]=smax[k+1];
-	  result=smax[k]-Size*Point;
+	  result=smax[k]-Size*_Point;
 	  }
      //Print (" k=",k," trend=",trend[k], " res=",result," Smax=", smax[k], " Smin=", smin[k]);
 	  
@@ -166,15 +166,15 @@ int start()
 				
 	Comment (" StepSize= ", Step);
 	
-	StepMA = StepMACalc ( HighLow, Step, shift)+Percentage/100.0*Step*Point;
+	StepMA = StepMACalc ( HighLow, Step, shift)+Percentage/100.0*Step*_Point;
 	
 	if ( ColorMode == 0) LineBuffer[shift]=StepMA;
 	
 	if ( ColorMode == 1)
 	{
-	if ( trend[shift]>0 ) {UpBuffer[shift]=StepMA-Step*Point;DnBuffer[shift]=EMPTY_VALUE;}
+	if ( trend[shift]>0 ) {UpBuffer[shift]=StepMA-Step*_Point;DnBuffer[shift]=EMPTY_VALUE;}
 	else
-	if ( trend[shift]<0 ) {DnBuffer[shift]=StepMA+Step*Point;UpBuffer[shift]=EMPTY_VALUE;}
+	if ( trend[shift]<0 ) {DnBuffer[shift]=StepMA+Step*_Point;UpBuffer[shift]=EMPTY_VALUE;}
 	}
 	else
 	if ( ColorMode == 2)

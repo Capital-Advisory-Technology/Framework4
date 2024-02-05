@@ -3,7 +3,7 @@
    Website:  H t Tp :// w W W .M eTAq U ote s.NE T
    E-mail : S u PPoRT @ M et A qu O te S .n ET
 */
-#property copyright "Copyright © 2013,Xmaster Formula"
+#property copyright "Copyright ï¿½ 2013,Xmaster Formula"
 #property link      " http://www.xmasterformula.com "
 
 #property indicator_separate_window
@@ -112,7 +112,7 @@ int start() {
          if (Lda_4[Li_20 + 1] < 0.0) G_ibuf_100[Li_20 + 1] = G_ibuf_108[Li_20 + 1];
          if (Lda_4[Li_20 + 1] < 0.0) {
             if (Li_20 == 1) {
-               Ld_8 = Ld_36 - Gi_88 * Point;
+               Ld_8 = Ld_36 - Gi_88 * _Point;
                f0_0("UP Buy ", 0, Ld_8, Ld_36);
             }
          }
@@ -123,7 +123,7 @@ int start() {
             if (Lda_4[Li_20 + 1] > 0.0) G_ibuf_104[Li_20 + 1] = G_ibuf_108[Li_20 + 1];
             if (Lda_4[Li_20 + 1] > 0.0) {
                if (Li_20 == 1) {
-                  Ld_8 = Ld_36 + Gi_88 * Point;
+                  Ld_8 = Ld_36 + Gi_88 * _Point;
                   f0_0("DOWN Sell ", 0, Ld_8, Ld_36);
                }
             }

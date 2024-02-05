@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                       Waddah_Attar_Explosion.mq4 |
-//|                              Copyright © 2006, Eng. Waddah Attar |
+//|                              Copyright ï¿½ 2006, Eng. Waddah Attar |
 //|                                          waddahattar@hotmail.com |
 //+------------------------------------------------------------------+
-#property  copyright "Copyright © 2006, Eng. Waddah Attar"
+#property  copyright "Copyright ï¿½ 2006, Eng. Waddah Attar"
 #property  link      "waddahattar@hotmail.com"
 //----
 #property  indicator_separate_window
@@ -83,7 +83,7 @@ int start()
                  iBands(NULL, 0, 20, 2, 0, PRICE_CLOSE, MODE_LOWER, i));
        Explo2 = (iBands(NULL, 0, 20, 2, 0, PRICE_CLOSE, MODE_UPPER, i + 1) - 
                  iBands(NULL, 0, 20, 2, 0, PRICE_CLOSE, MODE_LOWER, i + 1));
-       Dead = Point * DeadZonePip;
+       Dead = _Point * DeadZonePip;
        ind_buffer1[i] = 0;
        ind_buffer2[i] = 0;
        ind_buffer3[i] = 0;

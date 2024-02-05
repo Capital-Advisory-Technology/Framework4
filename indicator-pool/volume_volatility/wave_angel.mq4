@@ -78,7 +78,7 @@ int start()
       else 
         { 
          lastlow=val; 
-         if((Low[shift]-val)>(ExtDeviation*Point)) val=0.0;
+         if((Low[shift]-val)>(ExtDeviation*_Point)) val=0.0;
          else
            {
             for(back=1; back<=ExtBackstep; back++)
@@ -95,7 +95,7 @@ int start()
       else 
         {
          lasthigh=val;
-         if((val-High[shift])>(ExtDeviation*Point)) val=0.0;
+         if((val-High[shift])>(ExtDeviation*_Point)) val=0.0;
          else
            {
             for(back=1; back<=ExtBackstep; back++)
@@ -199,20 +199,20 @@ int start()
       if(WolfWave=="Buy") {
         	ObjectCreate(Title + "Line-1-3", OBJ_TREND, 0, Time[Wolf[1]],Low[Wolf[1]], Time[Wolf[3]],Low[Wolf[3]] );
         	if (ObjectGetValueByShift(Title + "Line-1-3", Wolf[5]) >= Low[Wolf[5]]) {
-           	ObjectCreate(Title + "1", OBJ_TEXT, 0, Time[Wolf[1]],Low[Wolf[1]]-LowerDistance*Point );
+           	ObjectCreate(Title + "1", OBJ_TEXT, 0, Time[Wolf[1]],Low[Wolf[1]]-LowerDistance*_Point );
            	ObjectSetText(Title + "1", ""+DoubleToStr(1,0), 10, "Arial", Blue);
-           	ObjectCreate(Title + "2", OBJ_TEXT, 0, Time[Wolf[2]],High[Wolf[2]]+UpperDistance*Point );
+           	ObjectCreate(Title + "2", OBJ_TEXT, 0, Time[Wolf[2]],High[Wolf[2]]+UpperDistance*_Point );
            	ObjectSetText(Title + "2", ""+DoubleToStr(2,0), 10, "Arial", Blue);
-           	ObjectCreate(Title + "3", OBJ_TEXT, 0, Time[Wolf[3]],Low[Wolf[3]]-LowerDistance*Point );
+           	ObjectCreate(Title + "3", OBJ_TEXT, 0, Time[Wolf[3]],Low[Wolf[3]]-LowerDistance*_Point );
            	ObjectSetText(Title + "3", ""+DoubleToStr(3,0), 10, "Arial", Blue);
-           	ObjectCreate(Title + "4", OBJ_TEXT, 0, Time[Wolf[4]],High[Wolf[4]]+UpperDistance*Point );
+           	ObjectCreate(Title + "4", OBJ_TEXT, 0, Time[Wolf[4]],High[Wolf[4]]+UpperDistance*_Point );
            	ObjectSetText(Title + "4", ""+DoubleToStr(4,0), 10, "Arial", Blue);
-           	ObjectCreate(Title + "5", OBJ_TEXT, 0, Time[Wolf[5]],Low[Wolf[5]]-LowerDistance*Point );
+           	ObjectCreate(Title + "5", OBJ_TEXT, 0, Time[Wolf[5]],Low[Wolf[5]]-LowerDistance*_Point );
            	ObjectSetText(Title + "5", ""+DoubleToStr(5,0), 10, "Arial", Blue);
            	ObjectCreate(Title + "Line-1-4", OBJ_TREND, 0, Time[Wolf[1]],Low[Wolf[1]], Time[Wolf[4]],High[Wolf[4]] );
            	ObjectSet(Title + "Line-1-4", OBJPROP_COLOR, Black);
           	ObjectSet(Title + "Line-1-4", OBJPROP_WIDTH, 2);
-           	Comment("Buy Wolfwave (" + TimeToStr(Time[Wolf[5]],TIME_DATE|TIME_MINUTES) + ") at " + (ObjectGetValueByShift("Line-1-3", Wolf[5])-5*Point) + " SL " + High[Wolf[5]]);
+           	Comment("Buy Wolfwave (" + TimeToStr(Time[Wolf[5]],TIME_DATE|TIME_MINUTES) + ") at " + (ObjectGetValueByShift("Line-1-3", Wolf[5])-5*_Point) + " SL " + High[Wolf[5]]);
           	// found=true;
          } else {
             ObjectDelete(Title + "Line-1-3");
@@ -220,20 +220,20 @@ int start()
       } else if (WolfWave=="Sell") {
          ObjectCreate(Title + "Line-1-3", OBJ_TREND, 0, Time[Wolf[1]],High[Wolf[1]], Time[Wolf[3]],High[Wolf[3]] );
          if ( ObjectGetValueByShift(Title + "Line-1-3", Wolf[5]) <= High[Wolf[5]] ) {
-           	ObjectCreate(Title + "1", OBJ_TEXT, 0, Time[Wolf[1]],High[Wolf[1]]+UpperDistance*Point );
+           	ObjectCreate(Title + "1", OBJ_TEXT, 0, Time[Wolf[1]],High[Wolf[1]]+UpperDistance*_Point );
             ObjectSetText(Title + "1", ""+DoubleToStr(1,0), 10, "Arial", Blue);
-            ObjectCreate(Title + "2", OBJ_TEXT, 0, Time[Wolf[2]],Low[Wolf[2]]-LowerDistance*Point );
+            ObjectCreate(Title + "2", OBJ_TEXT, 0, Time[Wolf[2]],Low[Wolf[2]]-LowerDistance*_Point );
             ObjectSetText(Title + "2", ""+DoubleToStr(2,0), 10, "Arial", Blue);
-            ObjectCreate(Title + "3", OBJ_TEXT, 0, Time[Wolf[3]],High[Wolf[3]]+UpperDistance*Point );
+            ObjectCreate(Title + "3", OBJ_TEXT, 0, Time[Wolf[3]],High[Wolf[3]]+UpperDistance*_Point );
             ObjectSetText(Title + "3", ""+DoubleToStr(3,0), 10, "Arial", Blue);
-            ObjectCreate(Title + "4", OBJ_TEXT, 0, Time[Wolf[4]],Low[Wolf[4]]-LowerDistance*Point );
+            ObjectCreate(Title + "4", OBJ_TEXT, 0, Time[Wolf[4]],Low[Wolf[4]]-LowerDistance*_Point );
             ObjectSetText(Title + "4", ""+DoubleToStr(4,0), 10, "Arial", Blue);
-            ObjectCreate(Title + "5", OBJ_TEXT, 0, Time[Wolf[5]],High[Wolf[5]]+UpperDistance*Point );
+            ObjectCreate(Title + "5", OBJ_TEXT, 0, Time[Wolf[5]],High[Wolf[5]]+UpperDistance*_Point );
             ObjectSetText(Title + "5", ""+DoubleToStr(5,0), 10, "Arial", Blue);
             ObjectCreate(Title + "Line-1-4", OBJ_TREND, 0, Time[Wolf[1]],High[Wolf[1]], Time[Wolf[4]],Low[Wolf[4]] );
             ObjectSet(Title + "Line-1-4", OBJPROP_COLOR, Black);
             ObjectSet(Title + "Line-1-4", OBJPROP_WIDTH, 2);
-           	Comment("Sell Wolfwave (" + TimeToStr(Time[Wolf[5]],TIME_DATE|TIME_MINUTES) + ") at " + (ObjectGetValueByShift("Line-1-3", Wolf[5])-5*Point) + " SL " + High[Wolf[5]]);
+           	Comment("Sell Wolfwave (" + TimeToStr(Time[Wolf[5]],TIME_DATE|TIME_MINUTES) + ") at " + (ObjectGetValueByShift("Line-1-3", Wolf[5])-5*_Point) + " SL " + High[Wolf[5]]);
             // found=true;
          } else {
            	ObjectDelete(Title + "Line-1-3");

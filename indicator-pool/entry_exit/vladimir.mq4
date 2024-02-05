@@ -1,4 +1,4 @@
-#property copyright "Copyright © 2012, Vladimirs Forex Signals and Mentoring"
+#property copyright "Copyright ï¿½ 2012, Vladimirs Forex Signals and Mentoring"
 #property link      "http://www.VladimirForexSignals.com"
 
 #property indicator_separate_window
@@ -110,7 +110,7 @@ int init() {
    gs_264 = gs_76;
    IndicatorDigits(6);
    IndicatorShortName(gs_264);
-   if (Point == 0.00001) gd_280 = 10;
+   if (_Point == 0.00001) gd_280 = 10;
    if (gd_136 > 0.0 || gd_144 > 0.0) {
       gd_292 = gd_136;
       gd_300 = gd_144;
@@ -304,7 +304,7 @@ int f0_11(int ai_0) {
                      if (gi_328 > -1) {
                         gd_356 = g_ibuf_260[gi_328];
                         if (NormalizeDouble(gd_356, 6) < NormalizeDouble(0.0, 6) && NormalizeDouble(gd_300, 6) <= NormalizeDouble(gd_348 - gd_356, 6)) {
-                           if (NormalizeDouble(gd_292 * gd_280 * Point, Digits) <= NormalizeDouble(gd_340 - g_low_332, Digits))
+                           if (NormalizeDouble(gd_292 * gd_280 * _Point, Digits) <= NormalizeDouble(gd_340 - g_low_332, Digits))
                               if (f0_5(gd_340, g_low_332, li_20, gi_316) == 0) gi_324 = li_20;
                         }
                      }
@@ -336,7 +336,7 @@ int f0_11(int ai_0) {
                            if (NormalizeDouble(gd_356, 6) < NormalizeDouble(0.0, 6) && (gi_152 == FALSE && NormalizeDouble(gd_348, 6) <= NormalizeDouble(gd_356, 6)) || (gi_152 == TRUE && NormalizeDouble(gd_164,
                               6) <= NormalizeDouble(gd_356 - gd_348, 6))) {
                               gd_340 = Low[li_20];
-                              if ((gi_152 == FALSE && NormalizeDouble(gd_340, Digits) <= NormalizeDouble(g_low_332, Digits)) || (gi_152 == TRUE && NormalizeDouble(gd_156 * gd_280 * Point, Digits) <= NormalizeDouble(g_low_332 - gd_340,
+                              if ((gi_152 == FALSE && NormalizeDouble(gd_340, Digits) <= NormalizeDouble(g_low_332, Digits)) || (gi_152 == TRUE && NormalizeDouble(gd_156 * gd_280 * _Point, Digits) <= NormalizeDouble(g_low_332 - gd_340,
                                  Digits)))
                                  if (f0_5(gd_340, g_low_332, li_20, gi_316) == 0) gi_324 = li_20;
                            }
@@ -404,7 +404,7 @@ int f0_11(int ai_0) {
                      if (gi_376 > -1) {
                         gd_404 = g_ibuf_260[gi_376];
                         if (NormalizeDouble(0.0, 6) < NormalizeDouble(gd_404, 6) && NormalizeDouble(gd_300, 6) <= NormalizeDouble(gd_404 - gd_396, 6)) {
-                           if (NormalizeDouble(gd_292 * gd_280 * Point, Digits) <= NormalizeDouble(g_high_380 - gd_388, Digits))
+                           if (NormalizeDouble(gd_292 * gd_280 * _Point, Digits) <= NormalizeDouble(g_high_380 - gd_388, Digits))
                               if (f0_3(gd_388, g_high_380, li_24, gi_364) == 0) gi_372 = li_24;
                         }
                      }
@@ -436,7 +436,7 @@ int f0_11(int ai_0) {
                            if (NormalizeDouble(0.0, 6) < NormalizeDouble(gd_404, 6) && (gi_152 == FALSE && NormalizeDouble(gd_404, 6) <= NormalizeDouble(gd_396, 6)) || (gi_152 == TRUE && NormalizeDouble(gd_164,
                               6) <= NormalizeDouble(gd_396 - gd_404, 6))) {
                               gd_388 = High[li_24];
-                              if ((gi_152 == FALSE && NormalizeDouble(g_high_380, Digits) <= NormalizeDouble(gd_388, Digits)) || (gi_152 == TRUE && NormalizeDouble(gd_156 * gd_280 * Point, Digits) <= NormalizeDouble(gd_388 - g_high_380,
+                              if ((gi_152 == FALSE && NormalizeDouble(g_high_380, Digits) <= NormalizeDouble(gd_388, Digits)) || (gi_152 == TRUE && NormalizeDouble(gd_156 * gd_280 * _Point, Digits) <= NormalizeDouble(gd_388 - g_high_380,
                                  Digits)))
                                  if (f0_3(gd_388, g_high_380, li_24, gi_364) == 0) gi_372 = li_24;
                            }
@@ -548,12 +548,12 @@ int f0_3(double ad_0, double ad_8, int ai_16, int ai_20) {
    double ld_48;
    int count_24 = 1;
    if (NormalizeDouble(0.0, 6) < NormalizeDouble(ai_16 - ai_20, 6)) {
-      ld_28 = (ad_8 - ad_0) / Point / (ai_16 - ai_20);
+      ld_28 = (ad_8 - ad_0) / _Point / (ai_16 - ai_20);
       for (int li_36 = ai_20 + 2; li_36 < ai_16 - 1; li_36++) {
          if (NormalizeDouble(Close[li_36], Digits) < NormalizeDouble(Open[li_36], Digits)) ld_40 = Open[li_36];
          else ld_40 = Close[li_36];
          if (ai_16 - li_36 > 0.0) {
-            ld_48 = (ld_40 - ad_0) / Point / (ai_16 - li_36);
+            ld_48 = (ld_40 - ad_0) / _Point / (ai_16 - li_36);
             if (NormalizeDouble(ld_28, 6) < NormalizeDouble(ld_48, 6)) {
                count_24++;
                if (count_24 <= 2) continue;
@@ -572,12 +572,12 @@ int f0_5(double ad_0, double ad_8, int ai_16, int ai_20) {
    double ld_48;
    int count_24 = 1;
    if (NormalizeDouble(0.0, 6) < NormalizeDouble(ai_16 - ai_20, 6)) {
-      ld_28 = (ad_0 - ad_8) / Point / (ai_16 - ai_20);
+      ld_28 = (ad_0 - ad_8) / _Point / (ai_16 - ai_20);
       for (int li_36 = ai_20 + 2; li_36 < ai_16 - 1; li_36++) {
          if (NormalizeDouble(Close[li_36], Digits) < NormalizeDouble(Open[li_36], Digits)) ld_40 = Close[li_36];
          else ld_40 = Open[li_36];
          if (NormalizeDouble(0.0, 6) < NormalizeDouble(ai_16 - li_36, 6)) {
-            ld_48 = (ad_0 - ld_40) / Point / (ai_16 - li_36);
+            ld_48 = (ad_0 - ld_40) / _Point / (ai_16 - li_36);
             if (NormalizeDouble(ld_28, 8) < NormalizeDouble(ld_48, 8)) {
                count_24++;
                if (count_24 <= 2) continue;
@@ -596,11 +596,11 @@ int f0_8(int ai_0, int ai_4) {
    double ld_32;
    int count_8 = 1;
    if (NormalizeDouble(0.0, 6) < NormalizeDouble(ai_0 - ai_4, 6)) {
-      ld_12 = (g_ibuf_260[ai_4] - g_ibuf_260[ai_0]) / Point / (ai_0 - ai_4);
+      ld_12 = (g_ibuf_260[ai_4] - g_ibuf_260[ai_0]) / _Point / (ai_0 - ai_4);
       for (int li_20 = ai_4 + 2; li_20 < ai_0 - 1; li_20++) {
          ld_24 = g_ibuf_260[li_20];
          if (NormalizeDouble(0.0, 6) < NormalizeDouble(li_20 - ai_4, 6)) {
-            ld_32 = (g_ibuf_260[ai_4] - ld_24) / Point / (li_20 - ai_4);
+            ld_32 = (g_ibuf_260[ai_4] - ld_24) / _Point / (li_20 - ai_4);
             if (NormalizeDouble(ld_12, 8) < NormalizeDouble(ld_32, 8)) {
                count_8++;
                if (count_8 <= 2) continue;
@@ -619,11 +619,11 @@ int f0_2(int ai_0, int ai_4) {
    double ld_32;
    int count_8 = 1;
    if (NormalizeDouble(0.0, 6) < NormalizeDouble(ai_0 - ai_4, 6)) {
-      ld_12 = (g_ibuf_260[ai_0] - g_ibuf_260[ai_4]) / Point / (ai_0 - ai_4);
+      ld_12 = (g_ibuf_260[ai_0] - g_ibuf_260[ai_4]) / _Point / (ai_0 - ai_4);
       for (int li_20 = ai_4 + 2; li_20 < ai_0 - 1; li_20++) {
          ld_24 = g_ibuf_260[li_20];
          if (NormalizeDouble(0.0, 6) < NormalizeDouble(li_20 - ai_4, 6)) {
-            ld_32 = (ld_24 - g_ibuf_260[ai_4]) / Point / (li_20 - ai_4);
+            ld_32 = (ld_24 - g_ibuf_260[ai_4]) / _Point / (li_20 - ai_4);
             if (NormalizeDouble(ld_12, 8) < NormalizeDouble(ld_32, 8)) {
                count_8++;
                if (count_8 <= 2) continue;
@@ -766,7 +766,7 @@ void f0_6(int ai_0, string as_4, int ai_12, double ad_16, color a_color_24, int 
       if (gda_440[li_32][5] == ai_0 && NormalizeDouble(gda_440[li_32][2], 0) == ai_12 || NormalizeDouble(gda_440[li_32][10], 0) == ai_12) {
          name_36 = gs_444 + f0_9(gda_440[li_32][0]) + "_(" + as_4 + ")_c";
          ObjectDelete(name_36);
-         ObjectCreate(name_36, OBJ_TREND, 0, gda_440[li_32][0], gda_440[li_32][1] + ad_16 * gd_280 * Point, gda_440[li_32][2], gda_440[li_32][3] + ad_16 * gd_280 * Point,
+         ObjectCreate(name_36, OBJ_TREND, 0, gda_440[li_32][0], gda_440[li_32][1] + ad_16 * gd_280 * _Point, gda_440[li_32][2], gda_440[li_32][3] + ad_16 * gd_280 * _Point,
             0, 0);
          ObjectSet(name_36, OBJPROP_RAY, FALSE);
          ObjectSet(name_36, OBJPROP_COLOR, a_color_24);
@@ -775,7 +775,7 @@ void f0_6(int ai_0, string as_4, int ai_12, double ad_16, color a_color_24, int 
          if (WindowFind(gs_264) > 0) {
             name_36 = gs_444 + f0_9(gda_440[li_32][0]) + "_(" + as_4 + ")_i";
             ObjectDelete(name_36);
-            ObjectCreate(name_36, OBJ_TREND, WindowFind(gs_264), gda_440[li_32][8], gda_440[li_32][6] + ad_16 * gd_280 / 5.0 * Point, gda_440[li_32][9], gda_440[li_32][7] + ad_16 * gd_280 / 5.0 * Point,
+            ObjectCreate(name_36, OBJ_TREND, WindowFind(gs_264), gda_440[li_32][8], gda_440[li_32][6] + ad_16 * gd_280 / 5.0 * _Point, gda_440[li_32][9], gda_440[li_32][7] + ad_16 * gd_280 / 5.0 * _Point,
                0, 0);
             ObjectSet(name_36, OBJPROP_RAY, FALSE);
             ObjectSet(name_36, OBJPROP_COLOR, a_color_24);

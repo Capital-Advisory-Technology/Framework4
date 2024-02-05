@@ -41,7 +41,7 @@ int deinit()
 int start()
   {
       
-   double p=Point();
+   double p=_Point();
 
    int      pos=Bars-100;
    int      ctr=0;

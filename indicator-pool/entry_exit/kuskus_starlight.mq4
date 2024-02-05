@@ -1,10 +1,10 @@
 //+------------------------------------------------------------------+
 //|                                             Kuskus_Starlight.mq4 |
-//|                           Copyright © 2007, VKX Professional LLC |
+//|                           Copyright ï¿½ 2007, VKX Professional LLC |
 //|                                               Modified by TaKZiM |
 //|                                    Original Developed by MartinG |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2007, VKX Professional LLC."
+#property copyright "Copyright ï¿½ 2007, VKX Professional LLC."
 #property link      "http://www.vkx-fx.com"
 //----
 #property indicator_separate_window
@@ -130,7 +130,7 @@ int CalculateCurrentBar(int pos)
 //----
    LowestLow=Low[Lowest(NULL,0,MODE_LOW,RangePeriods,pos)];
    HighestHigh=High[Highest(NULL,0,MODE_HIGH,RangePeriods,pos)];
-   if (HighestHigh-LowestLow<0.1*Point)HighestHigh=LowestLow+0.1*Point;
+   if (HighestHigh-LowestLow<0.1*_Point)HighestHigh=LowestLow+0.1*_Point;
    GreatestRange=HighestHigh-LowestLow;
    MidPrice=(High[pos]+Low[pos])/2;
    // PriceLocation in current Range 

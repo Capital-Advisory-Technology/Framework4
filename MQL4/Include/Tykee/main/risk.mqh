@@ -16,7 +16,7 @@ bool CheckForBreakEven(double breakeven) {
       double osl = NormalizeDouble(OrderStopLoss(), Digits);
       double otp = NormalizeDouble(OrderTakeProfit(), Digits);
       //--- Skip if the Open Order has stopLossPrice = openPrice or stopLoss in range openPrice +- 10 points
-      if (oop == osl || (oop + (10 * Point) > osl && oop - (10 * Point) < osl)) {
+      if (oop == osl || (oop + (10 * _Point) > osl && oop - (10 * _Point) < osl)) {
          return false;
       } else {
          double high = High[1];

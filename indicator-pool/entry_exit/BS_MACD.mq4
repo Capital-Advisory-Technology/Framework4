@@ -8,10 +8,10 @@
 //|                                                                  |
 //|   Trigger types: 1-stochastic, 2-cci, 3-rsi, 4-macd, 5-momentum  |
 //|                                                                  |
-//|                                        Copyright © 2006  Akuma99 |
+//|                                        Copyright ï¿½ 2006  Akuma99 |
 //|                                    http://www.beginnertrader.com |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2006, Akuma99"
+#property copyright "Copyright ï¿½ 2006, Akuma99"
 #property link      "http://www.beginnertrader.com "
 //----
 #property indicator_separate_window
@@ -163,7 +163,7 @@ double ugol=0;
          bbs=bolDev * std/diff;
            if(bbs<1) 
            {
-            arrowBuffer[shift]=High[shift]+15*Point;
+            arrowBuffer[shift]=High[shift]+15*_Point;
               if (d > 0) 
               {
                upB2[shift]=d;

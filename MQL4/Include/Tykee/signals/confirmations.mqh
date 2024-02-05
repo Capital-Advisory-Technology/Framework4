@@ -56,8 +56,8 @@ OrderAction DEMA_Baseline(double DEMA_period, int DEMA_enum_price, double DEMA_F
    addToConfirmationFunctionList("DEMA_Baseline");
    OrderAction signal = OA_IGNORE;
 
-   enPrices DEMA_Price = DEMA_enum_price; 
-   enFilterWhat DEMA_FilterOn = DEMA_enum_filter;
+   enPrices DEMA_Price = (enPrices)DEMA_enum_price; 
+   enFilterWhat DEMA_FilterOn = (enFilterWhat)DEMA_enum_filter;
 
    double DEMA_Baseline = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_Filter, DEMA_FilterPeriod, DEMA_FilterOn, 0, 1);
    if(CheckForLongBaseline(DEMA_Baseline)) signal = OA_OPEN_LONG;
@@ -73,7 +73,7 @@ OrderAction Trend_intensity2_Confirmation(int len, int TI2_price, ENUM_MA_METHOD
    addToConfirmationFunctionList("Trend_intensity2_Confirmation");
    OrderAction signal = OA_IGNORE;
 
-   enPrices price = TI2_price; // Price to use
+   enPrices price = (enPrices)TI2_price; // Price to use
 
    double ti2 = iCustom(NULL,0,"trend-intensity2",len,price,ma_method,80,20,0,1);
    if(ti2 <= -1) signal = OA_OPEN_LONG;

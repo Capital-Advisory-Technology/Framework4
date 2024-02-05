@@ -130,7 +130,7 @@ while (i >= 0)
    if (Steady==true) {MC=iMA(NULL,TimeFrame,Length,0,Method,PRICE_MEDIAN,i); MC1=iMA(NULL,TimeFrame,Length,0,Method,PRICE_MEDIAN,i+Smoothing);}
    VQ[i] = MathAbs(((MC - MC1) / MathMax(MH - ML,MathMax(MH - MC1,MC1 - ML)) + (MC - MO) / (MH - ML)) * 0.5) * ((MC - MC1 + (MC - MO)) * 0.5);
    SumVQ[i] = SumVQ[i + 1] + VQ[i];
-   if (Filter > 0) if (MathAbs(SumVQ[i] - SumVQ[i + 1]) < Filter * Point) SumVQ[i] = SumVQ[i + 1];
+   if (Filter > 0) if (MathAbs(SumVQ[i] - SumVQ[i + 1]) < Filter * _Point) SumVQ[i] = SumVQ[i + 1];
    i--;
    }
 

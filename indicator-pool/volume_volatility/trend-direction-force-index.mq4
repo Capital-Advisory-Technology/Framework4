@@ -189,8 +189,8 @@ int start()
                workTrend[r][_SMMA] = workTrend[r-1][_SMMA]+alpha*(workTrend[r][_MMA]-workTrend[r-1][_SMMA]);
                      double impetmma  = workTrend[r][_MMA]  - workTrend[r-1][_MMA];
                      double impetsmma = workTrend[r][_SMMA] - workTrend[r-1][_SMMA];
-                     double divma     = MathAbs(workTrend[r][_MMA]-workTrend[r][_SMMA])/Point;
-                     double averimpet = (impetmma+impetsmma)/(2*Point);
+                     double divma     = MathAbs(workTrend[r][_MMA]-workTrend[r][_SMMA])/_Point;
+                     double averimpet = (impetmma+impetsmma)/(2*_Point);
                workTrend[r][_TDF]  = divma*MathPow(averimpet,3);
 
                //

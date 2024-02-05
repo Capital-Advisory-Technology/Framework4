@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                          TicksSeparateVolume.mq4 |
-//|                                    Copyright © 2008, FOREXflash. |
+//|                                    Copyright ï¿½ 2008, FOREXflash. |
 //|                                        http://www.metaquotes.net |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2008, FOREXflash Software Corp."
+#property copyright "Copyright ï¿½ 2008, FOREXflash Software Corp."
 #property link      "http://www.metaquotes.net"
 //-----
 #property indicator_separate_window
@@ -71,7 +71,7 @@ int start()
 //----
    for(i=0; i<limit; i++)
      {
-      UpTicks[i]=(Volume[i]+(Close[i]-Open[i])/Point)/2;
+      UpTicks[i]=(Volume[i]+(Close[i]-Open[i])/_Point)/2;
       DownTicks[i]=Volume[i]-UpTicks[i];
      }
      

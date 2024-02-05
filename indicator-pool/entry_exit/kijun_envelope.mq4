@@ -112,7 +112,7 @@ int start()
       
       if(Show_Top_Envelope_Band == true)
       {
-         Kijun_Buffer_1[i+ShiftKijun]=((high+low)/2)+Envelope_Deviation*Point;
+         Kijun_Buffer_1[i+ShiftKijun]=((high+low)/2)+Envelope_Deviation*_Point;
          if(Show_Labels==true)
          {
             string KET = DoubleToStr(Kijun_Buffer_1[0],Digits);
@@ -136,7 +136,7 @@ int start()
       
       if(Show_Bottom_Envelope_Band == true)
       {
-         Kijun_Buffer_3[i+ShiftKijun]=((high+low)/2)-Envelope_Deviation*Point;
+         Kijun_Buffer_3[i+ShiftKijun]=((high+low)/2)-Envelope_Deviation*_Point;
          if (Show_Labels == true)
          {      
             string KEB = DoubleToStr(Kijun_Buffer_3[0],Digits);

@@ -1,10 +1,10 @@
 //+------------------------------------------------------------------+
 //|                                                      Kaufman.mq4 |
-//|                             Copyright © -2005, by konKop & wellx |
+//|                             Copyright ï¿½ -2005, by konKop & wellx |
 //|                                        http://www.metaquotes.net |
 //+------------------------------------------------------------------+
 
-#property copyright "Copyright © 2003-2004, by konKop, for MT GOODMAN,af,Mstera ,wellx "
+#property copyright "Copyright ï¿½ 2003-2004, by konKop, for MT GOODMAN,af,Mstera ,wellx "
 #property link      "http://www.metaquotes.net"
 
 #property indicator_chart_window
@@ -114,8 +114,8 @@ int start()
       UpBand[pos]=AMA+deviation*K_Bollinger;
       DownBand[pos]=AMA-deviation*K_Bollinger;
       ddK=(AMA-AMA0);
-      if ((MathAbs(ddK) > (dK*Point)) && (ddK > 0))  kAMAupsig[pos]  =AMA;
-      if ((MathAbs(ddK)) > (dK*Point) && (ddK < 0))  kAMAdownsig[pos]=AMA;
+      if ((MathAbs(ddK) > (dK*_Point)) && (ddK > 0))  kAMAupsig[pos]  =AMA;
+      if ((MathAbs(ddK)) > (dK*_Point) && (ddK < 0))  kAMAdownsig[pos]=AMA;
             
       AMA0=AMA;
       pos--;

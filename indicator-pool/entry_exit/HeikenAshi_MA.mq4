@@ -172,10 +172,10 @@ int start()
             
          if (Step>0)
          {
-            if( MathAbs(Buffer1[pos]-Buffer1[pos+1]) < Step*pointModifier*Point ) Buffer1[pos]=Buffer1[pos+1];
-            if( MathAbs(Buffer2[pos]-Buffer2[pos+1]) < Step*pointModifier*Point ) Buffer2[pos]=Buffer2[pos+1];
-            if( MathAbs(Buffer3[pos]-Buffer3[pos+1]) < Step*pointModifier*Point ) Buffer3[pos]=Buffer3[pos+1];
-            if( MathAbs(Buffer4[pos]-Buffer4[pos+1]) < Step*pointModifier*Point ) Buffer4[pos]=Buffer4[pos+1];
+            if( MathAbs(Buffer1[pos]-Buffer1[pos+1]) < Step*pointModifier*_Point ) Buffer1[pos]=Buffer1[pos+1];
+            if( MathAbs(Buffer2[pos]-Buffer2[pos+1]) < Step*pointModifier*_Point ) Buffer2[pos]=Buffer2[pos+1];
+            if( MathAbs(Buffer3[pos]-Buffer3[pos+1]) < Step*pointModifier*_Point ) Buffer3[pos]=Buffer3[pos+1];
+            if( MathAbs(Buffer4[pos]-Buffer4[pos+1]) < Step*pointModifier*_Point ) Buffer4[pos]=Buffer4[pos+1];
          }         
          trend[pos] = trend[pos+1];
          if (Buffer3[pos] < Buffer4[pos]) trend[pos] =  1;

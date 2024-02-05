@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                          MPC.mq4 |
-//|                                      Copyright © 2007, Alexandre |
+//|                                      Copyright ï¿½ 2007, Alexandre |
 //|                       http://www.kroufr.ru/content/view/885/124/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2007, Alexandre"
+#property copyright "Copyright ï¿½ 2007, Alexandre"
 #property link "http://www.kroufr.ru/content/view/885/124/"
 //----
 #property indicator_chart_window
@@ -26,7 +26,7 @@ int init()
 //----
    if (MPC_Range <= 1) { MPC_Range = 1; }
 //---- indicators
-   IndicatorShortName("Middle Point Channel (" + MPC_Range + ")"); 
+   IndicatorShortName("Middle _Point Channel (" + MPC_Range + ")"); 
 //----
    SetIndexStyle(0, DRAW_LINE); 
    SetIndexLabel(0, "Upper MPC Bound"); 
@@ -78,7 +78,7 @@ int start()
            cnt_bars = 0; 
    m_pr = (High[cnt_bars] + Low[cnt_bars]) / 2.0; 
 //----
-   if(MathAbs(m_pr - m_pr_old) < Point) 
+   if(MathAbs(m_pr - m_pr_old) < _Point) 
        return(0); 
    else 
        m_pr_old = m_pr; 

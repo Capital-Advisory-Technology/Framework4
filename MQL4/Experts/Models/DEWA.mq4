@@ -26,8 +26,8 @@ extern int ATR_period = 14;
 extern double SL_ratio = 1.5;
 extern double TP_ratio = 3.0;
 extern double breakeven = 0.5;
-extern double profit_zone = 0.5;
-extern double profit_zone_reward = 0.1;
+extern double profit_zone = 0.9;
+extern double profit_zone_reward = 0.2;
 extern double risk_per_trade = 1.0;
 
 // Strategies externals
@@ -49,6 +49,9 @@ CustomSession* customSession;
 RiskManager* riskManager;
 
 int OnInit() {
+   Print(Symbol());
+   Print(_Point);
+
    Logger::isDebug = print_logs;
 
    customSession = new CustomSession();
@@ -79,7 +82,7 @@ int OnInit() {
    inputJson["WDH_explosion_power"] = WDH_explosion_power;
    inputJson["WDH_trend_power"] = WDH_trend_power;
 
-   riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, 0.9, 0.2, ATR_period);
+   riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, profit_zone, profit_zone_reward, ATR_period);
    backtestInfo = new BacktestInfo(strategy_name, inputJson.Serialize(), export_data);
    positionManager = new PositionManager(riskManager, backtestInfo, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp);
    
