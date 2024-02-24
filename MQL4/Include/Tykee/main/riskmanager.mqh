@@ -1,16 +1,9 @@
-//###<Experts/Models/DEWA.mq4>
-//+------------------------------------------------------------------+
-//|                                                         risk.mqh |
-//|                                            Copyright 2022, Tykee |
-//|   risk.mqh provides functions that are used for risk management  |
-//+------------------------------------------------------------------+
-#property copyright "Copyright 2022, Tykee"
-#property link      ""
+// provides functions that are used for risk management
+#property copyright "Framework 4"
 #property strict
 
 // #define ATRIndicator "Indicators\\Adaptive_ATR.ex4"
 // #resource "\\" + ATRIndicator
-
 
 class RiskManager { 
     private:

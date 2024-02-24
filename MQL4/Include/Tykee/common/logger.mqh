@@ -1,4 +1,5 @@
-
+#property copyright "Framework 4"
+#property strict
 /*
    Custom logger for enabling/disbaling log printing. 
    Example how to enable/disable printing is in EA_TEMPLATE.

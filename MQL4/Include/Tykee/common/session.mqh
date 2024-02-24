@@ -1,37 +1,31 @@
+#property copyright "Framework 4"
+#property strict
+
 #include <Tykee/common/logger.mqh>
 #include <Tykee/common/enums.mqh>
 #include <libs/JAson.mqh>
 
-
 class Range {
- 
- private:
-   int beginning;
-   int end;
-   AllowedOrder allowedOrder;
+   private:
+      int beginning;
+      int end;
+      AllowedOrder allowedOrder;
 
- public:
+   public:
       Range::Range(int cBeginning, int cEnd, AllowedOrder cAllowedOrder) {
          this.beginning = cBeginning;
          this.end = cEnd;
          this.allowedOrder = cAllowedOrder;
       }
       
-      int getBeginning() {
-         return beginning;
-      }
+      int getBeginning() { return beginning; }
       
-      int getEnd() {
-         return end;
-      }
+      int getEnd() { return end; }
       
-      AllowedOrder getAllowedOrder() {
-         return allowedOrder;
-      }
+      AllowedOrder getAllowedOrder() { return allowedOrder; }
 };
 
-class CustomSession {
-      
+class CustomSession {  
    public:
       CustomSession::CustomSession() {
          positionsInPeriod = 0;
@@ -149,21 +143,6 @@ class CustomSession {
          limitPeriod = period;
          positionLimit = limit;
       }
-      
-      string toJson() {
-         CJAVal json;
-         CJAVal* pointer = &json;
-         formatAndAddRangeObject(pointer, minuteRanges, "minute_ranges");
-         formatAndAddRangeObject(pointer, hourRanges, "hour_ranges");
-         formatAndAddRangeObject(pointer, dayRanges, "day_ranges");
-         formatAndAddRangeObject(pointer, monthRanges, "month_ranges");
-
-         CJAVal timeLimit;
-         timeLimit["period"] = limitPeriod;
-         timeLimit["limit"] = positionLimit;
-         json["time_limit"] = timeLimit;
-         return json.Serialize();
-      }
          
    private:
       Range* minuteRanges[];
@@ -177,16 +156,6 @@ class CustomSession {
       
       bool isPositionLimitExceeded() {
          return positionsInPeriod == positionLimit;
-      }
-
-      void formatAndAddRangeObject(CJAVal* jsonToAdd, Range* &rangeList[], string rangePeriod) {
-         for (int i = 0;i < ArraySize(rangeList); i++) {
-            CJAVal range;
-            range["from"] = rangeList[i].getBeginning();
-            range["to"] = rangeList[i].getEnd();
-            range["order_type"] = rangeList[i].getAllowedOrder() + "";
-            jsonToAdd[rangePeriod].Add(range);
-         }
       }
       
       bool isInSession(Range* &rangeList[], int compareTo, int positionType) {
@@ -202,7 +171,7 @@ class CustomSession {
                   if (positionType != OP_SELL) isSupportedOrderType = false;
                   break;
                case OPEN_BOTH:
-                  NULL;
+                  break;
             }
             
             if (!isSupportedOrderType) continue;

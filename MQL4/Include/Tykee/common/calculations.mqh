@@ -1,10 +1,4 @@
-//+------------------------------------------------------------------+
-//|                                                 calculations.mqh |
-//|                                                            Tykee |
-//|                                                                  |
-//+------------------------------------------------------------------+
-#property copyright "Tykee"
-#property link      ""
+#property copyright "Framework 4"
 #property strict
 
 #define ATRIndicator "Indicators\\Adaptive_ATR.ex4"
@@ -13,44 +7,49 @@
 //+------------------------------------------------------------------+
 //| Calculates LotSize based on balance, risk and StopLoss           |
 //+------------------------------------------------------------------+
-double CalculateLotSize(double risk, int stopLoss)
-  {
-   double lotStep = MarketInfo(Symbol(), MODE_LOTSTEP);
-   double minLot = MarketInfo(Symbol(), MODE_MINLOT);
-   double maxLot = MarketInfo(Symbol(), MODE_MAXLOT);
-   double tickVal = MarketInfo(Symbol(), MODE_TICKVALUE);
-   double lotSize = AccountBalance() * risk / 100 / (stopLoss * tickVal);
-   return MathMin(
-    maxLot,
-    MathMax(
-      minLot,
-      NormalizeDouble(lotSize / lotStep, 0) * lotStep
-      )
-    );
-  }
+double CalculateLotSize(double risk, int stopLoss) {
+  double lotStep = MarketInfo(Symbol(), MODE_LOTSTEP);
+  double minLot = MarketInfo(Symbol(), MODE_MINLOT);
+  double maxLot = MarketInfo(Symbol(), MODE_MAXLOT);
+  double tickVal = MarketInfo(Symbol(), MODE_TICKVALUE);
+
+  double lotSize = AccountBalance() * risk / 100 / (stopLoss * tickVal);
+
+  return MathMin(maxLot, MathMax(minLot,NormalizeDouble(lotSize / lotStep, 0) * lotStep));
+}
 
 //+------------------------------------------------------------------+
 //| Calculates StopLoss based on ATR or fixed value                  |
 //+------------------------------------------------------------------+
 int CalculateSL(double stopLossRatio, int ATRPeriod, bool fixed) {
-  int stopLoss;
-  if(fixed) stopLoss = (int)MathRound(stopLossRatio);
-  else {
-    double atr = NormalizeDouble(iATR(Symbol(), Period(), ATRPeriod, 1), Digits);
-    // double atr = iCustom(NULL, 0, "Adaptive_ATR", ATRPeriod, 0, 1);
-    stopLoss = (int)(atr / _Point * stopLossRatio);
-    if (stopLoss < 100) stopLoss = 100;
+  int stopLoss = NULL;
+  double atr = NULL;
+
+  switch (fixed) {
+    case true:
+      stopLoss = (int)MathRound(stopLossRatio);
+      break;
+    case false:
+      atr = NormalizeDouble(iATR(Symbol(), Period(), ATRPeriod, 1), Digits);
+      stopLoss = (int)(atr / _Point * stopLossRatio);
+      if (stopLoss < 100) stopLoss = 100;
+      break;
   }
 
   return stopLoss;
 }
 
 int CalculateTP(double takeProfitRatio, int stopLoss ,bool fixed) {
-  int takeProfit;
-  if(fixed) takeProfit = (int)MathRound(takeProfitRatio);
-  else {
-    takeProfit = (int)(stopLoss * takeProfitRatio);
-  }
+  int takeProfit = NULL;
+
+  switch (fixed) {
+    case true:
+      takeProfit = (int)MathRound(takeProfitRatio);
+      break;
+    case false:
+      takeProfit = (int)(stopLoss * takeProfitRatio);
+      break;
+    }
 
   return takeProfit;
 }
@@ -58,39 +57,35 @@ int CalculateTP(double takeProfitRatio, int stopLoss ,bool fixed) {
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double GetSLprice(int stopLoss, int orderType)
-  {
-   double price = .0;
+double GetSLprice(int stopLoss, int orderType) {
+  double price = NULL;
 
-   switch(orderType)
-     {
-      case OP_BUY:
-         price = NormalizeDouble(Ask-stopLoss*_Point, Digits);
-         break;
-      case OP_SELL:
-         price = NormalizeDouble(Bid+stopLoss*_Point, Digits);
-         break;
-     }
-   return price;
+  switch(orderType) {
+    case OP_BUY:
+      price = NormalizeDouble(Ask-stopLoss*_Point, Digits);
+      break;
+    case OP_SELL:
+      price = NormalizeDouble(Bid+stopLoss*_Point, Digits);
+      break;
   }
+  return price;
+}
 
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double GetTPprice(int takeProfit, int orderType)
-  {
-   double price = .0;
+double GetTPprice(int takeProfit, int orderType) {
+  double price = NULL;
 
-   switch(orderType)
-     {
-      case OP_BUY:
-         price = NormalizeDouble(Ask+takeProfit*_Point, Digits);
-         break;
-      case OP_SELL:
-         price = NormalizeDouble(Bid-takeProfit*_Point, Digits);
-         break;
-     }
-   return price;
+  switch(orderType) {
+    case OP_BUY:
+      price = NormalizeDouble(Ask+takeProfit*_Point, Digits);
+      break;
+    case OP_SELL:
+      price = NormalizeDouble(Bid-takeProfit*_Point, Digits);
+      break;
   }
-//+------------------------------------------------------------------+
+  
+  return price;
+}

@@ -1,11 +1,9 @@
-#include <Tykee/main/backtest.mqh>
 #include <Tykee/main/positionmanager.mqh>
 #include <Tykee/main/riskmanager.mqh>
 
 #include <Tykee/common/utils.mqh>
 #include <Tykee/common/enums.mqh>
 #include <Tykee/common/logger.mqh>
-#include <Tykee/common/position.mqh>
 #include <Tykee/common/session.mqh>
 
 #include <Tykee/signals/exit.mqh>
@@ -14,7 +12,6 @@
 
 // Backtest controls
 bool print_logs = false; // If true, all logs added via custom logger will be visible in journal
-extern bool export_data = true;
 
 // Strategy name - version
 extern string strategy_name = "DEWA-1.0";
@@ -43,7 +40,6 @@ extern int WDH_dead_zone = 30;
 extern int WDH_explosion_power = 15;
 extern int WDH_trend_power = 15;
 
-BacktestInfo* backtestInfo;
 PositionManager* positionManager;
 CustomSession* customSession;
 RiskManager* riskManager;
@@ -61,41 +57,13 @@ int OnInit() {
    customSession.addMonthRange(1, 12, OPEN_BOTH); // Min 1, Max 12
    customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
 
-   CJAVal inputJson;
-   inputJson["SL_RATIO"] = SL_ratio;
-   inputJson["TP_RATIO"] = TP_ratio;
-   inputJson["FIXED_SLTP"] = fixed_sltp;
-   inputJson["SLIPPAGE"] = slippage;
-   inputJson["BREAKEVEN"] = breakeven;
-   inputJson["PROFIT_ZONE"] = profit_zone;
-   inputJson["PROFIT_ZONE_REWARD"] = profit_zone_reward;
-   inputJson["BREAKEVEN_WR"] = NormalizeDouble((SL_ratio / (SL_ratio + TP_ratio) * 100), 2);
-   inputJson["RISK"] = risk_per_trade;
-   inputJson["ATR_period"] = ATR_period;
-   inputJson["DEMA_period"] = DEMA_period;
-   inputJson["DEMA_filter"] = DEMA_filter;
-   inputJson["DEMA_filter_period"] = DEMA_filter_period;
-   inputJson["DEMA_enum_price"] = DEMA_enum_price;
-   inputJson["DEMA_enum_filter"] = DEMA_enum_filter;
-   inputJson["WDH_sensetive"] = WDH_sensetive;
-   inputJson["WDH_dead_zone"] = WDH_dead_zone;
-   inputJson["WDH_explosion_power"] = WDH_explosion_power;
-   inputJson["WDH_trend_power"] = WDH_trend_power;
-
    riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, profit_zone, profit_zone_reward, ATR_period);
-   backtestInfo = new BacktestInfo(strategy_name, inputJson.Serialize(), export_data);
-   positionManager = new PositionManager(riskManager, backtestInfo, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp);
+   positionManager = new PositionManager(riskManager, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp);
    
    return(INIT_SUCCEEDED);
 }
 
 void OnDeinit(const int reason) { 
-   positionManager.onDeInit();
-   
-   double profitFactor = NormalizeDouble(TesterStatistics(STAT_PROFIT_FACTOR), 2);
-   if (profitFactor >= 1.3) backtestInfo.exportBacktest();
-
-   delete backtestInfo;
    delete positionManager;
 }
 
@@ -104,7 +72,6 @@ void OnTick(){
    bool isNewBar = timeCur != timePre;
 
    if(isNewBar) {
-      backtestInfo.setDate(Time[0]);
       customSession.refresh();
 
       switch(positionManager.getStatus()) {
@@ -121,6 +88,4 @@ void OnTick(){
          }
       }
    }
-
-   
 }
