@@ -1,13 +1,4 @@
-#include <Tykee/main/positionmanager.mqh>
-#include <Tykee/main/riskmanager.mqh>
-
-#include <Tykee/common/utils.mqh>
-#include <Tykee/common/enums.mqh>
-#include <Tykee/common/logger.mqh>
-#include <Tykee/common/session.mqh>
-
 #include <Tykee/signals/exit.mqh>
-#include <Tykee/signals/entry.mqh>
 #include <Tykee/signals/confirmations.mqh>
 
 // Strategy name - version

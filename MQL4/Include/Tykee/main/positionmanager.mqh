@@ -112,22 +112,6 @@ class PositionManager {
       }
    }
    
-   /*
-      Checks if we have had TP/SL. If yes, closes position manually. Difference
-      between closePostition() is that we actually do not close position as
-      it is already automatically closed by terminal. Instead we just save it and 
-      mark closed.
-   */
-   void onAutomaticPositionClose() {
-      Logger::log("Stop loss/Take profit executed");
-
-      if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
-         Logger::log("Position closed");
-      } else {
-         Logger::log("Automatic close position error: " + string(GetLastError()));
-      }
-   }
-   
    void checkBreakeven() {
       if (OrderSelect(0, SELECT_BY_POS) == true) {
          int oticket = OrderTicket();
@@ -188,7 +172,6 @@ class PositionManager {
          Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
       }
    }
-   
 
    PositionStatus getStatus() {
       switch (OrdersTotal()) {
