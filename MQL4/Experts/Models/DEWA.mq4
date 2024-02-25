@@ -59,6 +59,9 @@ void OnTick() {
    if(!isNewBar) return;
    if(positionManager.getStatus() != AVAILABLE_TO_OPEN) return;
 
+   Logger::log("New bar: " + string(timeCur));
+   Logger::log(string(AVAILABLE_TO_OPEN));
+
    customSession.refresh();
 
    OrderAction action = DEMA_Simple(DEMA_period,
@@ -71,11 +74,15 @@ void OnTick() {
                                              WDH_dead_zone,
                                              WDH_explosion_power,
                                              WDH_trend_power);
-   
+
    if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT) {
       positionManager.openOrder(OP_SELL);
    } else if(action == OA_OPEN_LONG && confirm == OA_OPEN_LONG) {
       positionManager.openOrder(OP_BUY);
+   } else {
+      Logger::log("No valid actions");
+      Logger::log("Action: " + string(action));
+      Logger::log("Confirm: " + string(confirm));
    }
 }
 
