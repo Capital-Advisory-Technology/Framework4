@@ -93,7 +93,7 @@ int OnInit() {
    inputJson["WDH_explosion_power"] = WDH_explosion_power;
    inputJson["WDH_trend_power"] = WDH_trend_power;
 
-   riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, 0.9, 0.2, ATR_period);
+   riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, profit_zone, profit_zone_reward, ATR_period);
    backtestInfo = new BacktestInfo(strategy_name, inputJson.Serialize(), export_data);
    positionManager = new PositionManager(riskManager, backtestInfo, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp);
    
