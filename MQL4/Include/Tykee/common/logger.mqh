@@ -16,4 +16,4 @@ class Logger {
 
 };
 
-bool Logger::isDebug = false;
+bool Logger::isDebug = true;

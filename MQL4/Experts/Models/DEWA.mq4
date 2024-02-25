@@ -10,9 +10,6 @@
 #include <Tykee/signals/entry.mqh>
 #include <Tykee/signals/confirmations.mqh>
 
-// Backtest controls
-bool print_logs = false; // If true, all logs added via custom logger will be visible in journal
-
 // Strategy name - version
 extern string strategy_name = "DEWA-1.0";
 
@@ -45,10 +42,7 @@ CustomSession* customSession;
 RiskManager* riskManager;
 
 int OnInit() {
-   Print(Symbol());
-   Print(_Point);
-
-   Logger::isDebug = print_logs;
+   InitLog();
 
    customSession = new CustomSession();
    customSession.addMinuteRange(0, 59, OPEN_BOTH); // Min 0, Max 59
@@ -67,25 +61,35 @@ void OnDeinit(const int reason) {
    delete positionManager;
 }
 
-void OnTick(){
+void OnTick() {
    static datetime timeCur; datetime timePre = timeCur; timeCur=Time[0];
    bool isNewBar = timeCur != timePre;
 
-   if(isNewBar) {
-      customSession.refresh();
+   if(!isNewBar) return;
+   if(positionManager.getStatus() != AVAILABLE_TO_OPEN) return;
 
-      switch(positionManager.getStatus()) {
-         case AVAILABLE_TO_OPEN: {
-         OrderAction action = DEMA_Simple(DEMA_period, DEMA_enum_price, DEMA_filter, DEMA_filter_period, DEMA_enum_filter);
-         OrderAction confirm = Waddah_Confirmation(WDH_sensetive, WDH_dead_zone, WDH_explosion_power, WDH_trend_power);
-         
-         if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT){
-            positionManager.openOrder(OP_SELL);
-         } else if(action == OA_OPEN_LONG && confirm == OA_OPEN_LONG) {
-            positionManager.openOrder(OP_BUY);
-         }
-         break;
-         }
-      }
+   customSession.refresh();
+
+   OrderAction action = DEMA_Simple(DEMA_period,
+                                    DEMA_enum_price,
+                                    DEMA_filter,
+                                    DEMA_filter_period,
+                                    DEMA_enum_filter);
+
+   OrderAction confirm = Waddah_Confirmation(WDH_sensetive,
+                                             WDH_dead_zone,
+                                             WDH_explosion_power,
+                                             WDH_trend_power);
+   
+   if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT) {
+      positionManager.openOrder(OP_SELL);
+   } else if(action == OA_OPEN_LONG && confirm == OA_OPEN_LONG) {
+      positionManager.openOrder(OP_BUY);
    }
+}
+
+void InitLog() {
+   Logger::log("Symbol: " + Symbol());
+   Logger::log("Point: " + string(_Point));
+   Logger::log("Strategy name: " + strategy_name);
 }
