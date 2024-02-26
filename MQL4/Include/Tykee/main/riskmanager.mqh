@@ -11,7 +11,7 @@ class RiskManager {
         double riskPerTrade;
         double SLRatio;
         double TPRatio;
-        double breakeven;
+        double breakevenZone;
         double profitZone;
         double profitRatio;
         int ATRPeriod;
@@ -99,7 +99,7 @@ class RiskManager {
         
         void setBreakevenPrice() {
             double price = 0;
-            double breakevenDelta = takeProfitPoints * _Point * breakeven;
+            double breakevenDelta = takeProfitPoints * _Point * breakevenZone;
             if (positionType == OP_BUY) price = NormalizeDouble(breakevenDelta + openPrice, Digits); else price = NormalizeDouble(openPrice - breakevenDelta, Digits);
             breakevenPrice = price;
         }
@@ -129,11 +129,11 @@ class RiskManager {
         }
 
     public:
-        RiskManager::RiskManager(double cRiskPerTrade, double cSLRatio, double cTPRatio, double cBreakeven, double cProfitZone, double cProfitRatio, int cATRPeriod) {
+        RiskManager::RiskManager(double cRiskPerTrade, double cSLRatio, double cTPRatio, double cBreakevenZone, double cProfitZone, double cProfitRatio, int cATRPeriod) {
             this.riskPerTrade = cRiskPerTrade;
             this.SLRatio = cSLRatio;
             this.TPRatio = cTPRatio;
-            this.breakeven = cBreakeven;
+            this.breakevenZone = cBreakevenZone;
             this.profitZone = cProfitZone;
             this.profitRatio = cProfitRatio;
             this.ATRPeriod = cATRPeriod;
@@ -209,5 +209,32 @@ class RiskManager {
 
         double getProfitZoneSLPrice() {
             return profitZoneSLPrice;
+        }
+
+        bool getBreakevenStatus(int cOrderType, double cOpenPrice, double cTpPrice) {
+            double cBreakevenPrice = (cTpPrice - cOpenPrice) * breakevenZone;
+
+            double lastHigh = iHigh(Symbol(), Period(), 1);
+            double lastLow = iLow(Symbol(), Period(), 1);
+            if ((cOrderType == OP_BUY &&  cOpenPrice + cBreakevenPrice <= lastHigh) || (cOrderType == OP_SELL && cOpenPrice - cBreakevenPrice >= lastLow)) {
+                return true;
+            }
+            
+            return false;
+        }
+
+        double getProfitZoneStatus(int cOrderType, double cOpenPrice, double cTpPrice) {
+            double cProfitZonePrice = (cTpPrice - cOpenPrice) * profitZone;
+            double lastHigh = iHigh(Symbol(), Period(), 1);
+            double lastLow = iLow(Symbol(), Period(), 1);
+
+            if ((cOrderType == OP_BUY && cOpenPrice + cProfitZonePrice <= lastHigh) || (cOrderType == OP_SELL && cOpenPrice - cProfitZonePrice >= lastLow)) {
+                return true;
+            }
+            return false;
+        }
+
+        double getProfitZoneSL(int cOrderType, double cOpenPrice, double cTpPrice) {
+            return openPrice + (takeProfitPrice - openPrice) * profitRatio;
         }
 };

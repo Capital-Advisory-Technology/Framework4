@@ -90,7 +90,7 @@ class PositionManager {
    
     /*
       Close order. 
-      To not complictae things, call this function from EA's swtich/case statement
+      To not complicate things, call this function from EA's switch/case statement
       Where we check if there are open positions. Used only for manual closing i.e. in EA's 
       IS_OPENED block.
    */
@@ -173,30 +173,41 @@ class PositionManager {
       }
    }
 
+   void checkBreakevenProfit() {
+      int orderType = OrderType();
+
+      double oop = NormalizeDouble(OrderOpenPrice(), Digits); 
+      double osl = NormalizeDouble(OrderStopLoss(), Digits);
+      double otp = NormalizeDouble(OrderTakeProfit(), Digits);
+
+      // Check for breakeven
+      if (((orderType == OP_BUY && osl < oop) || (orderType == OP_SELL && osl > oop)) && riskManager.getBreakevenStatus(orderType, oop, otp)) {
+         bool orderModify = OrderModify(OrderTicket(), oop, oop, otp, 0, clrOrange);
+         if (orderModify) Logger::log("PositionManager.checkBreakevenNew() - Breakeven set");
+         else Logger::log("PositionManager.checkBreakevenNew() - Break even error: " + string(GetLastError()));
+      }
+      
+      // Check for profit zone
+      if (osl == oop && riskManager.getProfitZoneStatus(orderType, oop, otp)) {
+         double nsl = riskManager.getProfitZoneSL(orderType, oop, otp);
+         bool orderModify = OrderModify(OrderTicket(), oop, nsl, otp, 0, clrWhite);
+         if (orderModify) Logger::log("PositionManager.checkBreakevenNew() - Profit zone set");
+         else Logger::log("PositionManager.checkBreakevenNew() - Profit zone error: " + string(GetLastError()));
+      }
+   }
+
    PositionStatus getStatus() {
-      switch (OrdersTotal()) {
-         case 0:
-            Logger::log("PositionStatus.getStatus() - AVAILABLE_TO_OPEN"); 
-            return AVAILABLE_TO_OPEN;
-            break;
-
-         case 1:
-            if (!riskManager.getBreakeven()) {
-               checkBreakeven();
-               Logger::log("PositionStatus.getStatus() - checkBreakeven() True");
-            } else if(riskManager.getBreakeven() && !riskManager.getProfitZone()) {
-               checkProfitZone();
-               Logger::log("PositionStatus.getStatus() - checkProfitZone() True");
-            }
-
-            Logger::log("PositionStatus.getStatus() - IS_OPENED");
-            return IS_OPENED;
-            break;
-
-         default:
-            Logger::log("PositionStatus.getStatus() Switch exit Default");
-            break;
+      if (OrdersTotal() > 0) {
+         for( int i = 0 ; i < OrdersTotal() ; i++ ) { 
+            if (OrderSelect( i, SELECT_BY_POS, MODE_TRADES ) && OrderSymbol() == Symbol()) {   
+               checkBreakevenProfit();
+            }; 
          }
-      return true;
+         Logger::log("PositionManager.getStatus() - IS_OPENED"); 
+         return IS_OPENED;
+      } else {
+         Logger::log("PositionManager.getStatus() - AVAILABLE_TO_OPEN");
+         return AVAILABLE_TO_OPEN;
+      }
    }
 };
