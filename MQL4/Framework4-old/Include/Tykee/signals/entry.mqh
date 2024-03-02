@@ -9,9 +9,9 @@
 //| range doesn't mean it's supposed to be used                       |
 //+-------------------------------------------------------------------+
 
-#include <Tykee/common/enums.mqh>
-#include <Tykee/common/utils.mqh>
-#include <Tykee/main/backtest.mqh>
+#include <CAT/common/enums.mqh>
+#include <CAT/common/utils.mqh>
+#include <CAT/main/backtest.mqh>
 
 // #define DEMA_PATH "Indicators\\DEMA.ex4"
 

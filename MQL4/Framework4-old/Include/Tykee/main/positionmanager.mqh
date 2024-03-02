@@ -1,12 +1,12 @@
-#include <Tykee/main/risk.mqh>
-#include <Tykee/main/riskmanager.mqh>
-#include <Tykee/main/backtest.mqh>
+#include <CAT/main/risk.mqh>
+#include <CAT/main/riskmanager.mqh>
+#include <CAT/main/backtest.mqh>
 
-#include <Tykee/common/calculations.mqh>
-#include <Tykee/common/position.mqh>
-#include <Tykee/common/enums.mqh>
-#include <Tykee/common/logger.mqh>
-#include <Tykee/common/session.mqh>
+#include <CAT/common/calculations.mqh>
+#include <CAT/common/position.mqh>
+#include <CAT/common/enums.mqh>
+#include <CAT/common/logger.mqh>
+#include <CAT/common/session.mqh>
 
 static int openPositionType;
 

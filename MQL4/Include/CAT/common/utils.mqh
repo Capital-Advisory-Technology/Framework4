@@ -1,9 +1,4 @@
-//+------------------------------------------------------------------+
-//|                                                        utils.mqh |
-//|                                            Copyright 2022, Tykee |
-//+------------------------------------------------------------------+
-#property copyright "Copyright 2022, Tykee"
-#property link      ""
+#property copyright "Framework 4"
 #property strict
 
 // Checks for long crossover

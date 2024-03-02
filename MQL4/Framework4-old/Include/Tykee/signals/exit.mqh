@@ -12,10 +12,10 @@
 #property link      ""
 #property strict
 
-#include <Tykee/common/enums.mqh>
-#include <Tykee/common/utils.mqh>
-#include <Tykee/main/positionmanager.mqh>
-#include <Tykee/main/backtest.mqh>
+#include <CAT/common/enums.mqh>
+#include <CAT/common/utils.mqh>
+#include <CAT/main/positionmanager.mqh>
+#include <CAT/main/backtest.mqh>
 
 //| Relative Vigor Index (RVI) Crossover Exit (QC)
 //| RVI_period - {14 - 28}

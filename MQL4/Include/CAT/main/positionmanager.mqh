@@ -1,12 +1,13 @@
-#include <Tykee/main/risk.mqh>
-#include <Tykee/main/riskmanager.mqh>
-#include <Tykee/main/backtest.mqh>
+#property copyright "Framework 4"
+#property strict
 
-#include <Tykee/common/calculations.mqh>
-#include <Tykee/common/position.mqh>
-#include <Tykee/common/enums.mqh>
-#include <Tykee/common/logger.mqh>
-#include <Tykee/common/session.mqh>
+#include <CAT/main/risk.mqh>
+#include <CAT/main/riskmanager.mqh>
+
+#include <CAT/common/calculations.mqh>
+#include <CAT/common/enums.mqh>
+#include <CAT/common/logger.mqh>
+#include <CAT/common/session.mqh>
 
 static int openPositionType;
 
@@ -32,30 +33,24 @@ class PositionManager {
       double breakEven;
       bool fixedSLTP;
       datetime lastBarTime;
-      Position* openPosition;
       RiskManager* riskManager;
-      BacktestInfo* backtestInfo;
       CustomSession* customSession;
    
    public:
-      PositionManager::PositionManager(RiskManager* cRiskManager, BacktestInfo* cBacktestInfo, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
+      PositionManager::PositionManager(RiskManager* cRiskManager, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
         this.riskManager = cRiskManager;
-        this.backtestInfo = cBacktestInfo;
         this.riskPerTrade = cRiskPerTrade;
         this.SLRatio = cSLRatio;
         this.TPRatio = cTPRatio;
         this.ATRPeriod = cATRPeriod;
         this.slippage = cSlippage;
         this.lastBarTime = Time[0];
-        this.openPosition = NULL;
         this.breakEven = cBreakEven;
         this.fixedSLTP = cfixedSLTP;
         this.customSession = cCustomSession;
-        backtestInfo.setCustomSessionObject(cCustomSession);
       }
       
       ~PositionManager() {
-         delete openPosition;
          delete customSession;
          delete riskManager;
       }
@@ -83,19 +78,8 @@ class PositionManager {
       if  (number != -1) {
          Logger::log("Order send success");
          if (OrderSelect(0, SELECT_BY_POS)) {
-            // Calculate values for analysis
-            openPosition = new Position(
-               number,
-               OrderOpenTime(), 
-               positionType, 
-               lotSize, 
-               OrderOpenPrice(), 
-               slPrice, 
-               tpPrice
-           );
-
-           openPositionType = positionType;
-           customSession.onPositionOpened();
+            openPositionType = positionType;
+            customSession.onPositionOpened();
          } else {
            Logger::log("Select position error: " + string(GetLastError()));
          }
@@ -106,39 +90,25 @@ class PositionManager {
    
     /*
       Close order. 
-      To not complictae things, call this function from EA's swtich/case statement
+      To not complicate things, call this function from EA's switch/case statement
       Where we check if there are open positions. Used only for manual closing i.e. in EA's 
       IS_OPENED block.
    */
    void closePosition() {
-      if (openPosition == NULL) return;
+      if (OrdersTotal() == 0) return;
+
       double price;
-      if (openPosition.getPositionType() == OP_BUY) price = Bid; else price = Ask;
+
+      if (OrderType() == OP_BUY) price = Bid; else price = Ask;
+      
       if (OrderClose(OrderTicket(), OrderLots(), price, 30, White)) {
-          if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY) == true) {
-             Logger::log("Position closed");
-             savePosition(MANUAL_CLOSE);
-          } else {
-               Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
-          }
+         if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY) == true) {
+            Logger::log("Position closed");
+         } else {
+            Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
+         }
       } else {
          Logger::log("Close position error: " + string(GetLastError()));
-      }
-   }
-   
-   /*
-      Checks if we have had TP/SL. If yes, closes position manually. Difference
-      between closePostition() is that we actually do not close position as
-      it is already automatically closed by terminal. Instead we just save it and 
-      mark closed.
-   */
-   void onAutomaticPositionClose() {
-      Logger::log("Stop loss/Take profit executed");
-      if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
-         savePosition(AUTOMATIC_CLOSE);
-         Logger::log("Position closed");
-      } else {
-        Logger::log("Automatic close position error: " + string(GetLastError()));
       }
    }
    
@@ -162,14 +132,11 @@ class PositionManager {
          }
 
          if (orderModify) {
-            openPosition.updateStopLoss(oop);
-            openPosition.setBreakEvenFlag(true);
             riskManager.setBreakeven();
-            Logger::log("Break even executed");
+            Logger::log("Breakeven set");
          } else {
             Logger::log("Break even error: " + string(GetLastError()));
          }
-         // }
       } else {
          Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
       }
@@ -195,72 +162,52 @@ class PositionManager {
          }
 
          if (orderModify) {
-            openPosition.updateStopLoss(newSL);
-            // openPosition.setBreakEvenFlag(true);
             riskManager.setProfitZone();
-            Logger::log("Break even executed");
+            Logger::log("Profit zone set");
          } else {
-            Logger::log("Break even error: " + string(GetLastError()));
+            Logger::log("Profit zone error: " + string(GetLastError()));
          }
-         // }
+
       } else {
          Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
       }
    }
 
-   bool isPositionOpen() {
-      return openPosition != NULL;
-   }
-   
-   /*
-      Saves an open position at backtest end.
-   */
-   void onDeInit() {
-      if (isPositionOpen()) {
-         if (OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY)) {
-            savePosition(AUTOMATIC_CLOSE);
-         }
+   void checkBreakevenProfit() {
+      int orderType = OrderType();
+
+      double oop = NormalizeDouble(OrderOpenPrice(), Digits); 
+      double osl = NormalizeDouble(OrderStopLoss(), Digits);
+      double otp = NormalizeDouble(OrderTakeProfit(), Digits);
+
+      // Check for breakeven
+      if (((orderType == OP_BUY && osl < oop) || (orderType == OP_SELL && osl > oop)) && riskManager.getBreakevenStatus(orderType, oop, otp)) {
+         bool orderModify = OrderModify(OrderTicket(), oop, oop, otp, 0, clrOrange);
+         if (orderModify) Logger::log("PositionManager.checkBreakevenNew() - Breakeven set");
+         else Logger::log("PositionManager.checkBreakevenNew() - Break even error: " + string(GetLastError()));
+      }
+      
+      // Check for profit zone
+      if (osl == oop && riskManager.getProfitZoneStatus(orderType, oop, otp)) {
+         double nsl = riskManager.getProfitZoneSL(orderType, oop, otp);
+         bool orderModify = OrderModify(OrderTicket(), oop, nsl, otp, 0, clrWhite);
+         if (orderModify) Logger::log("PositionManager.checkBreakevenNew() - Profit zone set");
+         else Logger::log("PositionManager.checkBreakevenNew() - Profit zone error: " + string(GetLastError()));
       }
    }
-   
-   /*
-      Called every time onTick is called. Checks status of positions and
-      break even. 
-   */
+
    PositionStatus getStatus() {
-      if (OrdersTotal() == 0) {
-         if (isPositionOpen()) {
-            onAutomaticPositionClose();
+      if (OrdersTotal() > 0) {
+         for( int i = 0 ; i < OrdersTotal() ; i++ ) { 
+            if (OrderSelect( i, SELECT_BY_POS, MODE_TRADES ) && OrderSymbol() == Symbol()) {   
+               checkBreakevenProfit();
+            }; 
          }
-         return AVAILABLE_TO_OPEN;
-      } else if (isPositionOpen()) {
-         // if (CheckForBreakEven(breakEven) && !openPosition.getBreakEvenFlag()) {
-         //    openPosition.updateStopLoss();
-         //    openPosition.setBreakEvenFlag(true);
-         // }
-         // return IS_OPENED;
-         if (!riskManager.getBreakeven() && !openPosition.getBreakEvenFlag()) {
-            checkBreakeven();
-         } else if(riskManager.getBreakeven() && !riskManager.getProfitZone()) {
-            checkProfitZone();
-         }
+         Logger::log("PositionManager.getStatus() - IS_OPENED"); 
          return IS_OPENED;
       } else {
-         return IS_OPENED;
+         Logger::log("PositionManager.getStatus() - AVAILABLE_TO_OPEN");
+         return AVAILABLE_TO_OPEN;
       }
-   }
-   
-   /*
-      Save position to backtest array of positions.
-   */
-   void savePosition(CloseType closeType) {
-      double oNetProfit = NormalizeDouble(OrderProfit(), 2);
-      double oCommission = NormalizeDouble(OrderCommission(), 2);
-      double oSwap = NormalizeDouble(OrderSwap(), 2);
-      double oGrossProfit = NormalizeDouble(oNetProfit + oCommission + oSwap, 2);
-      openPosition.setPositionClosed(OrderCloseTime(), NormalizeDouble(OrderClosePrice(), Digits), oGrossProfit, oNetProfit, oCommission, oSwap, closeType);
-      backtestInfo.savePosition(openPosition);
-      openPosition = NULL;
-      riskManager.onPositionClosed();
    }
 };

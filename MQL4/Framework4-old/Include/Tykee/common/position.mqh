@@ -1,6 +1,6 @@
-#include <Tykee/common/enums.mqh>
-#include <Tykee/common/logger.mqh>
-#include <Tykee/database/queries.mqh>
+#include <CAT/common/enums.mqh>
+#include <CAT/common/logger.mqh>
+#include <CAT/database/queries.mqh>
 #include <libs/JAson.mqh>
 
 /*
