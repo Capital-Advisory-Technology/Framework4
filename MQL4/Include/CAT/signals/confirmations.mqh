@@ -130,3 +130,20 @@ OrderAction RSI_Confirmation(int RSI_period) {
   if(RSI_Line > 30 && RSI_Line < 70) signal = OA_CONFIRMED;
   return signal;
 }
+
+//| ATRP Confirmation (QC) (OA_CONFIRMED)
+//| RSI_period - {14 - 28}
+OrderAction ATRP_Confirmation(int ATR_period, double threshold) {
+    OrderAction signal = OA_IGNORE;
+    double ATRP_Line = iCustom(NULL, 0, "ATRP", ATR_period, 0, 1);
+    if(ATRP_Line > threshold) signal = OA_CONFIRMED;
+    return signal;
+}
+
+
+OrderAction STDDEV_Confirmation(int period, double threshold) {
+    OrderAction signal = OA_IGNORE;
+    double stdDevLine = iStdDev(NULL,0, period, 0, MODE_EMA, PRICE_CLOSE, 1);
+    if(stdDevLine > threshold) signal = OA_CONFIRMED;
+    return signal;
+}
