@@ -38,15 +38,15 @@ OrderAction EMA_Baseline(double EMA_period, double EMA_set_price) {
 }
 
 //| DEMA Baseline check (QC)
-//| DEMA_period - {60 - 200}     |  DEMA_enum_price - [ANY enPrice ENUM]  |  DEMA_Filter = {0 - 8}
-//| DEMA_FilterPeriod - {0 - 8}  |  DEMA_enum_filter - [0 - 2]                          
-OrderAction DEMA_Baseline(double DEMA_period, int DEMA_enum_price, double DEMA_Filter, int DEMA_FilterPeriod, int DEMA_enum_filter) {
+//| cDEMA_period - {60 - 200}     |  cDEMA_enum_price - [ANY enPrice ENUM]  |  cDEMA_Filter = {0 - 8}
+//| cDEMA_FilterPeriod - {0 - 8}  |  cDEMA_enum_filter - [0 - 2]                          
+OrderAction DEMA_Baseline(double cDEMA_period, int cDEMA_enum_price, double cDEMA_Filter, int cDEMA_FilterPeriod, int cDEMA_enum_filter) {
   OrderAction signal = OA_IGNORE;
 
-  enPrices DEMA_Price = (enPrices)DEMA_enum_price; 
-  enFilterWhat DEMA_FilterOn = (enFilterWhat)DEMA_enum_filter;
+  enPrices DEMA_Price = (enPrices)cDEMA_enum_price; 
+  enFilterWhat DEMA_FilterOn = (enFilterWhat)cDEMA_enum_filter;
 
-  double DEMA_Baseline = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, DEMA_period, DEMA_Price, DEMA_Filter, DEMA_FilterPeriod, DEMA_FilterOn, 0, 1);
+  double DEMA_Baseline = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, cDEMA_period, DEMA_Price, cDEMA_Filter, cDEMA_FilterPeriod, DEMA_FilterOn, 0, 1);
   if(CheckForLongBaseline(DEMA_Baseline)) signal = OA_OPEN_LONG;
   if(CheckForShortBaseline(DEMA_Baseline)) signal = OA_OPEN_SHORT;
   return signal; 
@@ -93,7 +93,7 @@ OrderAction Trend_Lord_Confirmation(int Trend_Lord_len, ENUM_MA_METHOD Trend_Lor
 //| Waddah Confirmation (QC)
 //| NOTE: THIS INDICATOR IS SOPHISTICATED, MUST BE ADAPTED AND OPTIMIZED AFTER CREATING
 //| A REASONABLE ENTRY LOGIC - after that ranges for period & prices can be optimised as per entry logic.
-OrderAction Waddah_Confirmation(int WDH_sensetive, int WDH_deadZone, int WDH_explosionPower, int WDH_trendPower) {
+OrderAction Waddah_Confirmation(int cWDH_sensetive, int WDH_deadZone, int WDH_explosionPower, int WDH_trendPower) {
   OrderAction signal = OA_IGNORE;
   string Waddah_path;
   #ifdef WDH_PATH
@@ -102,9 +102,9 @@ OrderAction Waddah_Confirmation(int WDH_sensetive, int WDH_deadZone, int WDH_exp
   Waddah_path = "Waddah";
   #endif
   
-  double WaddahBuy = iCustom(NULL, 0, Waddah_path, WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 0, 1);
-  double WaddahSell = iCustom(NULL, 0, Waddah_path, WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 1, 1);
-  double WaddahBaseline = iCustom(NULL, 0, Waddah_path, WDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 2, 1);
+  double WaddahBuy = iCustom(NULL, 0, Waddah_path, cWDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 0, 1);
+  double WaddahSell = iCustom(NULL, 0, Waddah_path, cWDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 1, 1);
+  double WaddahBaseline = iCustom(NULL, 0, Waddah_path, cWDH_sensetive, WDH_deadZone, WDH_explosionPower, WDH_trendPower, 2, 1);
 
   if(WaddahBuy > WaddahBaseline) signal = OA_OPEN_LONG;
   if(WaddahSell > WaddahBaseline) signal = OA_OPEN_SHORT;
@@ -133,9 +133,9 @@ OrderAction RSI_Confirmation(int RSI_period) {
 
 //| ATRP Confirmation (QC) (OA_CONFIRMED)
 //| RSI_period - {14 - 28}
-OrderAction ATRP_Confirmation(int ATR_period, double threshold) {
+OrderAction ATRP_Confirmation(int cATR_period, double threshold) {
     OrderAction signal = OA_IGNORE;
-    double ATRP_Line = iCustom(NULL, 0, "ATRP", ATR_period, 0, 1);
+    double ATRP_Line = iCustom(NULL, 0, "ATRP", cATR_period, 0, 1);
     if(ATRP_Line > threshold) signal = OA_CONFIRMED;
     return signal;
 }

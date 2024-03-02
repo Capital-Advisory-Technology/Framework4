@@ -1,7 +1,6 @@
 #property copyright "Framework 4"
 #property strict
 
-#include <CAT/main/risk.mqh>
 #include <CAT/main/riskmanager.mqh>
 
 #include <CAT/common/calculations.mqh>
