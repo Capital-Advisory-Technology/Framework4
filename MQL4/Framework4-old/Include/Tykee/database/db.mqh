@@ -9,8 +9,8 @@
 
 #include <SQLite3/Statement.mqh>
 
-#include <Tykee/main/backtest.mqh>
-#include <Tykee/database/queries.mqh>
+#include <CAT/main/backtest.mqh>
+#include <CAT/database/queries.mqh>
 
 /*
    Database class to establish connection with DB and execute queries.

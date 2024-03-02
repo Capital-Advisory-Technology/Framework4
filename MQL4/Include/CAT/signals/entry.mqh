@@ -5,8 +5,8 @@
 #property copyright "Framework 4"
 #property strict
 
-#include <Tykee/common/enums.mqh>
-#include <Tykee/common/utils.mqh>
+#include <CAT/common/enums.mqh>
+#include <CAT/common/utils.mqh>
 
 // #define DEMA_PATH "Indicators\\DEMA.ex4"
 

@@ -1,8 +1,8 @@
 #property copyright "Framework 4"
 #property strict
 
-#include <Tykee/common/logger.mqh>
-#include <Tykee/common/enums.mqh>
+#include <CAT/common/logger.mqh>
+#include <CAT/common/enums.mqh>
 #include <libs/JAson.mqh>
 
 class Range {

@@ -1,5 +1,5 @@
-#include <Tykee/signals/exit.mqh>
-#include <Tykee/signals/confirmations.mqh>
+#include <CAT/signals/exit.mqh>
+#include <CAT/signals/confirmations.mqh>
 
 // Strategy name - version
 extern string strategy_name = "DEWA-1.0";

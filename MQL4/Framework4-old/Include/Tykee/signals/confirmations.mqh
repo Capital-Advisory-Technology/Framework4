@@ -12,10 +12,10 @@
 #property link      ""
 #property strict
 
-#include <Tykee/common/enums.mqh>
-#include <Tykee/common/utils.mqh>
-#include <Tykee/signals/entry.mqh>
-#include <Tykee/main/backtest.mqh>
+#include <CAT/common/enums.mqh>
+#include <CAT/common/utils.mqh>
+#include <CAT/signals/entry.mqh>
+#include <CAT/main/backtest.mqh>
 
 // #define WDH_PATH "Indicators\\Waddah.ex4"
 

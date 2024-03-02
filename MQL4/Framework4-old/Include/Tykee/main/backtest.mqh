@@ -1,8 +1,8 @@
-#include <Tykee/common/position.mqh>
-#include <Tykee/common/session.mqh>
-#include <Tykee/common/extensions.mqh>
-#include <Tykee/http/request.mqh>
-#include <Tykee/database/db.mqh>
+#include <CAT/common/position.mqh>
+#include <CAT/common/session.mqh>
+#include <CAT/common/extensions.mqh>
+#include <CAT/http/request.mqh>
+#include <CAT/database/db.mqh>
 
 static string entryFunctionList[];
 static string exitFunctionList[];

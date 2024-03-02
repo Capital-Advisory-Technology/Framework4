@@ -1,16 +1,16 @@
-#include <Tykee/main/backtest.mqh>
-#include <Tykee/main/positionmanager.mqh>
-#include <Tykee/main/riskmanager.mqh>
+#include <CAT/main/backtest.mqh>
+#include <CAT/main/positionmanager.mqh>
+#include <CAT/main/riskmanager.mqh>
 
-#include <Tykee/common/utils.mqh>
-#include <Tykee/common/enums.mqh>
-#include <Tykee/common/logger.mqh>
-#include <Tykee/common/position.mqh>
-#include <Tykee/common/session.mqh>
+#include <CAT/common/utils.mqh>
+#include <CAT/common/enums.mqh>
+#include <CAT/common/logger.mqh>
+#include <CAT/common/position.mqh>
+#include <CAT/common/session.mqh>
 
-#include <Tykee/signals/exit.mqh>
-#include <Tykee/signals/entry.mqh>
-#include <Tykee/signals/confirmations.mqh>
+#include <CAT/signals/exit.mqh>
+#include <CAT/signals/entry.mqh>
+#include <CAT/signals/confirmations.mqh>
 
 // Backtest controls
 bool print_logs = false; // If true, all logs added via custom logger will be visible in journal
