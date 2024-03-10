@@ -7,23 +7,23 @@ extern string strategy_name = "LER";
 // Backtest externs for optimization
 extern bool fixed_sltp = false;
 extern int slippage = 3;
-extern int ATR_period = 14;
+extern int ATR_period = 144;
 extern double SL_ratio = 1.5;
-extern double TP_ratio = 3.0;
+extern double TP_ratio = 3.5;
 extern double breakeven = 0.5;
 extern double profit_zone = 0.9;
-extern double profit_zone_reward = 0.2;
-extern double risk_per_trade = 1.0;
+extern double profit_zone_reward = 0.6;
+extern double risk_per_trade = 1.5;
 
 // Action model externs
-extern int linreg_period = 60;
-extern int linreg_price = 0;
+extern int linreg_period = 55;
+extern int linreg_price = PRICE_WEIGHTED;
 
 // Action model externs
-extern int ema_period = 200;
+extern int ema_period = 89;
 extern int ema_price = 7;
 
-extern int rsi_period = 14;
+extern int rsi_period = 13;
 
 PositionManager* positionManager;
 CustomSession* customSession;
@@ -34,7 +34,7 @@ int OnInit() {
 
    customSession = new CustomSession();
    customSession.addMinuteRange(0, 59, OPEN_BOTH); // Min 0, Max 59
-   customSession.addHourRange(2, 22, OPEN_BOTH); // Min 0, Max 23
+   customSession.addHourRange(3, 21, OPEN_BOTH); // Min 0, Max 23
    customSession.addDayOfWeekRange(1, 7, OPEN_BOTH); // Min 1, Max 7
    customSession.addMonthRange(1, 12, OPEN_BOTH); // Min 1, Max 12
    customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
