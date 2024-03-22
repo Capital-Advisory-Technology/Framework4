@@ -3,7 +3,6 @@
 
 #include <CAT/main/riskmanager.mqh>
 
-#include <CAT/common/calculations.mqh>
 #include <CAT/common/enums.mqh>
 #include <CAT/common/logger.mqh>
 #include <CAT/common/session.mqh>
