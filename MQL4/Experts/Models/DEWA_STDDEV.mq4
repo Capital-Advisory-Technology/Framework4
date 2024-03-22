@@ -1,27 +1,13 @@
-#include <Tykee/main/backtest.mqh>
-#include <Tykee/main/positionmanager.mqh>
-#include <Tykee/main/riskmanager.mqh>
-
-#include <Tykee/common/utils.mqh>
-#include <Tykee/common/enums.mqh>
-#include <Tykee/common/logger.mqh>
-#include <Tykee/common/position.mqh>
-#include <Tykee/common/session.mqh>
-
-#include <Tykee/signals/exit.mqh>
-#include <Tykee/signals/entry.mqh>
-#include <Tykee/signals/confirmations.mqh>
-
-// Backtest controls
-bool print_logs = false; // If true, all logs added via custom logger will be visible in journal
-extern bool export_data = true;
+#include <CAT/signals/exit.mqh>
+#include <CAT/signals/confirmations.mqh>
 
 // Strategy name - version
-extern string strategy_name = "DEWA-1.0";
+extern string strategy_name = "DEWA_STDDEV-1.0";
 
 // Backtest's externals for optimization
 extern bool fixed_sltp = false;
 extern int slippage = 3;
+extern int max_open_positions = 1;
 extern int ATR_period = 14;
 extern double SL_ratio = 1.5;
 extern double TP_ratio = 3.0;
@@ -42,20 +28,16 @@ extern int WDH_sensetive = 150;
 extern int WDH_dead_zone = 30;
 extern int WDH_explosion_power = 15;
 extern int WDH_trend_power = 15;
-// ATRP
+// STDDEV
 extern int STDDEV_period = 14;
 extern double STDDEV_threshold = 0.1;
 
-BacktestInfo* backtestInfo;
 PositionManager* positionManager;
 CustomSession* customSession;
 RiskManager* riskManager;
 
 int OnInit() {
-   Print(Symbol());
-   Print(_Point);
-
-   Logger::isDebug = print_logs;
+   InitLog();
 
    customSession = new CustomSession();
    customSession.addMinuteRange(0, 59, OPEN_BOTH); // Min 0, Max 59
@@ -64,67 +46,52 @@ int OnInit() {
    customSession.addMonthRange(1, 12, OPEN_BOTH); // Min 1, Max 12
    customSession.setPositionLimit(10, PERIOD_D1); // Support only H1, D1 and MN1
 
-   CJAVal inputJson;
-   inputJson["SL_RATIO"] = SL_ratio;
-   inputJson["TP_RATIO"] = TP_ratio;
-   inputJson["FIXED_SLTP"] = fixed_sltp;
-   inputJson["SLIPPAGE"] = slippage;
-   inputJson["BREAKEVEN"] = breakeven;
-   inputJson["PROFIT_ZONE"] = profit_zone;
-   inputJson["PROFIT_ZONE_REWARD"] = profit_zone_reward;
-   inputJson["BREAKEVEN_WR"] = NormalizeDouble((SL_ratio / (SL_ratio + TP_ratio) * 100), 2);
-   inputJson["RISK"] = risk_per_trade;
-   inputJson["ATR_period"] = ATR_period;
-   inputJson["DEMA_period"] = DEMA_period;
-   inputJson["DEMA_filter"] = DEMA_filter;
-   inputJson["DEMA_filter_period"] = DEMA_filter_period;
-   inputJson["DEMA_enum_price"] = DEMA_enum_price;
-   inputJson["DEMA_enum_filter"] = DEMA_enum_filter;
-   inputJson["WDH_sensetive"] = WDH_sensetive;
-   inputJson["WDH_dead_zone"] = WDH_dead_zone;
-   inputJson["WDH_explosion_power"] = WDH_explosion_power;
-   inputJson["WDH_trend_power"] = WDH_trend_power;
-   inputJson["STDDEV_period"] = STDDEV_period;
-   inputJson["STDDEV_threshold"] = STDDEV_threshold;
-
    riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, profit_zone, profit_zone_reward, ATR_period);
-   backtestInfo = new BacktestInfo(strategy_name, inputJson.Serialize(), export_data);
-   positionManager = new PositionManager(riskManager, backtestInfo, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp);
+   positionManager = new PositionManager(riskManager, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp, max_open_positions);
    
    return(INIT_SUCCEEDED);
 }
 
 void OnDeinit(const int reason) { 
-   positionManager.onDeInit();
-   
-   double profitFactor = NormalizeDouble(TesterStatistics(STAT_PROFIT_FACTOR), 2);
-   if (profitFactor >= 1.2) backtestInfo.exportBacktest();
-
-   delete backtestInfo;
    delete positionManager;
 }
 
-void OnTick(){
+void OnTick() {
    static datetime timeCur; datetime timePre = timeCur; timeCur=Time[0];
    bool isNewBar = timeCur != timePre;
+   
+   if(!isNewBar) return;
+   Logger::log("New bar: " + string(timeCur));
+   
+   if(positionManager.getStatus() != AVAILABLE_TO_OPEN) return;
 
-   if(isNewBar) {
-      backtestInfo.setDate(Time[0]);
-      customSession.refresh();
+   customSession.refresh();
 
-      switch(positionManager.getStatus()) {
-         case AVAILABLE_TO_OPEN: {
-         OrderAction action = DEMA_Simple(DEMA_period, DEMA_enum_price, DEMA_filter, DEMA_filter_period, DEMA_enum_filter);
-         OrderAction confirm = Waddah_Confirmation(WDH_sensetive, WDH_dead_zone, WDH_explosion_power, WDH_trend_power);
-         OrderAction stdConfirm = STDDEV_Confirmation(STDDEV_period, STDDEV_threshold);
+   OrderAction action = DEMA_Simple(DEMA_period,
+                                    DEMA_enum_price,
+                                    DEMA_filter,
+                                    DEMA_filter_period,
+                                    DEMA_enum_filter);
 
-         if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT && stdConfirm == OA_CONFIRMED){
-            positionManager.openOrder(OP_SELL);
-         } else if(action == OA_OPEN_LONG && confirm == OA_OPEN_LONG && stdConfirm == OA_CONFIRMED) {
-            positionManager.openOrder(OP_BUY);
-         }
-         break;
-         }
-      }
+   OrderAction confirm = Waddah_Confirmation(WDH_sensetive,
+                                             WDH_dead_zone,
+                                             WDH_explosion_power,
+                                             WDH_trend_power);
+
+   OrderAction stdConfirm = STDDEV_Confirmation(STDDEV_period, STDDEV_threshold);
+
+   Logger::log("OnTick: Action: " + string(action) + " Confirm: " + string(confirm));
+   if(action == OA_OPEN_SHORT && confirm == OA_OPEN_SHORT && stdConfirm == OA_CONFIRMED) {
+      Logger::log("OnTick: Open short");
+      positionManager.openOrder(OP_SELL);
+   } else if(action == OA_OPEN_LONG && confirm == OA_OPEN_LONG && stdConfirm == OA_CONFIRMED) {
+      Logger::log("OnTick: Open long");
+      positionManager.openOrder(OP_BUY);
+   } else {
+      Logger::log("OnTick: No signal");
    }
+}
+
+void InitLog() {
+   Logger::log("Strategy name: " + strategy_name + " Symbol: " + Symbol() + " Point: " + string(_Point));
 }

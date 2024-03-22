@@ -29,6 +29,7 @@ class PositionManager {
       double TPRatio;
       int ATRPeriod;
       int slippage;
+      int maxOpenPositions;
       double breakEven;
       bool fixedSLTP;
       datetime lastBarTime;
@@ -36,7 +37,7 @@ class PositionManager {
       CustomSession* customSession;
    
    public:
-      PositionManager::PositionManager(RiskManager* cRiskManager, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP) {
+      PositionManager::PositionManager(RiskManager* cRiskManager, CustomSession* cCustomSession, double cSLRatio, double cTPRatio, int cATRPeriod,double cRiskPerTrade, int cSlippage, double cBreakEven, bool cfixedSLTP, int cMaxOpenPositions = 1) {
         this.riskManager = cRiskManager;
         this.riskPerTrade = cRiskPerTrade;
         this.SLRatio = cSLRatio;
@@ -47,6 +48,7 @@ class PositionManager {
         this.breakEven = cBreakEven;
         this.fixedSLTP = cfixedSLTP;
         this.customSession = cCustomSession;
+        this.maxOpenPositions = cMaxOpenPositions;
       }
       
       ~PositionManager() {
@@ -64,14 +66,10 @@ class PositionManager {
    void openOrder(int positionType) {
       if (!customSession.allowToOpen(positionType)) return;
       // Calculate values for order
-      riskManager.newTrade(positionType);
-      double lotSize = riskManager.getLotSize();
-      double slPrice = riskManager.getSLprice();
-      double tpPrice = riskManager.getTPprice();
-      double openPrice;
-      if (positionType == OP_BUY) openPrice = Ask; else openPrice = Bid;
-      
-      int number = OrderSend(Symbol(), positionType, lotSize, openPrice, slippage, slPrice, tpPrice, "Comment", 0, 0, Red);
+      NewTrade trade = riskManager.getNewTrade(positionType);
+      Logger::log("Open Order: " + string(trade.positionType) + " Lot Size: " + string(trade.lotSize) + " Open Price: " + string(trade.openPrice) + " SL: " + string(trade.slPrice) + " TP: " + string(trade.tpPrice));
+
+      int number = OrderSend(Symbol(), positionType, trade.lotSize, trade.openPrice, slippage, trade.slPrice, trade.tpPrice, "Comment", 0, 0, Red);
       Logger::log("Opened order number: " + string(number));
       
       if  (number != -1) {
@@ -111,67 +109,10 @@ class PositionManager {
       }
    }
    
-   void checkBreakeven() {
-      if (OrderSelect(0, SELECT_BY_POS) == true) {
-         int oticket = OrderTicket();
-         double oop = NormalizeDouble(OrderOpenPrice(), Digits); 
-         double osl = NormalizeDouble(OrderStopLoss(), Digits);
-         double otp = NormalizeDouble(OrderTakeProfit(), Digits);
-         double breakevenPrice = riskManager.getBreakevenPrice();
-         bool orderModify;
-
-         if (OrderType() == OP_BUY) {
-            if (Bid >= breakevenPrice || High[1] >= breakevenPrice) {
-               orderModify = OrderModify(oticket, oop, oop, otp, 0, clrOrange);
-            }
-         } else {
-            if (Ask <= breakevenPrice || Low[1] <= breakevenPrice) {
-               orderModify = OrderModify(oticket, oop, oop, otp, 0, clrOrange);
-            }
-         }
-
-         if (orderModify) {
-            riskManager.setBreakeven();
-            Logger::log("Breakeven set");
-         } else {
-            Logger::log("Break even error: " + string(GetLastError()));
-         }
-      } else {
-         Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
-      }
-   }
-
-   void checkProfitZone() {
-      if (OrderSelect(0, SELECT_BY_POS) == true) {
-         int oticket = OrderTicket();
-         double oop = NormalizeDouble(OrderOpenPrice(), Digits); 
-         double otp = NormalizeDouble(OrderTakeProfit(), Digits);
-         double profitZonePrice = riskManager.getProfitZonePrice();
-         double newSL = riskManager.getProfitZoneSLPrice();
-         bool orderModify;
-
-         if (OrderType() == OP_BUY) {
-            if (Bid >= profitZonePrice || High[1] >= profitZonePrice) {
-               orderModify = OrderModify(oticket, oop, newSL, otp, 0, clrWhite);
-            }
-         } else {
-            if (Ask <= profitZonePrice || Low[1] <= profitZonePrice) {
-               orderModify = OrderModify(oticket, oop, newSL, otp, 0, clrWhite);
-            }
-         }
-
-         if (orderModify) {
-            riskManager.setProfitZone();
-            Logger::log("Profit zone set");
-         } else {
-            Logger::log("Profit zone error: " + string(GetLastError()));
-         }
-
-      } else {
-         Logger::log("Could not access last historical order... ErrorCode= " + string(GetLastError()));
-      }
-   }
-
+   /*
+      Check and can set breakeven or profit zone for a position.
+      This function is called from getStatus() function.
+   */
    void checkBreakevenProfit() {
       int orderType = OrderType();
 
@@ -179,31 +120,39 @@ class PositionManager {
       double osl = NormalizeDouble(OrderStopLoss(), Digits);
       double otp = NormalizeDouble(OrderTakeProfit(), Digits);
 
+      bool isBreakeven = riskManager.getBreakevenStatus(orderType, oop, otp);
+      bool isProfitZone = riskManager.getProfitZoneStatus(orderType, oop, otp);
+
       // Check for breakeven
-      if (((orderType == OP_BUY && osl < oop) || (orderType == OP_SELL && osl > oop)) && riskManager.getBreakevenStatus(orderType, oop, otp)) {
+      if (isBreakeven && ((orderType == OP_BUY && osl < oop) || (orderType == OP_SELL && osl > oop))) {
          bool orderModify = OrderModify(OrderTicket(), oop, oop, otp, 0, clrOrange);
-         if (orderModify) Logger::log("PositionManager.checkBreakevenNew() - Breakeven set");
-         else Logger::log("PositionManager.checkBreakevenNew() - Break even error: " + string(GetLastError()));
+         if (orderModify) Logger::log("PositionManager.checkBreakevenProfit() - Breakeven set");
+         else Logger::log("PositionManager.checkBreakevenProfit() - Break even error: " + string(GetLastError()));
       }
       
       // Check for profit zone
-      if (osl == oop && riskManager.getProfitZoneStatus(orderType, oop, otp)) {
+      if (isProfitZone && osl == oop) {
          double nsl = riskManager.getProfitZoneSL(orderType, oop, otp);
          bool orderModify = OrderModify(OrderTicket(), oop, nsl, otp, 0, clrWhite);
-         if (orderModify) Logger::log("PositionManager.checkBreakevenNew() - Profit zone set");
-         else Logger::log("PositionManager.checkBreakevenNew() - Profit zone error: " + string(GetLastError()));
+         if (orderModify) Logger::log("PositionManager.checkBreakevenProfit() - Profit zone set");
+         else Logger::log("PositionManager.checkBreakevenProfit() - Profit zone error: " + string(GetLastError()));
       }
    }
 
    PositionStatus getStatus() {
-      if (OrdersTotal() > 0) {
+      int ordersTotal = OrdersTotal();
+      if (ordersTotal > 0) {
          for( int i = 0 ; i < OrdersTotal() ; i++ ) { 
             if (OrderSelect( i, SELECT_BY_POS, MODE_TRADES ) && OrderSymbol() == Symbol()) {   
                checkBreakevenProfit();
             }; 
          }
+         if (ordersTotal >= maxOpenPositions) {
+            Logger::log("PositionManager.getStatus() - MULTIPLE_POSITIONS");
+            return IS_OPENED;
+         }
          Logger::log("PositionManager.getStatus() - IS_OPENED"); 
-         return IS_OPENED;
+         return AVAILABLE_TO_OPEN;
       } else {
          Logger::log("PositionManager.getStatus() - AVAILABLE_TO_OPEN");
          return AVAILABLE_TO_OPEN;

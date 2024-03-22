@@ -109,21 +109,15 @@ OrderAction ABI_Simple(bool ABI_useRSI, double ABI_len, double ABI_smooth, int A
 //| cDEMA_filter = [0 - 20]  | cDEMA_filter_period - {0 - 8}
 //| cDEMA_enum_filter - [0 - 2]  |  cDEMA_enum_price - [0-32]
 OrderAction DEMA_Simple(double cDEMA_period, int cDEMA_enum_price, double cDEMA_filter, int cDEMA_filter_period, int cDEMA_enum_filter) {
-  OrderAction signal = OA_IGNORE;
   enPrices DEMA_Price = (enPrices)cDEMA_enum_price;
   enFilterWhat DEMA_FilterOn = (enFilterWhat)cDEMA_enum_filter;
-  string DEMA_path;
-  #ifdef DEMA_PATH // if DEMA_PATH is defined, use it
-  DEMA_path = "::" + DEMA_PATH;
-  #else
-  DEMA_path = "DEMA";
-  #endif
-  double DEMA_Buy = iCustom(NULL, 0, DEMA_path, PERIOD_CURRENT, cDEMA_period, DEMA_Price, cDEMA_filter, cDEMA_filter_period, DEMA_FilterOn, 3, 1);
-  double DEMA_Sell = iCustom(NULL, 0, DEMA_path, PERIOD_CURRENT, cDEMA_period, DEMA_Price, cDEMA_filter, cDEMA_filter_period, DEMA_FilterOn, 4, 1);
-  
-  if(LongSignalEmptyValue(DEMA_Buy,  DEMA_Sell)) signal = OA_OPEN_LONG;
-  if(ShortSignalEmptyValue(DEMA_Buy,  DEMA_Sell)) signal = OA_OPEN_SHORT;
-  return signal;
+
+  double DEMA_Buy = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, cDEMA_period, DEMA_Price, cDEMA_filter, cDEMA_filter_period, DEMA_FilterOn, 3, 1);
+  double DEMA_Sell = iCustom(NULL, 0, "DEMA", PERIOD_CURRENT, cDEMA_period, DEMA_Price, cDEMA_filter, cDEMA_filter_period, DEMA_FilterOn, 4, 1);
+
+  if(LongSignalEmptyValue(DEMA_Buy,  DEMA_Sell)) return OA_OPEN_LONG;
+  if(ShortSignalEmptyValue(DEMA_Buy,  DEMA_Sell)) return OA_OPEN_SHORT;
+  return OA_IGNORE;
 }
 
 //| SSL Crossover Entry (QC)
