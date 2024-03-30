@@ -7,8 +7,8 @@ extern string strategy_name = "DEWA-1.0";
 extern bool fixed_sltp = false;
 extern int slippage = 3;
 input string RISK_EXTERNALS = "";
-extern int max_open_positions = 3;
-extern double risk_per_trade = 1.0;
+extern double max_open_risk = 1.0;
+extern int max_open_trades = 3;
 extern int ATR_period = 14;
 extern double SL_ratio = 1.5;
 extern double TP_ratio = 3.0;
@@ -50,8 +50,10 @@ int OnInit() {
     customSession.addMonthRange(1, 12, OPEN_BOTH);                            // Min 1, Max 12
     customSession.setPositionLimit(10, PERIOD_D1);                            // Support only H1, D1 and MN1
 
-    riskManager = new RiskManager(risk_per_trade, SL_ratio, TP_ratio, breakeven, profit_zone, profit_zone_reward, ATR_period);
-    positionManager = new PositionManager(riskManager, customSession, SL_ratio, TP_ratio, ATR_period, risk_per_trade, slippage, breakeven, fixed_sltp, max_open_positions);
+    riskManager = new RiskManager(max_open_risk, max_open_trades, SL_ratio, TP_ratio, breakeven, profit_zone, profit_zone_reward, ATR_period);
+    positionManager = new PositionManager(riskManager, customSession, slippage, max_open_trades);
+
+    backtestExporter = new BacktestExporter(strategy_name, sessionString);
 
     return (INIT_SUCCEEDED);
 }

@@ -76,8 +76,8 @@ class RiskManager {
         }
 
     public:
-        RiskManager::RiskManager(double cRiskPerTrade, double cSLRatio, double cTPRatio, double cBreakevenZone, double cProfitZone, double cProfitRatio, int cATRPeriod) {
-            this.riskPerTrade = cRiskPerTrade;
+        RiskManager::RiskManager(double cMaxOpenRisk, double cMaxOpenTrades, double cSLRatio, double cTPRatio, double cBreakevenZone, double cProfitZone, double cProfitRatio, int cATRPeriod) {
+            this.riskPerTrade = NormalizeDouble(cMaxOpenRisk / cMaxOpenTrades, 2);
             this.SLRatio = cSLRatio;
             this.TPRatio = cTPRatio;
             this.breakevenZone = cBreakevenZone;
