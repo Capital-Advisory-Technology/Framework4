@@ -106,7 +106,7 @@ class RiskManager {
             double bePrice = NormalizeDouble(cOpenPrice + (cTpPrice - cOpenPrice) * breakevenZone, Digits);
             double lastHigh = iHigh(Symbol(), Period(), 1);
             double lastLow = iLow(Symbol(), Period(), 1);
-            Print("Open price: ", cOpenPrice, " TP price: ", cTpPrice, " BE price: ", bePrice);
+
             if (cOrderType == OP_BUY &&  bePrice <= lastHigh) return true;
             else if (cOrderType == OP_SELL && bePrice >= lastLow) return true;
             else return false;
@@ -116,7 +116,7 @@ class RiskManager {
             double pzPrice = NormalizeDouble(cOpenPrice + (cTpPrice - cOpenPrice) * profitZone, Digits);
             double lastHigh = iHigh(Symbol(), Period(), 1);
             double lastLow = iLow(Symbol(), Period(), 1);
-            Print("Open price: ", cOpenPrice, " TP price: ", cTpPrice, " PZ price: ", pzPrice);
+
             if (cOrderType == OP_BUY &&  pzPrice <= lastHigh) return true;
             else if (cOrderType == OP_SELL && pzPrice >= lastLow) return true;
             else return false;

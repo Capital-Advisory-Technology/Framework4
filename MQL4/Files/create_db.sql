@@ -1,49 +1,23 @@
 DROP TABLE IF EXISTS position_types;
 CREATE TABLE IF NOT EXISTS position_types
 (
-    id   INTEGER NOT NULL,
-    name TEXT    NOT NULL,
-    UNIQUE (id)
+    id   INTEGER PRIMARY KEY,
+    value INTEGER NOT NULL,
+    name TEXT    NOT NULL
 );
 
-INSERT INTO position_types (id, name)
-VALUES (0, 'Long')
-     , (1, 'Short')
-;
+INSERT INTO position_types (value, name)
+VALUES (0, 'Long'), (1, 'Short');
 
-
-DROP TABLE IF EXISTS breakeven_flags;
-CREATE TABLE IF NOT EXISTS breakeven_flags
-(
-    id   INTEGER NOT NULL,
-    name TEXT    NOT NULL,
-    UNIQUE (id)
-);
-INSERT INTO breakeven_flags (id, name)
-VALUES (0, 'No BreakEven')
-     , (1, 'BreakEven')
-;
-
-DROP TABLE IF EXISTS close_types;
-CREATE TABLE IF NOT EXISTS close_types
-(
-    id   INTEGER NOT NULL,
-    name TEXT    NOT NULL,
-    UNIQUE (id)
-);
-INSERT INTO close_types (id, name)
-VALUES (0, 'Manual')
-     , (1, 'Automatic')
-;
 
 DROP TABLE IF EXISTS periods;
 CREATE TABLE IF NOT EXISTS periods
 (
-    id   INTEGER NOT NULL,
-    name TEXT    NOT NULL,
-    UNIQUE (id)
+    id   INTEGER PRIMARY KEY,
+    value INTEGER NOT NULL,
+    name TEXT NOT NULL
 );
-INSERT INTO periods
+INSERT INTO periods (value, name)
 VALUES (1, 'M1')
      , (5, 'M5')
      , (10, 'M10')
@@ -63,8 +37,7 @@ CREATE TABLE IF NOT EXISTS symbols
     name     TEXT    NOT NULL,
     base     TEXT    NOT NULL,
     exchange TEXT    NOT NULL,
-    digits   INTEGER NOT NULL,
-    UNIQUE (id)
+    digits   INTEGER NOT NULL
 );
 
 INSERT INTO symbols (name, base, exchange, digits)
@@ -98,33 +71,30 @@ VALUES ('AUDCAD', 'AUD', 'CAD', 5)
      , ('USDJPY', 'USD', 'JPY', 3)
 ;
 
-DROP TABLE IF EXISTS strategies;
-CREATE TABLE IF NOT EXISTS strategies
-(
-    id   INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    UNIQUE (name)
-);
-
-DROP TABLE IF EXISTS backtests;
-CREATE TABLE IF NOT EXISTS backtests
-(
+DROP TABLE IF EXISTS backtests_raw;
+CREATE TABLE IF NOT EXISTS backtests_raw (
     id                INTEGER PRIMARY KEY,
-    strategy_id       INTEGER NOT NULL,
-    symbol_id         INTEGER NOT NULL,
+    symbol         INTEGER NOT NULL,
     period            INTEGER NOT NULL,
-    account_currency  INTEGER NOT NULL,
+    account_currency  TEXT NOT NULL,
+    account_balance  REAL NOT NULL,
     date_from         INTEGER NOT NULL,
     date_to           INTEGER NOT NULL,
-    balance           INTEGER NOT NULL,
     session_limits    TEXT    NOT NULL,
-    inputs            TEXT    NOT NULL,
-    entry_list        TEXT    NOT NULL,
-    exit_list         TEXT    NOT NULL,
-    confirmation_list TEXT    NOT NULL,
-    FOREIGN KEY (strategy_id) REFERENCES strategies (id) ON DELETE CASCADE,
-    FOREIGN KEY (symbol_id) REFERENCES symbols (id) ON DELETE CASCADE,
-    FOREIGN KEY (period) REFERENCES periods (id) ON DELETE CASCADE
+
+    strategy_name            TEXT    NOT NULL,
+    profit                 REAL    NOT NULL,
+    trades                 INTEGER NOT NULL,
+    profit_factor          REAL    NOT NULL,
+    expected_payoff        REAL    NOT NULL,
+    drawdown               REAL    NOT NULL,
+    drawdown_percent       REAL    NOT NULL
+    -- entry_list        TEXT    NOT NULL,
+    -- exit_list         TEXT    NOT NULL,
+    -- confirmation_list TEXT    NOT NULL,
+    -- FOREIGN KEY (strategy_id) REFERENCES strategies (id) ON DELETE CASCADE,
+    -- FOREIGN KEY (symbol_id) REFERENCES symbols (id) ON DELETE CASCADE,
+    -- FOREIGN KEY (period) REFERENCES periods (id) ON DELETE CASCADE
     -- ,UNIQUE(strategy_id, symbol_id, period, date_from, date_to, inputs)
 
 );
@@ -133,12 +103,11 @@ DROP TABLE IF EXISTS positions;
 CREATE TABLE IF NOT EXISTS positions
 (
     id             INTEGER PRIMARY KEY,
-    backtest_id    INTEGER NOT NULL,
+    bt_raw_id    INTEGER NOT NULL,
+    type           INT     NOT NULL,
     order_number   INTEGER NOT NULL,
     open_time      TEXT    NOT NULL,
     close_time     TEXT    NOT NULL,
-    position_type  INT     NOT NULL,
-    balance        REAL    NOT NULL,
     lot_size       REAL    NOT NULL,
     open_price     REAL    NOT NULL,
     close_price    REAL    NOT NULL,
@@ -148,10 +117,6 @@ CREATE TABLE IF NOT EXISTS positions
     net_profit     REAL    NOT NULL,
     commission     REAL    NOT NULL,
     swap           REAL    NOT NULL,
-    breakeven_flag INTEGER NOT NULL,
-    close_type     INTEGER NOT NULL,
-    FOREIGN KEY (backtest_id) REFERENCES backtests (id) ON DELETE CASCADE,
-    FOREIGN KEY (position_type) REFERENCES position_types (id) ON DELETE CASCADE,
-    FOREIGN KEY (breakeven_flag) REFERENCES breakeven_flags (id) ON DELETE CASCADE,
-    FOREIGN KEY (close_type) REFERENCES close_types (id) ON DELETE CASCADE
+
+    FOREIGN KEY (bt_raw_id) REFERENCES backtests_raw (id) ON DELETE CASCADE
 );

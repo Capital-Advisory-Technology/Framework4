@@ -12,7 +12,7 @@
 
 //| Relative Vigor Index (RVI) Crossover Exit (QC)
 //| RVI_period - {14 - 28}
-OrderAction ExitRVI(int RVI_period) {
+OrderAction ExitRVI(int RVI_period, int positionType) {
    OrderAction signal = OA_IGNORE;
 
    double RVIBuy = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,0,1);
@@ -20,9 +20,9 @@ OrderAction ExitRVI(int RVI_period) {
    double RVIBuyPrev = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,0,2);
    double RVISellPrev = iCustom(NULL,0,"RelativeVigorIndex",RVI_period,1,2);
 
-   if(openPositionType == 0) {
+   if(positionType == 0) {
       if(ShortCrossOver(RVIBuy, RVISell, RVIBuyPrev, RVISellPrev)) signal = OA_CLOSE;  
-   } else if (openPositionType == 1) {
+   } else if (positionType == 1) {
       if(LongCrossOver(RVIBuy, RVISell, RVIBuyPrev, RVISellPrev)) signal = OA_CLOSE;
    }
 

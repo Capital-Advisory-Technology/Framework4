@@ -1,5 +1,6 @@
 #include <CAT/signals/confirmations.mqh>
 #include <CAT/signals/exit.mqh>
+#include <CAT/common/exporter.mqh>
 
 // Backtest's externals for optimization
 input string BACKTEST_EXTERNALS = "";
@@ -36,6 +37,7 @@ extern int WDH_dead_zone = 30;
 extern int WDH_explosion_power = 15;
 extern int WDH_trend_power = 15;
 
+BacktestExporter* backtestExporter;
 PositionManager* positionManager;
 CustomSession* customSession;
 RiskManager* riskManager;
@@ -49,17 +51,13 @@ int OnInit() {
     customSession.addDayOfWeekRange(1, 7, OPEN_BOTH);                         // Min 1, Max 7
     customSession.addMonthRange(1, 12, OPEN_BOTH);                            // Min 1, Max 12
     customSession.setPositionLimit(10, PERIOD_D1);                            // Support only H1, D1 and MN1
+    string sessionString = customSession.toString();
 
+    backtestExporter = new BacktestExporter(strategy_name, sessionString);
     riskManager = new RiskManager(max_open_risk, max_open_trades, SL_ratio, TP_ratio, breakeven, profit_zone, profit_zone_reward, ATR_period);
     positionManager = new PositionManager(riskManager, customSession, slippage, max_open_trades);
 
-    backtestExporter = new BacktestExporter(strategy_name, sessionString);
-
     return (INIT_SUCCEEDED);
-}
-
-void OnDeinit(const int reason) {
-    delete positionManager;
 }
 
 void OnTick() {
@@ -95,6 +93,15 @@ void OnTick() {
     } else {
         Logger::log("OnTick: No signal");
     }
+}
+
+void OnDeinit(const int reason) {
+    if (IsOptimization() || IsTesting()) {
+        backtestExporter.exportBacktest();
+    }
+
+    delete backtestExporter;
+    delete positionManager;
 }
 
 void InitLog() {
