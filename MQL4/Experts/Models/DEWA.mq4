@@ -51,9 +51,8 @@ int OnInit() {
     customSession.addDayOfWeekRange(1, 7, OPEN_BOTH);                         // Min 1, Max 7
     customSession.addMonthRange(1, 12, OPEN_BOTH);                            // Min 1, Max 12
     customSession.setPositionLimit(10, PERIOD_D1);                            // Support only H1, D1 and MN1
-    string sessionString = customSession.toString();
 
-    backtestExporter = new BacktestExporter(strategy_name, sessionString);
+    backtestExporter = new BacktestExporter();
     riskManager = new RiskManager(max_open_risk, max_open_trades, SL_ratio, TP_ratio, breakeven, profit_zone, profit_zone_reward, ATR_period);
     positionManager = new PositionManager(riskManager, customSession, slippage, max_open_trades);
 
@@ -96,8 +95,38 @@ void OnTick() {
 }
 
 void OnDeinit(const int reason) {
-    if (IsOptimization() || IsTesting()) {
-        backtestExporter.exportBacktest();
+    if ((IsOptimization() || IsTesting()) && TesterStatistics(STAT_PROFIT_FACTOR) >= exportPFThreshold) {
+        CJAVal inputJson;
+    
+        inputJson["strategy_name"] = strategy_name;
+        inputJson["fixed_sltp"] = fixed_sltp;
+        inputJson["slippage"] = slippage;
+
+        inputJson["max_open_risk"] = max_open_risk;
+        inputJson["max_open_trades"] = max_open_trades;
+        inputJson["ATR_period"] = ATR_period;
+        inputJson["SL_ratio"] = SL_ratio;
+        inputJson["TP_ratio"] = TP_ratio;
+
+        inputJson["breakeven"] = breakeven;
+        inputJson["profit_zone"] = profit_zone;
+        inputJson["profit_zone_reward"] = profit_zone_reward;
+
+        inputJson["hour_limit_start"] = hour_limit_start;
+        inputJson["hour_limit_end"] = hour_limit_end;
+
+        inputJson["DEMA_period"] = DEMA_period;
+        inputJson["DEMA_filter"] = DEMA_filter;
+        inputJson["DEMA_filter_period"] = DEMA_filter_period;
+        inputJson["DEMA_enum_price"] = DEMA_enum_price;
+        inputJson["DEMA_enum_filter"] = DEMA_enum_filter;
+
+        inputJson["WDH_sensetive"] = WDH_sensetive;
+        inputJson["WDH_dead_zone"] = WDH_dead_zone;
+        inputJson["WDH_explosion_power"] = WDH_explosion_power;
+        inputJson["WDH_trend_power"] = WDH_trend_power;
+        
+        backtestExporter.exportBacktest(strategy_name, inputJson.Serialize(), customSession.toString());
     }
 
     delete backtestExporter;

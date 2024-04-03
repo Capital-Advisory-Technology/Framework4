@@ -7,17 +7,14 @@ class BacktestExporter {
     private:
         Database* db;
         
-        string strategyName;
-        string sessionLimits;
         string dateFrom;
         double accountStartBalance;
 
+
     public:
-        BacktestExporter(string cStrategyName, string cSessionLimits) {
+        BacktestExporter() {
             this.db = new Database();
 
-            this.strategyName = cStrategyName;
-            this.sessionLimits = cSessionLimits;
             this.accountStartBalance = AccountBalance();
             this.dateFrom = getCurrentDateTime();
         }
@@ -26,10 +23,8 @@ class BacktestExporter {
             delete db;
         }
 
-        void exportBacktest() {
-            if (TesterStatistics(STAT_PROFIT_FACTOR) <= 1.3) return;
-
-            string backtestQuery = setBacktestDataQuery(accountStartBalance, dateFrom, sessionLimits, strategyName);
+        void exportBacktest(string strategyName, string inputJson, string sessionLimits) {
+            string backtestQuery = insertBacktestQuery(strategyName, inputJson, sessionLimits, accountStartBalance, dateFrom);
             db.insertData(backtestQuery);
 
             int btId = (int)db.lastInsertId();

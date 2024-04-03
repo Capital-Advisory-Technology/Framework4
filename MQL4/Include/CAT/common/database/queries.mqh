@@ -1,20 +1,16 @@
-string setBacktestDataQuery(
-    double accountStartBalance, string dateFrom,
-    string sessionLimits, string strategyName
+string insertBacktestQuery(
+    string strategyName, string inputJson, string sessionLimits, double accountStartBalance, string dateFrom
 ) {
-    string accountCurrency = AccountInfoString(ACCOUNT_CURRENCY);
-    string dateTo = getCurrentDateTime();
+    int isOptimization = (int)IsOptimization();
+    int isTest = (int)IsTesting();
 
-    double profit = NormalizeDouble(TesterStatistics(STAT_PROFIT), 2);
-    int trades = (int)TesterStatistics(STAT_TRADES);
-    double profitFactor = NormalizeDouble(TesterStatistics(STAT_PROFIT_FACTOR), 2);
-    double expectedPayoff = NormalizeDouble(TesterStatistics(STAT_EXPECTED_PAYOFF), 2);
-    double drawdown = NormalizeDouble(TesterStatistics(STAT_EQUITYDD_PERCENT), 2);
-    double drawdownPercent = NormalizeDouble(TesterStatistics(STAT_EQUITY_DDREL_PERCENT), 2);
+    string dateTo = getCurrentDateTime();
+    string accountCurrency = AccountInfoString(ACCOUNT_CURRENCY);
+
     string query = "INSERT INTO backtests_raw";
-    StringAdd(query, " (symbol, period, account_currency, account_balance, date_from, date_to, session_limits, strategy_name, profit, trades, profit_factor, expected_payoff, drawdown, drawdown_percent)");
-    string valueStr = StringFormat(" VALUES ('%s', %d, '%s', %f, '%s', '%s', '%s', '%s', %f, %d, %f, %f, %f, %f)",
-                                   Symbol(), Period(), accountCurrency, accountStartBalance, dateFrom, dateTo, sessionLimits, strategyName, profit, trades, profitFactor, expectedPayoff, drawdown, drawdownPercent);
+    StringAdd(query, " (strategy_name, inputs, session_limits, symbol, period, account_currency, account_balance, date_from, date_to, is_optimization, is_test)");
+    string valueStr = StringFormat(" VALUES ('%s', '%s', '%s', '%s', %d, '%s', %f, '%s', '%s', %d, %d)",
+                                   strategyName, inputJson, sessionLimits, Symbol(), Period(), accountCurrency, accountStartBalance, dateFrom, dateTo, isOptimization, isTest);
     StringAdd(query, valueStr);
     return query;
 }
@@ -53,7 +49,7 @@ string insertPositionsQuery(int btRawId) {
 }
 
 string getStrDateTime(datetime dt) {
-    return TimeToStr(dt, TIME_DATE | TIME_MINUTES);
+    return TimeToStr(dt, TIME_DATE | TIME_SECONDS);
 }
 
 string getCurrentDateTime() {
