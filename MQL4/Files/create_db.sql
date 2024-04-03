@@ -1,49 +1,24 @@
 DROP TABLE IF EXISTS position_types;
 CREATE TABLE IF NOT EXISTS position_types
 (
-    id   INTEGER NOT NULL,
-    name TEXT    NOT NULL,
-    UNIQUE (id)
+    id    INTEGER PRIMARY KEY,
+    value INTEGER NOT NULL,
+    name  TEXT    NOT NULL
 );
 
-INSERT INTO position_types (id, name)
-VALUES (0, 'Long')
-     , (1, 'Short')
-;
+INSERT INTO position_types (value, name)
+VALUES (0, 'Long'),
+       (1, 'Short');
 
-
-DROP TABLE IF EXISTS breakeven_flags;
-CREATE TABLE IF NOT EXISTS breakeven_flags
-(
-    id   INTEGER NOT NULL,
-    name TEXT    NOT NULL,
-    UNIQUE (id)
-);
-INSERT INTO breakeven_flags (id, name)
-VALUES (0, 'No BreakEven')
-     , (1, 'BreakEven')
-;
-
-DROP TABLE IF EXISTS close_types;
-CREATE TABLE IF NOT EXISTS close_types
-(
-    id   INTEGER NOT NULL,
-    name TEXT    NOT NULL,
-    UNIQUE (id)
-);
-INSERT INTO close_types (id, name)
-VALUES (0, 'Manual')
-     , (1, 'Automatic')
-;
 
 DROP TABLE IF EXISTS periods;
 CREATE TABLE IF NOT EXISTS periods
 (
-    id   INTEGER NOT NULL,
-    name TEXT    NOT NULL,
-    UNIQUE (id)
+    period_id INTEGER PRIMARY KEY,
+    value     INTEGER NOT NULL,
+    name      TEXT    NOT NULL
 );
-INSERT INTO periods
+INSERT INTO periods (value, name)
 VALUES (1, 'M1')
      , (5, 'M5')
      , (10, 'M10')
@@ -59,12 +34,11 @@ VALUES (1, 'M1')
 DROP TABLE IF EXISTS symbols;
 CREATE TABLE IF NOT EXISTS symbols
 (
-    id       INTEGER PRIMARY KEY,
-    name     TEXT    NOT NULL,
-    base     TEXT    NOT NULL,
-    exchange TEXT    NOT NULL,
-    digits   INTEGER NOT NULL,
-    UNIQUE (id)
+    symbol_id INTEGER PRIMARY KEY,
+    name      TEXT    NOT NULL,
+    base      TEXT    NOT NULL,
+    exchange  TEXT    NOT NULL,
+    digits    INTEGER NOT NULL
 );
 
 INSERT INTO symbols (name, base, exchange, digits)
@@ -98,60 +72,136 @@ VALUES ('AUDCAD', 'AUD', 'CAD', 5)
      , ('USDJPY', 'USD', 'JPY', 3)
 ;
 
-DROP TABLE IF EXISTS strategies;
-CREATE TABLE IF NOT EXISTS strategies
+DROP TABLE IF EXISTS backtests_raw;
+CREATE TABLE IF NOT EXISTS backtests_raw
 (
-    id   INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    UNIQUE (name)
-);
+    bt_raw_id        INTEGER PRIMARY KEY,
+    symbol           TEXT NOT NULL,
+    period           INTEGER NOT NULL,
+    account_currency TEXT    NOT NULL,
+    account_balance  REAL    NOT NULL,
+    date_from        INTEGER NOT NULL,
+    date_to          INTEGER NOT NULL,
 
-DROP TABLE IF EXISTS backtests;
-CREATE TABLE IF NOT EXISTS backtests
-(
-    id                INTEGER PRIMARY KEY,
-    strategy_id       INTEGER NOT NULL,
-    symbol_id         INTEGER NOT NULL,
-    period            INTEGER NOT NULL,
-    account_currency  INTEGER NOT NULL,
-    date_from         INTEGER NOT NULL,
-    date_to           INTEGER NOT NULL,
-    balance           INTEGER NOT NULL,
-    session_limits    TEXT    NOT NULL,
-    inputs            TEXT    NOT NULL,
-    entry_list        TEXT    NOT NULL,
-    exit_list         TEXT    NOT NULL,
-    confirmation_list TEXT    NOT NULL,
-    FOREIGN KEY (strategy_id) REFERENCES strategies (id) ON DELETE CASCADE,
-    FOREIGN KEY (symbol_id) REFERENCES symbols (id) ON DELETE CASCADE,
-    FOREIGN KEY (period) REFERENCES periods (id) ON DELETE CASCADE
-    -- ,UNIQUE(strategy_id, symbol_id, period, date_from, date_to, inputs)
+    strategy_name    TEXT    NOT NULL,
+    inputs           TEXT    NOT NULL,
+    session_limits   TEXT    NOT NULL,
+
+    is_optimization  INTEGER NOT NULL,
+    is_test          INTEGER NOT NULL,
+    is_processed     INTEGER NOT NULL DEFAULT 0
+    -- entry_list        TEXT    NOT NULL,
+    -- exit_list         TEXT    NOT NULL,
+    -- confirmation_list TEXT    NOT NULL,
 
 );
 
 DROP TABLE IF EXISTS positions;
 CREATE TABLE IF NOT EXISTS positions
 (
-    id             INTEGER PRIMARY KEY,
-    backtest_id    INTEGER NOT NULL,
-    order_number   INTEGER NOT NULL,
-    open_time      TEXT    NOT NULL,
-    close_time     TEXT    NOT NULL,
-    position_type  INT     NOT NULL,
-    balance        REAL    NOT NULL,
-    lot_size       REAL    NOT NULL,
-    open_price     REAL    NOT NULL,
-    close_price    REAL    NOT NULL,
-    sl_price       REAL    NOT NULL,
-    tp_price       REAL    NOT NULL,
-    gross_profit   REAL    NOT NULL,
-    net_profit     REAL    NOT NULL,
-    commission     REAL    NOT NULL,
-    swap           REAL    NOT NULL,
-    breakeven_flag INTEGER NOT NULL,
-    close_type     INTEGER NOT NULL,
-    FOREIGN KEY (backtest_id) REFERENCES backtests (id) ON DELETE CASCADE,
-    FOREIGN KEY (position_type) REFERENCES position_types (id) ON DELETE CASCADE,
-    FOREIGN KEY (breakeven_flag) REFERENCES breakeven_flags (id) ON DELETE CASCADE,
-    FOREIGN KEY (close_type) REFERENCES close_types (id) ON DELETE CASCADE
+    id           INTEGER PRIMARY KEY,
+    bt_raw_id    INTEGER NOT NULL,
+    type         INT     NOT NULL,
+    order_number INTEGER NOT NULL,
+    open_time    TEXT    NOT NULL,
+    close_time   TEXT    NOT NULL,
+    lot_size     REAL    NOT NULL,
+    open_price   REAL    NOT NULL,
+    close_price  REAL    NOT NULL,
+    sl_price     REAL    NOT NULL,
+    tp_price     REAL    NOT NULL,
+    gross_profit REAL    NOT NULL,
+    net_profit   REAL    NOT NULL,
+    commission   REAL    NOT NULL,
+    swap         REAL    NOT NULL,
+
+    FOREIGN KEY (bt_raw_id) REFERENCES backtests_raw (bt_raw_id) ON DELETE CASCADE
 );
+
+DROP TABLE IF EXISTS strategies;
+CREATE TABLE IF NOT EXISTS strategies
+(
+    strategy_id     INTEGER PRIMARY KEY,
+    name            TEXT NOT NULL UNIQUE
+);
+
+DROP TABLE IF EXISTS backtests;
+CREATE TABLE IF NOT EXISTS backtests
+(
+    bt_id            INTEGER PRIMARY KEY,
+    strategy_id      INTEGER NOT NULL,
+    bt_raw_id        INTEGER NOT NULL,
+    symbol_id        INTEGER NOT NULL,
+    period_id        INTEGER NOT NULL,
+    account_currency TEXT    NOT NULL,
+    inputs           TEXT    NOT NULL,
+
+    UNIQUE (bt_raw_id, strategy_id, symbol_id, period_id, account_currency, inputs),
+    FOREIGN KEY (bt_raw_id) REFERENCES backtests_raw (bt_raw_id) ON DELETE CASCADE,
+    FOREIGN KEY (strategy_id) REFERENCES strategies (strategy_id)  ON DELETE CASCADE,
+    FOREIGN KEY (symbol_id) REFERENCES symbols (symbol_id) ON DELETE CASCADE,
+    FOREIGN KEY (period_id) REFERENCES periods (period_id) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS backtests_stats;
+CREATE TABLE IF NOT EXISTS backtests_stats
+(
+    bt_stats_id     INTEGER PRIMARY KEY,
+    bt_id           INTEGER NOT NULL,
+
+    date_from       INTEGER NOT NULL,
+    date_to         INTEGER NOT NULL,
+
+    overall_stats   TEXT    NOT NULL,
+    yearly_stats    TEXT    NOT NULL,
+    monthly_stats   TEXT    NOT NULL,
+
+    is_optimization INTEGER NOT NULL,
+    is_test         INTEGER NOT NULL,
+
+    FOREIGN KEY (bt_id) REFERENCES backtests (bt_id) ON DELETE CASCADE
+
+);
+
+
+--     start_balance  REAL NOT NULL,
+--     final_balance  REAL NOT NULL,
+--     min_balance    REAL NOT NULL,
+--     max_balance    REAL NOT NULL,
+--     net_profit     REAL NOT NULL,
+--     profit_factor          REAL    NOT NULL,
+--     trans_cost           REAL    NOT NULL,
+--     trans_cost_percent  REAL    NOT NULL,
+--
+--     expected_payoff        REAL    NOT NULL,
+--     drawdown               REAL    NOT NULL,
+--     drawdown_percent       REAL    NOT NULL,
+--
+--     avg_drawdown    REAL NOT NULL,
+--     max_drawdown    REAL NOT NULL,
+--     min_drawdown    REAL NOT NULL,
+--     avg_dd_duration REAL NOT NULL,
+--     max_dd_duration REAL NOT NULL,
+--     min_dd_duration REAL NOT NULL,
+--     max_drawdown_duration    REAL NOT NULL,
+--
+--     total_trades    REAL NOT NULL,
+--     long_trades REAL NOT NULL,
+--     short_trades    REAL NOT NULL,
+--     long_wins   REAL NOT NULL,
+--     short_wins  REAL NOT NULL,
+--     long_wr REAL NOT NULL,
+--     short_wr    REAL NOT NULL,
+--     long_pf REAL NOT NULL,
+--     short_pf    REAL NOT NULL,
+--     win_rate    REAL NOT NULL,
+--     breakeven_wr    REAL NOT NULL,
+--
+--     max_cons_wins REAL NOT NULL,
+--     max_cons_losses REAL NOT NULL,
+--     avg_cons_wins REAL NOT NULL,
+--     avg_cons_losses REAL NOT NULL,
+--     max_cons_l_duration REAL NOT NULL,
+--     max_cons_w_duration REAL NOT NULL,
+--     avg_cons_l_duration REAL NOT NULL,
+--     avg_cons_w_duration REAL NOT NULL,
