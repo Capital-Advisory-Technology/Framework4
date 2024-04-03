@@ -1,0 +1,3 @@
+Endpoints:
+
+* /optimization/upload
