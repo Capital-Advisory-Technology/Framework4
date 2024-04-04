@@ -1,24 +1,12 @@
 import polars as pl
 
 
-
-#
-# max_cons_wins REAL NOT NULL,
-# max_cons_losses REAL NOT NULL,
-# avg_cons_wins REAL NOT NULL,
-# avg_cons_losses REAL NOT NULL,
-# max_cons_l_duration REAL NOT NULL,
-# max_cons_w_duration REAL NOT NULL,
-# avg_cons_l_duration REAL NOT NULL,
-# avg_cons_w_duration REAL NOT NULL,
-
 def add_balance_column(positions: list[dict], start_balance: float) -> pl.DataFrame:
     pos_df = pl.DataFrame(positions)
-    # pos_df = pos_df.with_columns(
-    #     pl.col("open_time").str.to_datetime(format="%Y-%m-%d %H:%M:%S"),
-    #     pl.col("close_time").str.to_datetime(format="%Y-%m-%d %H:%M:%S"),
-    # )
-    pos_df = pos_df.with_columns((pl.col("net_profit").cumsum() + start_balance).alias("balance"))
+    pos_df = pos_df.with_columns(
+        pl.col("close_time").str.to_datetime(format="%Y.%m.%d %H:%M:%S"),
+        (pl.col("net_profit").cumsum() + start_balance).alias("balance")
+    )
     return pos_df
 
 
@@ -26,14 +14,20 @@ def balance_stats(backtest: dict, positions: pl.DataFrame):
     start_balance = backtest["account_balance"]
     final_balance = round(start_balance + positions.select(pl.col("net_profit").sum()).to_numpy()[0][0], 2)
 
-    profit_factor = round(
-        positions.filter(pl.col('net_profit') > 0)['net_profit'].sum() /
-        abs(positions.filter(pl.col('net_profit') < 0)['net_profit'].sum()),
-        2
-    )
+    pos_profit_sum = positions.filter(pl.col('net_profit') > 0)['net_profit'].sum()
+    neg_profit_sum = abs(positions.filter(pl.col('net_profit') < 0)['net_profit'].sum())
+    if neg_profit_sum == 0 or pos_profit_sum == 0:
+        profit_factor = 0
+    else:
+        profit_factor = round(pos_profit_sum / neg_profit_sum, 2)
 
+    net_profit = abs(positions.select(
+        pl.when(pl.col('net_profit') == 0.0).then(0.01).otherwise(pl.col('net_profit')).alias('net_profit')
+    )['net_profit'].sum())
+    net_profit = 0.01 if net_profit == 0 else net_profit
     transaction_cost = round(
-        (positions['commission'].sum() + positions['swap'].sum()) / positions['net_profit'].sum() * 100, 2)
+        (positions['commission'].sum() + positions['swap'].sum()) / abs(net_profit) * 100, 2
+    )
 
     return {
         "start_balance": start_balance,
@@ -47,22 +41,23 @@ def balance_stats(backtest: dict, positions: pl.DataFrame):
     }
 
 
-# avg_drawdown    REAL NOT NULL,
-# max_drawdown    REAL NOT NULL,
-# min_drawdown    REAL NOT NULL,
-# avg_dd_duration REAL NOT NULL,
-# max_dd_duration REAL NOT NULL,
-# min_dd_duration REAL NOT NULL,
-# max_drawdown_duration    REAL NOT NULL,
-
-
 def drawdown_stats(backtest: dict, positions: pl.DataFrame):
+    if positions.shape[0] == 0:
+        return {
+            "avg_drawdown": 0,
+            "max_drawdown": 0,
+            "min_drawdown": 0,
+            "avg_dd_duration": 0,
+            "max_dd_duration": 0,
+            "min_dd_duration": 0,
+            "max_drawdown_duration": 0
+        }
     datetime = pl.concat([
-        pl.Series([backtest["date_from"]]),
+        pl.Series([backtest["date_from"]]).str.to_datetime(format="%Y.%m.%d %H:%M:%S"),
         positions['close_time']
     ])
-    print(datetime)
-    datetime = datetime.str.to_datetime(format="%Y.%m.%d %H:%M:%S")
+
+    # datetime = datetime.str.to_datetime(format="%Y.%m.%d %H:%M:%S")
     balance = pl.concat([
         pl.Series([backtest["account_balance"]]),
         positions['balance']
@@ -100,25 +95,28 @@ def drawdown_stats(backtest: dict, positions: pl.DataFrame):
         "avg_drawdown": round(group_dd.mean(), 2),
         "max_drawdown": round(group_dd.min(), 2),
         "min_drawdown": round(group_dd.max(), 2),
-        "avg_dd_duration": group_duration.mean(),
-        "max_dd_duration": group_duration.max(),
-        "min_dd_duration": group_duration.min(),
-        "max_drawdown_duration": group_df.filter(pl.col("dd_rel") == group_dd.min())['duration'].max()
+        "avg_dd_duration": int(group_duration.mean().total_seconds()),
+        "max_dd_duration": int(group_duration.max().total_seconds()),
+        "min_dd_duration": int(group_duration.min().total_seconds()),
+        "max_drawdown_duration": group_df.filter(pl.col("dd_rel") == group_dd.min())['duration'].max().total_seconds()
     }
 
 
-# total_trades    REAL NOT NULL,
-# long_trades REAL NOT NULL,
-# short_trades    REAL NOT NULL,
-# long_wins   REAL NOT NULL,
-# short_wins  REAL NOT NULL,
-# long_wr REAL NOT NULL,
-# short_wr    REAL NOT NULL,
-# long_pf REAL NOT NULL,
-# short_pf    REAL NOT NULL,
-# win_rate    REAL NOT NULL,
-# breakeven_wr    REAL NOT NULL,
 def trade_stats(positions: pl.DataFrame):
+    if positions.shape[0] == 0:
+        return {
+            "total_trades": 0,
+            "long_trades": 0,
+            "short_trades": 0,
+            "long_wins": 0,
+            "short_wins": 0,
+            "long_wr": 0,
+            "short_wr": 0,
+            "long_pf": 0,
+            "short_pf": 0,
+            "win_rate": 0,
+            "breakeven_wr": 0
+        }
     total_trades = positions['type'].count()
     # position types: 0 - long, 1 - short
     long_trades = positions.filter(pl.col('type') == 0)['type'].count()
@@ -143,7 +141,7 @@ def trade_stats(positions: pl.DataFrame):
     )
 
     win_rate = round((long_wins + short_wins) / total_trades * 100, 2)
-    breakeven_wr = round(positions.filter(pl.col('net_profit') == 0)['net_profit'].count() / total_trades * 100, 2)
+    # breakeven_wr = round(positions.filter(pl.col('net_profit') == 0)['net_profit'].count() / total_trades * 100, 2)
 
     return {
         "total_trades": total_trades,
@@ -156,18 +154,108 @@ def trade_stats(positions: pl.DataFrame):
         "long_pf": long_pf,
         "short_pf": short_pf,
         "win_rate": win_rate,
-        "breakeven_wr": breakeven_wr
+        "breakeven_wr": 0  # TODO: need to read from backtest.inputs SL and TP values
+    }
+
+
+def consecutive_stats(positions: pl.DataFrame):
+    if positions.shape[0] == 0:
+        return {
+            "max_cons_wins": 0,
+            "avg_cons_wins": 0,
+            "max_cons_w_duration": 0,
+            "avg_cons_w_duration": 0,
+
+            "max_cons_losses": 0,
+            "avg_cons_losses": 0,
+            "max_cons_l_duration": 0,
+            "avg_cons_l_duration": 0
+        }
+    cons_df = positions.with_columns(
+        pl.col("close_time").alias("dt"),
+        pl.col('gross_profit').gt(0).cast(pl.UInt32).alias('win'),
+        pl.col('gross_profit').lt(0).cast(pl.UInt32).alias('loss'),
+    )
+    cons_df = cons_df.with_columns(
+        pl.col('win').cumsum().alias('win_count'),
+        pl.col('loss').cumsum().alias('loss_count')
+    )
+    loss_starts = cons_df['loss'].diff().fill_null(0) != 0
+    group_id = loss_starts.cumsum()
+
+    loss_df = pl.DataFrame({"dt": cons_df["dt"], "data": cons_df['loss'], "group_id": group_id})
+    loss_df = loss_df.with_columns(
+        pl.when(loss_df["data"] == 1)
+        .then(pl.col("data").cumsum().over("group_id"))
+        .otherwise(0)
+        .alias("sequence")
+    ).filter(pl.col("data") == 1)
+
+    loss_results = loss_df.groupby("group_id").agg(
+        pl.col("sequence").max().alias("max_loss"),
+        (pl.col("dt").last() - pl.col("dt").first()).alias("duration")
+    )
+
+    win_df = pl.DataFrame({"dt": cons_df["dt"], "data": cons_df['win'], "group_id": group_id})
+    win_df = win_df.with_columns(
+        pl.when(win_df["data"] == 1)
+        .then(pl.col("data").cumsum().over("group_id"))
+        .otherwise(0)
+        .alias("sequence")
+    ).filter(pl.col("data") == 1)
+
+    win_results = win_df.groupby("group_id").agg(
+        pl.col("sequence").max().alias("max_win"),
+        (pl.col("dt").last() - pl.col("dt").first()).alias("duration")
+    )
+    max_wins = win_results.filter(pl.col("max_win") == win_results["max_win"].max())
+    max_losses = loss_results.filter(pl.col("max_loss") == loss_results["max_loss"].max())
+    return {
+        "max_cons_wins": cons_df['win_count'].max(),
+        "avg_cons_wins": round(win_results['max_win'].mean(), 2),
+        "max_cons_w_duration": int(max_wins['duration'].mean().total_seconds()),
+        "avg_cons_w_duration": int(win_results['duration'].mean().total_seconds()),
+
+        "max_cons_losses": cons_df['loss_count'].max(),
+        "avg_cons_losses": round(loss_results['max_loss'].mean(), 2),
+        "max_cons_l_duration": int(max_losses['duration'].mean().total_seconds()),
+        "avg_cons_l_duration": int(loss_results['duration'].mean().total_seconds()),
+    }
+
+
+def get_stats(backtest: dict, positions: pl.DataFrame):
+    return {
+        "balance_stats": balance_stats(backtest, positions),
+        "drawdown_stats": drawdown_stats(backtest, positions),
+        "trade_stats": trade_stats(positions),
+        "consecutive_stats": consecutive_stats(positions),
     }
 
 
 def calculate_stats(backtest: dict, positions: list[dict]):
-    # for pos in positions:
-    #     print(pos["close_time"])
-    pos_df = add_balance_column(positions, backtest["account_balance"])
-    b_stats = balance_stats(backtest, pos_df)
+    position_df = add_balance_column(positions, backtest["account_balance"])
 
-    dd_stats = drawdown_stats(backtest, pos_df)
-    print(dd_stats)
+    overall_stats = get_stats(backtest, position_df)
 
-    t_stats = trade_stats(pos_df)
-    print(t_stats)
+    yearly_stats = []
+    for year in position_df["close_time"].dt.year().unique():
+        yearly_stats.append(
+            {f"{year}": get_stats(backtest, position_df.filter(pl.col('close_time').dt.year() == year))})
+
+    monthly_stats = []
+    position_df = position_df.with_columns(
+        pl.datetime(pl.col('close_time').dt.year(), pl.col('close_time').dt.month(), 1).alias("month_start")
+    )
+
+    for month in position_df["month_start"].unique():
+        month_df = position_df.filter(pl.col('month_start') == month)
+        if month_df.shape[0] != 0:
+            monthly_stats.append(
+                {month.strftime('%Y-%m-%d'): get_stats(backtest, position_df.filter(
+                    pl.col('close_time').dt.month_start() == month))})
+
+    return {
+        "overall": overall_stats,
+        "yearly": yearly_stats,
+        "monthly": monthly_stats
+    }

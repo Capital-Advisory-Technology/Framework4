@@ -1,10 +1,10 @@
+import json
 import logging
-from datetime import datetime
 
 import aiosqlite
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('aiosqlite')
 
 
@@ -16,7 +16,7 @@ class DatabaseManager:
     async def connect_db(self):
         self.db = await aiosqlite.connect(self.database_url)
         self.db.row_factory = aiosqlite.Row
-        await self.db.set_trace_callback(logger.debug)
+        await self.db.set_trace_callback(logger.info)
 
     async def disconnect_db(self):
         await self.db.close()
@@ -82,9 +82,33 @@ class DatabaseManager:
         async with self.db.execute(query) as cursor:
             data = await cursor.fetchall()
             data = [dict(row) for row in data]
-            # for row in data:
-            #     row["open_time"] = datetime.strptime(row["open_time"], "%Y-%m-%d %H:%M:%S")
-            #     row["close_time"] = datetime.strptime(row["close_time"], "%Y-%m-%d %H:%M:%S")
-
             return data
 
+    async def save_stats(self, bt_id: int, backtest: dict, stats: dict):
+        date_from = backtest["date_from"]
+        date_to = backtest["date_to"]
+        is_optimization = backtest["is_optimization"]
+        is_test = backtest["is_test"]
+        get_query = (f"SELECT * FROM backtests_stats "
+                     f"WHERE bt_id = {bt_id} AND date_from = '{date_from}' AND date_to = '{date_to}'"
+                     f"AND is_optimization = {is_optimization} AND is_test = {is_test}")
+        async with self.db.execute(get_query) as cursor:
+            row = await cursor.fetchone()
+            if row:
+                return
+
+        overall_stats = json.dumps(stats["overall"])
+        yearly_stats = json.dumps(stats["yearly"])
+        monthly_stats = json.dumps(stats["monthly"])
+
+        stats_query = (f"INSERT INTO backtests_stats "
+                       f"(bt_id, date_from, date_to, overall_stats, yearly_stats, monthly_stats, is_optimization, is_test) "
+                       f"VALUES "
+                       f"({bt_id}, '{backtest['date_from']}', '{backtest['date_to']}', '{overall_stats}', '{yearly_stats}', '{monthly_stats}', {backtest['is_optimization']}, {backtest['is_test']});")
+        await self.db.execute(stats_query)
+
+        update_query = f"UPDATE backtests_raw SET is_processed = 1 WHERE bt_raw_id = {backtest['bt_raw_id']}"
+        await self.db.execute(update_query)
+
+        await self.db.commit()
+        logger.info(f"Stats for backtest {bt_id} saved.")
