@@ -40,6 +40,8 @@ class DatabaseManager:
             return cursor.lastrowid
 
     async def get_symbol_id(self, symbol: str) -> int:
+        symbol = symbol.replace("...", "") if "..." in symbol else symbol
+
         get_query = f"SELECT symbol_id FROM symbols WHERE name = '{symbol}'"
         async with self.db.execute(get_query) as cursor:
             row = await cursor.fetchone()
