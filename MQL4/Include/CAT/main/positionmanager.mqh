@@ -118,4 +118,51 @@ class PositionManager {
          return AVAILABLE_TO_OPEN;
       }
    }
+
+   bool rolloverDeals() {
+      // Get current date
+      datetime currentTime = TimeCurrent();
+      int currentMonth = TimeMonth(currentTime);
+
+      // Check if a new month has started
+      static int lastMonth = -1;
+      if (currentMonth != lastMonth) {
+         // Loop through all open positions
+         for (int i = OrdersTotal() - 1; i >= 0 ; i-- ) {
+            if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) && OrderSymbol() == Symbol()) {
+               // Close the position
+               if (OrderType() == OP_SELL) { 
+                  if (!OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 3)) {
+                     Logger::log("PositionManager.rolloverDeals() - Failed to close deal: " 
+                                 + string(OrderTicket()) + " Last error: " + string(GetLastError()));
+                     return false;
+                  }
+               else {
+                  if (!OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 3)) {
+                     Logger::log("PositionManager.rolloverDeals() - Failed to close deal: " 
+                                 + string(OrderTicket()) + " Last error: " + string(GetLastError()));
+                     return false;
+                  }
+               }
+            }
+         }
+      }
+
+         // for (int i = OrdersTotal() - 1; i >= 0; i--) {
+         //    if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) {
+         //       // Close the position
+         //       if (!OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 3)) {
+         //          Logger::log("PositionManager.rolloverDeals() - Failed to close deal: " + string(OrderTicket()));
+         //          return false;
+         //       }
+         //    }
+         // }
+
+         Logger::log("PositionManager.rolloverDeals() - All deals rolled over for month " + string(lastMonth));
+         
+         // Update last month
+         lastMonth = currentMonth;
+      }
+      return true;
+   }
 };
