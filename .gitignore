@@ -21,6 +21,7 @@ MQL4/Include/Tools/
 MQL4/Indicators/Examples/
 MQL4/Scripts/
 MQL4/.vscode/
+python/.idea
 profiles/
 statements/
 templates/
