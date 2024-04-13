@@ -129,9 +129,11 @@ class PositionManager {
       if (currentMonth != lastMonth) {
          // Loop through all open positions
          for (int i = OrdersTotal() - 1; i >= 0 ; i-- ) {
+            Logger::log("PositionManager.rolloverDeals() - Orders Total: " + string(OrdersTotal()));
+
             if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) && OrderSymbol() == Symbol()) {
-               // Close the position
-               if (OrderType() == OP_SELL) { 
+               // Close the position, use ASK to sell position
+               if (OrderType() == OP_SELL) {
                   if (!OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 3)) {
                      Logger::log("PositionManager.rolloverDeals() - Failed to close deal: " 
                                  + string(OrderTicket()) + " Last error: " + string(GetLastError()));
@@ -142,21 +144,13 @@ class PositionManager {
                      Logger::log("PositionManager.rolloverDeals() - Failed to close deal: " 
                                  + string(OrderTicket()) + " Last error: " + string(GetLastError()));
                      return false;
-                  }
+                  }}
                }
+            } else {
+               Logger::log("PositionManager.rolloverDeals() - Failed to select order, SELECT_BY_POS: "
+                           + string(SELECT_BY_POS));
             }
          }
-      }
-
-         // for (int i = OrdersTotal() - 1; i >= 0; i--) {
-         //    if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) {
-         //       // Close the position
-         //       if (!OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 3)) {
-         //          Logger::log("PositionManager.rolloverDeals() - Failed to close deal: " + string(OrderTicket()));
-         //          return false;
-         //       }
-         //    }
-         // }
 
          Logger::log("PositionManager.rolloverDeals() - All deals rolled over for month " + string(lastMonth));
          
