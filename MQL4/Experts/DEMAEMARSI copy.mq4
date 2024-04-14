@@ -54,23 +54,24 @@ int OnInit() {
     customSession.setPositionLimit(10, PERIOD_D1);                            // Support only H1, D1 and MN1
 
     backtestExporter = new BacktestExporter();
-    
-    riskManager = new RiskManager(max_open_risk, max_open_trades, SL_ratio, TP_ratio,
-                                  breakeven, profit_zone, profit_zone_reward, ATR_period);
-
+    riskManager = new RiskManager(max_open_risk, max_open_trades, SL_ratio, TP_ratio, breakeven, profit_zone, profit_zone_reward, ATR_period);
     positionManager = new PositionManager(riskManager, customSession, slippage, max_open_trades);
 
     return (INIT_SUCCEEDED);
 }
 
 void OnTick() {
+    // definē periodu
     static datetime timeCur;
     datetime timePre = timeCur;
     timeCur = Time[0];
+
+    // pārbauda vai periods ir mainījies
     bool isNewBar = timeCur != timePre;
     if (!isNewBar) return;
     Logger::log("New bar: " + string(timeCur));
 
+    // positionManager
     if (positionManager.rolloverDeals() != true) return;
     if (positionManager.getStatus() != AVAILABLE_TO_OPEN) return;
 

@@ -13,12 +13,8 @@ struct NewTrade {
     double lotSize;
 };
 
-// #define ATRIndicator "Indicators\\Adaptive_ATR.ex4"
-// #resource "\\" + ATRIndicator
-
-class RiskManager { 
+class RiskManager {
     private:
-        // Init variables - ratios, percentages, etc.
         double riskPerTrade;
         double SLRatio;
         double TPRatio;
