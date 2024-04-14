@@ -73,6 +73,8 @@ void OnTick() {
 
     customSession.refresh();
 
+    // Tiek izsaukta loģikas apstrādes funkcija,
+    // kuras rezultāts tiek saglabāts enum datu tipā 
     OrderAction action = DEMA_Simple(DEMA_period,
                                      DEMA_enum_price,
                                      DEMA_filter,
@@ -85,6 +87,7 @@ void OnTick() {
 
     Logger::log("OnTick: Action: " + string(action) + " Confirm: " + string(baseline_confirm) + " RSI Confirm: " + string(rsi_confirm));
     
+    // Ja sniegtās vērtības atbilst - atver atbilstošo darījumu
     if (action == OA_OPEN_SHORT && baseline_confirm == OA_OPEN_SHORT && rsi_confirm == OA_CONFIRMED) {
         Logger::log("OnTick: Open short");
         positionManager.openOrder(OP_SELL);
@@ -94,6 +97,8 @@ void OnTick() {
     } else {
         Logger::log("OnTick: No signal");
     }
+
+    
 }
 
 void OnDeinit(const int reason) {

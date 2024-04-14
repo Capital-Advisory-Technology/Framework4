@@ -59,11 +59,7 @@ class PositionManager {
 
       if  (number != -1) {
          Logger::log("Order send success");
-         if (OrderSelect(0, SELECT_BY_POS)) {
-            customSession.onPositionOpened();
-         } else {
-           Logger::log("Select position error: " + string(GetLastError()));
-         }
+         customSession.onPositionOpened();
       } else {
          Logger::log("Open position error: " + string(GetLastError()));
       }
@@ -128,10 +124,10 @@ class PositionManager {
       static int lastMonth = -1;
       if (currentMonth != lastMonth) {
          // Loop through all open positions
-         for (int i = OrdersTotal() - 1; i >= 0 ; i-- ) {
+         for (int i = OrdersTotal()-1; i >= -1 ; i--) {
             Logger::log("PositionManager.rolloverDeals() - Orders Total: " + string(OrdersTotal()));
 
-            if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) && OrderSymbol() == Symbol()) {
+            if (OrderSelect(i, SELECT_BY_POS)) {
                // Close the position, use ASK to sell position
                if (OrderType() == OP_SELL) {
                   if (!OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 3)) {
@@ -147,7 +143,7 @@ class PositionManager {
                   }}
                }
             } else {
-               Logger::log("PositionManager.rolloverDeals() - Failed to select order, SELECT_BY_POS: "
+               Logger::log("PositionManager.rolloverDeals() - No orders selected, SELECT_BY_POS: "
                            + string(SELECT_BY_POS));
             }
          }
