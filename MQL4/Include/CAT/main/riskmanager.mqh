@@ -99,6 +99,8 @@ class RiskManager {
         }
 
         bool getBreakevenStatus(int cOrderType, double cOpenPrice, double cTpPrice) {
+            if (breakevenZone <= 0 || breakevenZone >= 1) return false;
+
             double bePrice = NormalizeDouble(cOpenPrice + (cTpPrice - cOpenPrice) * breakevenZone, Digits);
             double lastHigh = iHigh(Symbol(), Period(), 1);
             double lastLow = iLow(Symbol(), Period(), 1);
@@ -109,6 +111,8 @@ class RiskManager {
         }
 
         bool getProfitZoneStatus(int cOrderType, double cOpenPrice, double cTpPrice) {
+            if (profitZone <= 0 || profitZone >= 1) return false;
+
             double pzPrice = NormalizeDouble(cOpenPrice + (cTpPrice - cOpenPrice) * profitZone, Digits);
             double lastHigh = iHigh(Symbol(), Period(), 1);
             double lastLow = iLow(Symbol(), Period(), 1);

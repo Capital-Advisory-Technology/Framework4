@@ -5,7 +5,6 @@
 // Backtest's externals for optimization
 input string BACKTEST_EXTERNALS = "";
 extern string strategy_name = "DEMAEMARSI";
-extern bool fixed_sltp = false;
 extern int slippage = 3;
 extern double exportPFThreshold = 0;
 input string RISK_EXTERNALS = "";
@@ -37,6 +36,7 @@ extern int ema_price = 8;
 
 input string RSI_EXTERNALS = "";
 extern int rsi_period = 14;
+extern bool rsi_vol = true;
 
 BacktestExporter* backtestExporter;
 PositionManager* positionManager;
@@ -71,36 +71,33 @@ void OnTick() {
     if (!isNewBar) return;
     Logger::log("New bar: " + string(timeCur));
 
-    if (positionManager.rolloverDeals() != true) return;
+    // if (positionManager.rolloverDeals() != true) return;
     if (positionManager.getStatus() != AVAILABLE_TO_OPEN) return;
 
     customSession.refresh();
 
-    // Tiek izsaukta loģikas apstrādes funkcija,
-    // kuras rezultāts tiek saglabāts enum datu tipā 
-    OrderAction action = DEMA_Simple(DEMA_period,
-                                     DEMA_enum_price,
-                                     DEMA_filter,
-                                     DEMA_filter_period,
-                                     DEMA_enum_filter);
+    // Iepriekšējais kods ...
 
-    OrderAction baseline_confirm = EMA_Baseline(ema_period, ema_price);
+    OrderAction dema_signal = DEMA_Simple(DEMA_period,DEMA_enum_price,DEMA_filter,
+                                          DEMA_filter_period,DEMA_enum_filter);
 
-    OrderAction rsi_confirm = RSI_Confirmation(rsi_period);
+    OrderAction ema_confirm = EMA_Baseline(ema_period, ema_price);
 
-    Logger::log("OnTick: Action: " + string(action) + " Confirm: " + string(baseline_confirm) + " RSI Confirm: " + string(rsi_confirm));
-    
-    // Ja sniegtās vērtības atbilst - atver atbilstošo darījumu
-    if (action == OA_OPEN_SHORT && baseline_confirm == OA_OPEN_SHORT && rsi_confirm == OA_CONFIRMED) {
-        Logger::log("OnTick: Open short");
+    OrderAction rsi_confirm = RSI_Confirmation(rsi_period, rsi_vol);
+
+    if (dema_signal == OA_OPEN_SHORT 
+        && ema_confirm == OA_OPEN_SHORT 
+        && rsi_confirm == OA_CONFIRMED) 
+    {
         positionManager.openOrder(OP_SELL);
-    } else if (action == OA_OPEN_LONG && baseline_confirm == OA_OPEN_LONG && rsi_confirm == OA_CONFIRMED) {
-        Logger::log("OnTick: Open long");
-        positionManager.openOrder(OP_BUY);
-    } else {
-        Logger::log("OnTick: No signal");
-    }
 
+    } else if (dema_signal == OA_OPEN_LONG 
+              && ema_confirm == OA_OPEN_LONG 
+              && rsi_confirm == OA_CONFIRMED) 
+    {
+        positionManager.openOrder(OP_BUY);
+
+    } else Logger::log("OnTick: No signal");
     
 }
 
@@ -109,7 +106,6 @@ void OnDeinit(const int reason) {
         CJAVal inputJson;
     
         inputJson["strategy_name"] = strategy_name;
-        inputJson["fixed_sltp"] = fixed_sltp;
         inputJson["slippage"] = slippage;
 
         inputJson["max_open_risk"] = max_open_risk;
