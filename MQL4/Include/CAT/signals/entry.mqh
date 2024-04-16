@@ -120,6 +120,14 @@ OrderAction DEMA_Simple(double cDEMA_period, int cDEMA_enum_price, double cDEMA_
   return OA_IGNORE;
 }
 
+OrderAction Prognozes_metode_1(int cPeriods) {
+  return OA_IGNORE;
+}
+
+OrderAction Prognozes_metode_2(int cCena) {
+  return OA_IGNORE;
+}
+
 //| SSL Crossover Entry (QC)
 //| SSL_Lb - {10 - 70}                          
 OrderAction SSL_Simple(int SSL_Lb) {
