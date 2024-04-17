@@ -128,7 +128,7 @@ OrderAction RSI_Confirmation(int RSI_period, bool RSI_vol) {
   double RSI_Line = iCustom(NULL, 0, "RSI", RSI_period, 0, 1);
 
   if (RSI_Line > 30 && RSI_Line < 70) {
-    if (RSI_Line < 45 || RSI_Line > 55) {
+    if (RSI_Line < 44.94 || RSI_Line > 54.94) {
       return OA_CONFIRMED;  
     }
   }
