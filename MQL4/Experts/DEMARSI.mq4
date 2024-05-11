@@ -5,7 +5,6 @@
 // Backtest's externals for optimization
 input string BACKTEST_EXTERNALS = "";
 extern string strategy_name = "DEMAEMARSI";
-extern bool fixed_sltp = false;
 extern int slippage = 3;
 extern double exportPFThreshold = 0;
 input string RISK_EXTERNALS = "";
@@ -31,15 +30,9 @@ extern int DEMA_filter_period = 0;
 extern int DEMA_enum_price = 0;
 extern int DEMA_enum_filter = 0;
 
-input string EMA_EXTERNALS = "";
-extern int ema_period = 30;
-extern int ema_price = 8;
-
 input string RSI_EXTERNALS = "";
 extern int rsi_period = 14;
-
-extern int periods = 14;
-extern int cena = 123;
+extern bool rsi_vol = true;
 
 BacktestExporter* backtestExporter;
 PositionManager* positionManager;
@@ -58,49 +51,81 @@ int OnInit() {
 
     backtestExporter = new BacktestExporter();
     
-    riskManager = new RiskManager(max_open_risk, max_open_trades, SL_ratio, TP_ratio, 
-                                 breakeven, profit_zone, profit_zone_reward, ATR_period);
+    riskManager = new RiskManager(max_open_risk, max_open_trades, SL_ratio, TP_ratio,
+                                  breakeven, profit_zone, profit_zone_reward, ATR_period);
 
-    positionManager = new PositionManager(riskManager, customSession, slippage,
-                                          max_open_trades);
+    positionManager = new PositionManager(riskManager, customSession, slippage, max_open_trades);
 
     return (INIT_SUCCEEDED);
 }
 
 void OnTick() {
-    // definē periodu un pārbauda vai ir mainījies
-    // ..
-    // pārbauda darbības statusu un veic modifikācijas
-    if (positionManager.getStatus() != AVAILABLE_TO_OPEN) return;
-    if (!positionManager.rolloverDeals()) return;
+    static datetime timeCur;
+    datetime timePre = timeCur;
+    timeCur = Time[0];
+    bool isNewBar = timeCur != timePre;
+    if (!isNewBar) return;
+    Logger::log("New bar: " + string(timeCur));
 
-    // pārbauda laika limitācijas
+    // if (positionManager.rolloverDeals() != true) return;
+    if (positionManager.getStatus() != AVAILABLE_TO_OPEN) return;
+
     customSession.refresh();
-     
-    OrderAction action = Prognozes_metode_1(periods);
-    OrderAction action2 = Prognozes_metode_2(cena);
-    
-    // Ja sniegtās vērtības atbilst - atver atbilstošo darījumu
-    if (action == OA_OPEN_SHORT && action2 == OA_OPEN_SHORT) {
+
+    // Iepriekšējais kods ...
+
+    OrderAction dema_signal = DEMA_Simple(DEMA_period,DEMA_enum_price,DEMA_filter,
+                                          DEMA_filter_period,DEMA_enum_filter);
+
+    OrderAction rsi_confirm = RSI_Confirmation(rsi_period, rsi_vol);
+
+    if (dema_signal == OA_OPEN_SHORT
+        && rsi_confirm == OA_CONFIRMED) 
+    {
         positionManager.openOrder(OP_SELL);
-    } else if (action == OA_OPEN_LONG && action2 == OA_OPEN_LONG) {
+
+    } else if (dema_signal == OA_OPEN_LONG 
+              && rsi_confirm == OA_CONFIRMED) 
+    {
         positionManager.openOrder(OP_BUY);
-    } else { Logger::log("OnTick: No signal"); } 
+
+    } else Logger::log("OnTick: No signal");
+    
 }
 
 void OnDeinit(const int reason) {
     if ((IsOptimization() || IsTesting()) && TesterStatistics(STAT_PROFIT_FACTOR) >= exportPFThreshold) {
-        
         CJAVal inputJson;
+    
+        inputJson["strategy_name"] = strategy_name;
+        inputJson["slippage"] = slippage;
 
-        // mainīgo ievietošana json
-        
+        inputJson["max_open_risk"] = max_open_risk;
+        inputJson["max_open_trades"] = max_open_trades;
+        inputJson["ATR_period"] = ATR_period;
+        inputJson["SL_ratio"] = SL_ratio;
+        inputJson["TP_ratio"] = TP_ratio;
+
+        inputJson["breakeven"] = breakeven;
+        inputJson["profit_zone"] = profit_zone;
+        inputJson["profit_zone_reward"] = profit_zone_reward;
+
+        inputJson["hour_limit_start"] = hour_limit_start;
+        inputJson["hour_limit_end"] = hour_limit_end;
+
+        inputJson["DEMA_period"] = DEMA_period;
+        inputJson["DEMA_filter"] = DEMA_filter;
+        inputJson["DEMA_filter_period"] = DEMA_filter_period;
+        inputJson["DEMA_enum_price"] = DEMA_enum_price;
+        inputJson["DEMA_enum_filter"] = DEMA_enum_filter;
+
+        inputJson["RSI_period"] = rsi_period;
+
         backtestExporter.exportBacktest(strategy_name, inputJson.Serialize(), customSession.toString());
     }
+
     delete backtestExporter;
     delete positionManager;
-    delete customSession;
-    delete riskManager;
 }
 
 void InitLog() {
