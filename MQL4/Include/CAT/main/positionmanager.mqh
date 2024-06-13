@@ -118,4 +118,45 @@ class PositionManager {
          return AVAILABLE_TO_OPEN;
       }
    }
+
+   bool rolloverDeals() {
+      // Get current date
+      datetime currentTime = TimeCurrent();
+      int currentMonth = TimeMonth(currentTime);
+
+      // Check if a new month has started
+      static int lastMonth = -1;
+      if (currentMonth != lastMonth) {
+         // Loop through all open positions
+         for (int i = OrdersTotal()-1; i >= -1 ; i--) {
+            Logger::log("PositionManager.rolloverDeals() - Orders Total: " + string(OrdersTotal()));
+
+            if (OrderSelect(i, SELECT_BY_POS)) {
+               // Close the position, use ASK to sell position
+               if (OrderType() == OP_SELL) {
+                  if (!OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 3)) {
+                     Logger::log("PositionManager.rolloverDeals() - Failed to close deal: " 
+                                 + string(OrderTicket()) + " Last error: " + string(GetLastError()));
+                     return false;
+                  }
+               else {
+                  if (!OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 3)) {
+                     Logger::log("PositionManager.rolloverDeals() - Failed to close deal: " 
+                                 + string(OrderTicket()) + " Last error: " + string(GetLastError()));
+                     return false;
+                  }}
+               }
+            } else {
+               Logger::log("PositionManager.rolloverDeals() - No orders selected, SELECT_BY_POS: "
+                           + string(SELECT_BY_POS));
+            }
+         }
+
+         Logger::log("PositionManager.rolloverDeals() - All deals rolled over for month " + string(lastMonth));
+         
+         // Update last month
+         lastMonth = currentMonth;
+      }
+      return true;
+   }
 };
