@@ -44,8 +44,8 @@ CustomSession* customSession;
 RiskManager* riskManager;
 
 int OnInit() {
-    InitLog();
-
+    Logger::log("Strategy name: " + strategy_name + " Symbol: " + Symbol() + " Point: " + string(_Point));
+    
     customSession = new CustomSession();
     customSession.addMinuteRange(0, 59, OPEN_BOTH);                           // Min 0, Max 59
     customSession.addHourRange(hour_limit_start, hour_limit_end, OPEN_BOTH);  // Min 0, Max 23
@@ -71,12 +71,11 @@ void OnTick() {
     if (!isNewBar) return;
     Logger::log("New bar: " + string(timeCur));
 
+    // not working quite yet...
     // if (positionManager.rolloverDeals() != true) return;
     if (positionManager.getStatus() != AVAILABLE_TO_OPEN) return;
 
     customSession.refresh();
-
-    // Iepriekšējais kods ...
 
     OrderAction dema_signal = DEMA_Simple(DEMA_period,DEMA_enum_price,DEMA_filter,
                                           DEMA_filter_period,DEMA_enum_filter);
@@ -137,8 +136,4 @@ void OnDeinit(const int reason) {
 
     delete backtestExporter;
     delete positionManager;
-}
-
-void InitLog() {
-    Logger::log("Strategy name: " + strategy_name + " Symbol: " + Symbol() + " Point: " + string(_Point));
 }
