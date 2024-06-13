@@ -125,6 +125,7 @@ OrderAction Low_Pass_Filter_Baseline(int LPF_price, int LPF_order, int LPF_filte
 //| RSI Confirmation (QC) (OA_CONFIRMED)
 //| RSI_period - {14 - 28}
 OrderAction RSI_Confirmation(int RSI_period, bool RSI_vol) {
+  OrderAction signal = OA_IGNORE;
   double RSI_Line = iCustom(NULL, 0, "RSI", RSI_period, 0, 1);
 
   if (RSI_Line > 30 && RSI_Line < 70) {
