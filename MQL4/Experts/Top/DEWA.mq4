@@ -5,6 +5,7 @@
 // Backtest's externals for optimization
 input string BACKTEST_EXTERNALS = "";
 extern string strategy_name = "DEWA-1.0";
+extern double exportPFThreshold = 1;
 extern bool fixed_sltp = false;
 extern int slippage = 3;
 input string RISK_EXTERNALS = "";
