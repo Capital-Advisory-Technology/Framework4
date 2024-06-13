@@ -59,7 +59,11 @@ class PositionManager {
 
       if  (number != -1) {
          Logger::log("Order send success");
-         customSession.onPositionOpened();
+         if (OrderSelect(0, SELECT_BY_POS)) {
+            customSession.onPositionOpened();
+         } else {
+           Logger::log("Select position error: " + string(GetLastError()));
+         }
       } else {
          Logger::log("Open position error: " + string(GetLastError()));
       }
