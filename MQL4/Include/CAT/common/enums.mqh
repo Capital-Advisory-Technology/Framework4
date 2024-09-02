@@ -17,5 +17,6 @@ enum AllowedOrder {
 
 enum PositionStatus {
     AVAILABLE_TO_OPEN,
-    IS_OPENED
+    IS_OPENED,
+    IS_CLOSED
 };

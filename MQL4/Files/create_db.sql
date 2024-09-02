@@ -72,11 +72,12 @@ VALUES ('AUDCAD', 'AUD', 'CAD', 5)
      , ('USDJPY', 'USD', 'JPY', 3)
 ;
 
-DROP TABLE IF EXISTS backtests_raw;
-CREATE TABLE IF NOT EXISTS backtests_raw
+DROP TABLE IF EXISTS backtests;
+CREATE TABLE IF NOT EXISTS backtests
 (
-    bt_raw_id        INTEGER PRIMARY KEY,
-    symbol           TEXT NOT NULL,
+    backtest_id      INTEGER PRIMARY KEY,
+    model_id         INTEGER NULL,     -- set after backtest is processed
+    symbol           TEXT    NOT NULL,
     period           INTEGER NOT NULL,
     account_currency TEXT    NOT NULL,
     account_balance  REAL    NOT NULL,
@@ -87,67 +88,63 @@ CREATE TABLE IF NOT EXISTS backtests_raw
     inputs           TEXT    NOT NULL,
     session_limits   TEXT    NOT NULL,
 
-    is_optimization  INTEGER NOT NULL,
-    is_test          INTEGER NOT NULL,
-    is_processed     INTEGER NOT NULL DEFAULT 0
-    -- entry_list        TEXT    NOT NULL,
-    -- exit_list         TEXT    NOT NULL,
-    -- confirmation_list TEXT    NOT NULL,
+    is_optimization  INTEGER NOT NULL, -- 0 - test, 1 - optimization
+    is_processed     INTEGER NOT NULL DEFAULT 0,
 
+    FOREIGN KEY (model_id) REFERENCES models (model_id) ON DELETE NO ACTION
 );
 
 DROP TABLE IF EXISTS positions;
 CREATE TABLE IF NOT EXISTS positions
 (
-    id           INTEGER PRIMARY KEY,
-    bt_raw_id    INTEGER NOT NULL,
-    type         INT     NOT NULL,
-    order_number INTEGER NOT NULL,
-    open_time    TEXT    NOT NULL,
-    close_time   TEXT    NOT NULL,
-    lot_size     REAL    NOT NULL,
-    open_price   REAL    NOT NULL,
-    close_price  REAL    NOT NULL,
-    sl_price     REAL    NOT NULL,
-    tp_price     REAL    NOT NULL,
-    gross_profit REAL    NOT NULL,
-    net_profit   REAL    NOT NULL,
-    commission   REAL    NOT NULL,
-    swap         REAL    NOT NULL,
+    id              INTEGER PRIMARY KEY,
+    backtest_id     INTEGER NOT NULL,
+    type            INTEGER NOT NULL,
+    order_number    INTEGER NOT NULL,
+    open_time       TEXT    NOT NULL,
+    close_time      TEXT    NOT NULL,
+    lot_size        REAL    NOT NULL,
+    open_price      REAL    NOT NULL,
+    close_price     REAL    NOT NULL,
+    sl_price        REAL    NOT NULL,
+    tp_price        REAL    NOT NULL,
+    gross_profit    REAL    NOT NULL,
+    net_profit      REAL    NOT NULL,
+    commission      REAL    NOT NULL,
+    swap            REAL    NOT NULL,
 
-    FOREIGN KEY (bt_raw_id) REFERENCES backtests_raw (bt_raw_id) ON DELETE CASCADE
+    FOREIGN KEY (backtest_id) REFERENCES backtests (backtest_id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS strategies;
 CREATE TABLE IF NOT EXISTS strategies
 (
-    strategy_id     INTEGER PRIMARY KEY,
-    name            TEXT NOT NULL UNIQUE
+    strategy_id INTEGER PRIMARY KEY,
+    name        TEXT NOT NULL UNIQUE
 );
 
-DROP TABLE IF EXISTS backtests;
-CREATE TABLE IF NOT EXISTS backtests
+DROP TABLE IF EXISTS models;
+CREATE TABLE IF NOT EXISTS models
 (
-    bt_id            INTEGER PRIMARY KEY,
+    model_id         INTEGER PRIMARY KEY,
     strategy_id      INTEGER NOT NULL,
-    bt_raw_id        INTEGER NOT NULL,
     symbol_id        INTEGER NOT NULL,
     period_id        INTEGER NOT NULL,
-    account_currency TEXT    NOT NULL,
     inputs           TEXT    NOT NULL,
+    account_currency TEXT    NOT NULL,
 
-    UNIQUE (bt_raw_id, strategy_id, symbol_id, period_id, account_currency, inputs),
-    FOREIGN KEY (bt_raw_id) REFERENCES backtests_raw (bt_raw_id) ON DELETE CASCADE,
-    FOREIGN KEY (strategy_id) REFERENCES strategies (strategy_id)  ON DELETE CASCADE,
+    UNIQUE (strategy_id, symbol_id, period_id, inputs, account_currency),
+    FOREIGN KEY (strategy_id) REFERENCES strategies (strategy_id) ON DELETE CASCADE,
     FOREIGN KEY (symbol_id) REFERENCES symbols (symbol_id) ON DELETE CASCADE,
     FOREIGN KEY (period_id) REFERENCES periods (period_id) ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS backtests_stats;
-CREATE TABLE IF NOT EXISTS backtests_stats
+DROP TABLE IF EXISTS model_stats;
+CREATE TABLE IF NOT EXISTS model_stats
 (
-    bt_stats_id     INTEGER PRIMARY KEY,
-    bt_id           INTEGER NOT NULL,
+    model_stats_id  INTEGER PRIMARY KEY,
+    model_id        INTEGER NOT NULL,
+    backtest_id     INTEGER NOT NULL,
 
     date_from       INTEGER NOT NULL,
     date_to         INTEGER NOT NULL,
@@ -157,11 +154,25 @@ CREATE TABLE IF NOT EXISTS backtests_stats
     monthly_stats   TEXT    NOT NULL,
 
     is_optimization INTEGER NOT NULL,
-    is_test         INTEGER NOT NULL,
 
-    FOREIGN KEY (bt_id) REFERENCES backtests (bt_id) ON DELETE CASCADE
-
+    UNIQUE (model_id, date_from, date_to),
+    FOREIGN KEY (model_id) REFERENCES models (model_id) ON DELETE CASCADE,
+    FOREIGN KEY (backtest_id) REFERENCES backtests (backtest_id) ON DELETE CASCADE
 );
+
+DROP VIEW IF EXISTS model_stats_view;
+CREATE VIEW model_stats_view AS
+SELECT ms.*,
+       m.inputs,
+       m.account_currency,
+       s.name  as symbol,
+       p.name  as period,
+       st.name as strategy
+FROM model_stats ms
+         LEFT JOIN models m ON ms.model_id = m.model_id
+         LEFT JOIN symbols s on m.symbol_id = s.symbol_id
+         LEFT JOIN periods p on m.period_id = p.period_id
+         LEFT JOIN strategies st on m.strategy_id = st.strategy_id;
 
 
 --     start_balance  REAL NOT NULL,

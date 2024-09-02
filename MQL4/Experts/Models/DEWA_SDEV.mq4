@@ -1,6 +1,6 @@
+#include <CAT/common/exporter.mqh>
 #include <CAT/signals/confirmations.mqh>
 #include <CAT/signals/exit.mqh>
-#include <CAT/common/exporter.mqh>
 
 // Backtest's externals for optimization
 input string BACKTEST_EXTERNALS = "";
@@ -21,6 +21,7 @@ extern double profit_zone_reward = 0.2;
 input string SESSION_EXTERNALS = "";
 extern int hour_limit_start = 2;
 extern int hour_limit_end = 22;
+extern int EOM_day = 25;
 
 // Strategies externals
 input string STRATEGIES_EXTERNALS = "";
@@ -55,6 +56,7 @@ int OnInit() {
     customSession.addDayOfWeekRange(1, 7, OPEN_BOTH);                         // Min 1, Max 7
     customSession.addMonthRange(1, 12, OPEN_BOTH);                            // Min 1, Max 12
     customSession.setPositionLimit(10, PERIOD_D1);                            // Support only H1, D1 and MN1
+    customSession.setEndOfMonth(EOM_day);
 
     backtestExporter = new BacktestExporter();
     riskManager = new RiskManager(max_open_risk, max_open_trades, SL_ratio, TP_ratio, breakeven, profit_zone, profit_zone_reward, ATR_period);
@@ -100,9 +102,14 @@ void OnTick() {
 }
 
 void OnDeinit(const int reason) {
-    if ((IsOptimization() || IsTesting()) && TesterStatistics(STAT_PROFIT_FACTOR) >= exportPFThreshold) {
+    int totalPositions = OrdersHistoryTotal();
+    double profitFactor = TesterStatistics(STAT_PROFIT_FACTOR);
+    if (
+        (IsOptimization() && profitFactor >= exportPFThreshold && totalPositions > 0) ||
+        (IsTesting() && totalPositions > 0)
+    ) {
         CJAVal inputJson;
-    
+
         inputJson["strategy_name"] = strategy_name;
         inputJson["fixed_sltp"] = fixed_sltp;
         inputJson["slippage"] = slippage;
@@ -133,7 +140,7 @@ void OnDeinit(const int reason) {
 
         inputJson["STDDEV_period"] = STDDEV_period;
         inputJson["STDDEV_threshold"] = STDDEV_threshold;
-        
+
         backtestExporter.exportBacktest(strategy_name, inputJson.Serialize(), customSession.toString());
     }
 

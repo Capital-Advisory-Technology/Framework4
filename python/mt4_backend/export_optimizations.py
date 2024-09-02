@@ -82,7 +82,7 @@ def get_backtests() -> pl.DataFrame:
 def main():
     # raw_results = copy_optimization_results()
     # raw_results.to_csv("raw_results.csv", index=False)
-    raw_results = pd.read_csv("raw_results.csv", header=None, dtype_backend="pyarrow")
+    raw_results = pd.read_csv("../data/raw_results.csv", header=None, dtype_backend="pyarrow")
 
     stats_df = clean_results(raw_results)
     bt_df = get_backtests()

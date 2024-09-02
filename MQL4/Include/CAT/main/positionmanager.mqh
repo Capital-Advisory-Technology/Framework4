@@ -1,11 +1,10 @@
 #property copyright "Framework 4"
 #property strict
 
-#include <CAT/main/riskmanager.mqh>
-
 #include <CAT/common/enums.mqh>
 #include <CAT/common/logger.mqh>
 #include <CAT/common/session.mqh>
+#include <CAT/main/riskmanager.mqh>
 
 /*
    Position manager meant for controlling when we can open/close position.
@@ -19,105 +18,132 @@
        order at incorrect time, you WILL mess up values.
 */
 class PositionManager {
-
    private:
-      int slippage;
-      int maxOpenPositions;
-      datetime lastBarTime;
-      RiskManager* riskManager;
-      CustomSession* customSession;
+    int slippage;
+    int maxOpenPositions;
+    datetime lastBarTime;
+    RiskManager* riskManager;
+    CustomSession* customSession;
 
    public:
-      PositionManager::PositionManager(RiskManager* cRiskManager, CustomSession* cCustomSession, int cSlippage, int cMaxOpenPositions = 1) {
+    PositionManager::PositionManager(RiskManager* cRiskManager, CustomSession* cCustomSession, int cSlippage, int cMaxOpenPositions = 1) {
         this.riskManager = cRiskManager;
         this.slippage = cSlippage;
         this.lastBarTime = Time[0];
         this.customSession = cCustomSession;
         this.maxOpenPositions = cMaxOpenPositions;
-      }
+    }
 
-      ~PositionManager() {
-         delete customSession;
-         delete riskManager;
-      }
+    ~PositionManager() {
+        delete customSession;
+        delete riskManager;
+    }
 
-   /*
-      Open order. TP/SL is calculted according to externals.
-      To not complictae things, call this function from EA's switch/case statement
-      where we check if there are no other positions open. If you decide
-      to call this function from other parts of code, you might open multiple
-      positions at once.
-   */
-   void openOrder(int positionType) {
-      if (!customSession.allowToOpen(positionType)) return;
-      // Calculate values for order
-      NewTrade trade = riskManager.getNewTrade(positionType);
-      Logger::log("Open Order: " + string(trade.positionType) + " Lot Size: " + string(trade.lotSize) + " Open Price: " + string(trade.openPrice) + " SL: " + string(trade.slPrice) + " TP: " + string(trade.tpPrice));
+    /*
+       Open order. TP/SL is calculted according to externals.
+       To not complictae things, call this function from EA's switch/case statement
+       where we check if there are no other positions open. If you decide
+       to call this function from other parts of code, you might open multiple
+       positions at once.
+    */
+    void openOrder(int positionType) {
+        if (!customSession.allowToOpen(positionType)) return;
+        // Calculate values for order
+        NewTrade trade = riskManager.getNewTrade(positionType);
+        Logger::log("Open Order: " + string(trade.positionType) + " Lot Size: " + string(trade.lotSize) + " Open Price: " + string(trade.openPrice) + " SL: " + string(trade.slPrice) + " TP: " + string(trade.tpPrice));
 
-      int number = OrderSend(Symbol(), positionType, trade.lotSize, trade.openPrice, slippage, trade.slPrice, trade.tpPrice, "Comment", 0, 0, Red);
-      Logger::log("Opened order number: " + string(number));
+        int number = OrderSend(Symbol(), positionType, trade.lotSize, trade.openPrice, slippage, trade.slPrice, trade.tpPrice, "Comment", 0, 0, Red);
+        Logger::log("Opened order number: " + string(number));
 
-      if  (number != -1) {
-         Logger::log("Order send success");
-         if (OrderSelect(0, SELECT_BY_POS)) {
-            customSession.onPositionOpened();
-         } else {
-           Logger::log("Select position error: " + string(GetLastError()));
-         }
-      } else {
-         Logger::log("Open position error: " + string(GetLastError()));
-      }
-   };
+        if (number != -1) {
+            Logger::log("Order send success");
+            if (OrderSelect(0, SELECT_BY_POS)) {
+                customSession.onPositionOpened();
+            } else {
+                Logger::log("Select position error: " + string(GetLastError()));
+            }
+        } else {
+            Logger::log("Open position error: " + string(GetLastError()));
+        }
+    };
 
-   /*
-      Check and set breakeven or profit zone for a position.
-      This function is called from getStatus() function.
-   */
-   void checkProfitZones() {
-      int orderType = OrderType();
+    void closeAllPositions() {
+        int ordersTotal = OrdersTotal();
+        if (ordersTotal > 0) {
+            for (int i = ordersTotal - 1; i >= 0; i--) {
+                 if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) && OrderSymbol() == Symbol()) {
+                     double closePrice;
+                     if (OrderType() == OP_BUY) closePrice = NormalizeDouble(Bid, Digits);
+                     else closePrice = NormalizeDouble(Ask, Digits);
 
-      double oop = NormalizeDouble(OrderOpenPrice(), Digits);
-      double osl = NormalizeDouble(OrderStopLoss(), Digits);
-      double otp = NormalizeDouble(OrderTakeProfit(), Digits);
+                     bool orderClose = OrderClose(OrderTicket(), OrderLots(), closePrice, slippage, clrWhite);
+                     if (orderClose) Logger::log("PositionManager.closeAllPositions() - Position closed");
+                     else Logger::log("PositionManager.closeAllPositions() - Close position error: " + string(GetLastError()));
+                 };
+            }
+        }
+    }
 
-      bool isBreakeven = riskManager.getBreakevenStatus(orderType, oop, otp);
-      bool isProfitZone = riskManager.getProfitZoneStatus(orderType, oop, otp);
+    /*
+       Check and set breakeven or profit zone for a position.
+       This function is called from getStatus() function.
+    */
+    void checkProfitZones() {
+        int orderType = OrderType();
 
-      // Check for breakeven
-      if (isBreakeven && ((orderType == OP_BUY && osl < oop) || (orderType == OP_SELL && osl > oop))) {
-         bool orderModify = OrderModify(OrderTicket(), oop, oop, otp, 0, clrOrange);
-         if (orderModify) Logger::log("PositionManager.checkProfitZones() - Breakeven set");
-         else Logger::log("PositionManager.checkProfitZones() - Break even error: " + string(GetLastError()));
-      }
+        double oop = NormalizeDouble(OrderOpenPrice(), Digits);
+        double osl = NormalizeDouble(OrderStopLoss(), Digits);
+        double otp = NormalizeDouble(OrderTakeProfit(), Digits);
 
-      // Check for profit zone
-      if (isProfitZone && osl == oop) {
-         double nsl = riskManager.getProfitZoneSL(orderType, oop, otp);
-         bool orderModify = OrderModify(OrderTicket(), oop, nsl, otp, 0, clrWhite);
-         if (orderModify) Logger::log("PositionManager.checkProfitZones() - Profit zone set! New SL: " + string(nsl) + " Old SL: " + string(osl) + " Open Price: " + string(oop) + " TP: " + string(otp) + " Order Type: " + string(orderType) + " Order SL: " + string(osl) + " Order TP: " + string(otp) + " Order Open Price: " + string(oop));
-         else Logger::log("PositionManager.checkProfitZones() - Profit zone error: " + string(GetLastError()));
-      }
-   }
+        // Check for profit zone first and exit function if its met
+        bool isProfitZone = riskManager.getProfitZoneStatus(orderType, oop, otp, osl);
+        double pfSl = riskManager.getProfitZoneSL(oop, otp);
+        if (isProfitZone) {
+            bool orderModify = OrderModify(OrderTicket(), oop, pfSl, otp, 0, clrWhite);
+            if (orderModify)
+                Logger::log("PositionManager.checkProfitZones() - Profit zone set! New SL: " + string(pfSl) + " Old SL: " + string(osl) + " Open Price: " + string(oop) + " TP: " + string(otp) + " Order Type: " + string(orderType) + " Order SL: " + string(osl) + " Order TP: " + string(otp) + " Order Open Price: " + string(oop));
+            else
+                Logger::log("PositionManager.checkProfitZones() - Profit zone error: " + string(GetLastError()));
+            return;
+        }
 
-   PositionStatus getStatus() {
-      int ordersTotal = OrdersTotal();
-      if (ordersTotal > 0) {
-         for( int i = 0 ; i < OrdersTotal() ; i++ ) {
-            if (OrderSelect( i, SELECT_BY_POS, MODE_TRADES ) && OrderSymbol() == Symbol()) {
-               checkProfitZones();
-            };
-         }
-         if (ordersTotal >= maxOpenPositions) {
-            Logger::log("PositionManager.getStatus() - MULTIPLE_POSITIONS");
-            return IS_OPENED;
-         }
-         Logger::log("PositionManager.getStatus() - IS_OPENED");
-         return AVAILABLE_TO_OPEN;
-      } else {
-         Logger::log("PositionManager.getStatus() - AVAILABLE_TO_OPEN");
-         return AVAILABLE_TO_OPEN;
-      }
-   }
+        // Check for breakeven
+        bool isBreakeven = riskManager.getBreakevenStatus(orderType, oop, otp, osl);
+        if (isBreakeven) {
+            bool orderModify = OrderModify(OrderTicket(), oop, oop, otp, 0, clrOrange);
+            if (orderModify)
+                Logger::log("PositionManager.checkProfitZones() - Breakeven set");
+            else
+                Logger::log("PositionManager.checkProfitZones() - Break even error: " + string(GetLastError()));
+        }
+    }
+
+    PositionStatus getStatus() {
+        bool isEndOfMonth = customSession.isEndOfMonth();
+        if (isEndOfMonth) {
+            Logger::log("PositionManager.getStatus() - END_OF_MONTH");
+            closeAllPositions();
+            return IS_CLOSED;
+        }
+
+        int ordersTotal = OrdersTotal();
+        if (ordersTotal > 0) {
+            for (int i = 0; i < OrdersTotal(); i++) {
+                if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) && OrderSymbol() == Symbol()) {
+                    checkProfitZones();
+                };
+            }
+            if (ordersTotal >= maxOpenPositions) {
+                Logger::log("PositionManager.getStatus() - MULTIPLE_POSITIONS");
+                return IS_OPENED;
+            }
+            Logger::log("PositionManager.getStatus() - IS_OPENED");
+            return AVAILABLE_TO_OPEN;
+        } else {
+            Logger::log("PositionManager.getStatus() - AVAILABLE_TO_OPEN");
+            return AVAILABLE_TO_OPEN;
+        }
+    }
 
    bool rolloverDeals() {
       // Get current date
@@ -135,13 +161,13 @@ class PositionManager {
                // Close the position, use ASK to sell position
                if (OrderType() == OP_SELL) {
                   if (!OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 3)) {
-                     Logger::log("PositionManager.rolloverDeals() - Failed to close deal: " 
+                     Logger::log("PositionManager.rolloverDeals() - Failed to close deal: "
                                  + string(OrderTicket()) + " Last error: " + string(GetLastError()));
                      return false;
                   }
                else {
                   if (!OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 3)) {
-                     Logger::log("PositionManager.rolloverDeals() - Failed to close deal: " 
+                     Logger::log("PositionManager.rolloverDeals() - Failed to close deal: "
                                  + string(OrderTicket()) + " Last error: " + string(GetLastError()));
                      return false;
                   }}
@@ -153,7 +179,7 @@ class PositionManager {
          }
 
          Logger::log("PositionManager.rolloverDeals() - All deals rolled over for month " + string(lastMonth));
-         
+
          // Update last month
          lastMonth = currentMonth;
       }

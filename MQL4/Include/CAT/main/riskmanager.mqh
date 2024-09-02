@@ -52,13 +52,13 @@ class RiskManager {
                 Logger::log("Tick value: " + string(tickVal));
                 Sleep(200);
             } while (tickVal <= 0.00001);
-                        
+
             double lotStep = MarketInfo(Symbol(), MODE_LOTSTEP);
             double minLot = MarketInfo(Symbol(), MODE_MINLOT);
             double maxLot = MarketInfo(Symbol(), MODE_MAXLOT);
-            
+
             double lots = AccountBalance() * (riskPerTrade / 100) / (t.slPoints * tickVal);
-            
+
             Logger::log("Lots: " + string(lots));
             double lotSize = MathMin(
                 maxLot,
@@ -98,32 +98,37 @@ class RiskManager {
             return trade;
         }
 
-        bool getBreakevenStatus(int cOrderType, double cOpenPrice, double cTpPrice) {
-            if (breakevenZone <= 0 || breakevenZone >= 1) return false;
+        bool getBreakevenStatus(int cOrderType, double cOpenPrice, double cTpPrice, double cSlPrice) {
+            if (breakevenZone == 0 || breakevenZone == 1) return false;
+            if (cOrderType == OP_BUY && cSlPrice >= cOpenPrice) return false;
+            if (cOrderType == OP_SELL && cSlPrice <= cOpenPrice) return false;
 
             double bePrice = NormalizeDouble(cOpenPrice + (cTpPrice - cOpenPrice) * breakevenZone, Digits);
             double lastHigh = iHigh(Symbol(), Period(), 1);
             double lastLow = iLow(Symbol(), Period(), 1);
 
-            if (cOrderType == OP_BUY &&  bePrice <= lastHigh) return true;
+            if (cOrderType == OP_BUY && bePrice <= lastHigh) return true;
             else if (cOrderType == OP_SELL && bePrice >= lastLow) return true;
             else return false;
         }
 
-        bool getProfitZoneStatus(int cOrderType, double cOpenPrice, double cTpPrice) {
+        double getProfitZonePrice(double cOpenPrice, double cTpPrice) {
+            return NormalizeDouble(cOpenPrice + (cTpPrice - cOpenPrice) * profitZone, Digits);
+        }
+
+        double getProfitZoneSL(double cOpenPrice, double cTpPrice) {
+            return NormalizeDouble(cOpenPrice + (cTpPrice - cOpenPrice) * profitRatio, Digits);
+        }
+
+        bool getProfitZoneStatus(int cOrderType, double cOpenPrice, double cTpPrice, double cSlPrice) {
             if (profitZone <= 0 || profitZone >= 1) return false;
 
-            double pzPrice = NormalizeDouble(cOpenPrice + (cTpPrice - cOpenPrice) * profitZone, Digits);
+            double pzPrice = getProfitZonePrice(cOpenPrice, cTpPrice);
             double lastHigh = iHigh(Symbol(), Period(), 1);
             double lastLow = iLow(Symbol(), Period(), 1);
 
-            if (cOrderType == OP_BUY &&  pzPrice <= lastHigh) return true;
-            else if (cOrderType == OP_SELL && pzPrice >= lastLow) return true;
+            if (cOrderType == OP_BUY && pzPrice <= lastHigh && cSlPrice < pzPrice) return true;
+            else if (cOrderType == OP_SELL && pzPrice >= lastLow && cSlPrice > pzPrice) return true;
             else return false;
-        }
-
-        double getProfitZoneSL(int cOrderType, double cOpenPrice, double cTpPrice) {
-            if (cOrderType == OP_BUY) return cOpenPrice + (cTpPrice - cOpenPrice) * profitRatio;
-            else return cOpenPrice - (cOpenPrice - cTpPrice) * profitRatio;
         }
 };
