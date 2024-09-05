@@ -52,6 +52,22 @@ OrderAction DEMA_Baseline(double cDEMA_period, int cDEMA_enum_price, double cDEM
   return signal; 
 }
 
+//| TE Crossover Entry (not QC)          
+//| TE_MaPeriod - {20 - 250}  |  TE_MaFilterPass - [1 - 98] 
+//| TE_MaShift - {0 or 1}     |  TE_Deviation - {0.2 - 1.0}  |  TE_enum_price - [ANY enPrices ENUM]
+OrderAction TE_Confirmation(ENUM_TIMEFRAMES TE_tf, int TE_MaPeriod, int TE_MaFilterPass, int TE_MaShift, double TE_Deviation, int TE_enum_price) {
+  OrderAction signal = OA_IGNORE;
+  enPrices TE_Price = (enPrices)TE_enum_price;
+
+  double TE_Buy = iCustom(NULL, TE_tf, "trend-envelope", TE_tf, TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_Price, 0, 1);
+  double TE_Sell = iCustom(NULL, TE_tf, "trend-envelope", TE_tf, TE_MaPeriod, TE_MaFilterPass, TE_MaShift, TE_Deviation, TE_Price, 1, 1);
+  
+  if(CheckForLong(TE_Buy, TE_Sell)) signal = OA_OPEN_LONG;
+  if(CheckForShort(TE_Buy, TE_Sell)) signal = OA_OPEN_SHORT;
+
+  return signal;
+}
+
 //| Trend Intensity 2 Baseline check (QC)
 //| NOTE: THIS INDICATOR IS SOPHISTICATED, MUST BE ADAPTED AND OPTIMIZED AFTER CREATING
 //| A REASONABLE ENTRY LOGIC - after that ranges for period & prices can be optimised as per entry logic.

@@ -1,0 +1,14 @@
+Idea of macro/micro makes sense.
+Likely needs multiple positions in the same direction.
+
+pros:
+- higher timeframe confirmation (less bs = more $)
+- fundamentally just makes sense
+
+cons:
+- heavy lag at turning points -> best case to not enter
+- v. slow compute/opt.
+
+structure:
+
+- macro 
