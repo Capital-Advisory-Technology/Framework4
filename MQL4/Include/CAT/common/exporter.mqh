@@ -6,7 +6,7 @@
 class BacktestExporter {
     private:
         Database* db;
-        
+
         string dateFrom;
         double accountStartBalance;
 
@@ -23,13 +23,17 @@ class BacktestExporter {
             delete db;
         }
 
-        void exportBacktest(string strategyName, string inputJson, string sessionLimits) {
-            string backtestQuery = insertBacktestQuery(strategyName, inputJson, sessionLimits, accountStartBalance, dateFrom);
+        void exportBacktest(string strategyName, string inputs, string sessionLimits) {
+            string backtestQuery = insertBacktestQuery(strategyName, inputs, sessionLimits, accountStartBalance, dateFrom);
             db.insertData(backtestQuery);
 
-            int btId = (int)db.lastInsertId();
-            string positionsQuery = insertPositionsQuery(btId);
-            db.insertData(positionsQuery);
+            int backtestId = db.getLastInsertId();
+            string queries[];
+            insertPositionsQueries(backtestId, queries);
+
+            for (int i = 0; i < ArraySize(queries); i++) {
+                db.insertData(queries[i]);
+            }
         }
 
 };

@@ -43,8 +43,8 @@ public:
         delete db;
     }
 
-    long lastInsertId() {
-        return db.getLastInsertRowId();
+    int getLastInsertId() {
+        return (int)db.getLastInsertRowId();
     }
 
     void insertData(string sql) {
